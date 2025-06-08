@@ -50,6 +50,7 @@ const SignIn = () => {
     password: "",
   });
   const [error, setError] = useState<Error>({ email: null, password: null, error: null });
+  const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
   const navigate = useNavigate();
@@ -57,10 +58,14 @@ const SignIn = () => {
   // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmiting(true);
     setError({ email: null, password: null, error: null });
 
     const validate = validateForm(value, setError);
-    if (validate) return;
+    if (validate) {
+      setSubmiting(false);
+      return;
+    }
 
     try {
       const response = await callApi("/auth/signin", { method: "POST", body: value });
@@ -80,17 +85,17 @@ const SignIn = () => {
         message: string;
         name?: string;
       }
-      if (err instanceof Error) {
-        const response: ErrorResponse | undefined = (err as { response?: { data?: ErrorResponse } })?.response?.data;
-        if (response?.code === "EMAIL_NOT_FOUND") setError((prev) => ({ ...prev, email: response.message }));
-        else if (response?.code === "INCORRECT_PASSWORD") setError((prev) => ({ ...prev, password: response.message }));
-        else {
-          setError((prev) => ({
-            ...prev,
-            error: { message: response?.message, title: response?.name },
-          }));
-        }
+      const response: ErrorResponse | undefined = (err as { data?: ErrorResponse })?.data;
+      if (response?.code === "EMAIL_NOT_FOUND") setError((prev) => ({ ...prev, email: response.message }));
+      else if (response?.code === "INCORRECT_PASSWORD") setError((prev) => ({ ...prev, password: response.message }));
+      else {
+        setError((prev) => ({
+          ...prev,
+          error: { message: response?.message, title: response?.name },
+        }));
       }
+    } finally {
+      setSubmiting(false);
     }
   };
 
@@ -130,7 +135,7 @@ const SignIn = () => {
                 Forgot Password?
               </a>
             </div>
-            <button className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3">Sign In</button>
+            <button disabled={submiting} className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress">Sign In</button>
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">

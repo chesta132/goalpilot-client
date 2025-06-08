@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, RefreshCw, Home, AlertTriangle } from "lucide-react";
+import { X, RefreshCw, Home, AlertTriangle, User2 } from "lucide-react";
 import { useNavigate } from "react-router";
 
 type ErrorPopupProps = {
@@ -9,8 +9,10 @@ type ErrorPopupProps = {
   onClose?: () => void;
   onRefresh?: () => void;
   onBackToDashboard?: () => void;
+  onBackToLoginPage?: () => void;
   showRefresh?: boolean;
   showBackToDashboard?: boolean;
+  showBackToLoginPage?: boolean;
 };
 
 const ErrorPopup = ({
@@ -20,8 +22,10 @@ const ErrorPopup = ({
   onClose,
   onRefresh,
   onBackToDashboard,
+  onBackToLoginPage,
   showRefresh = true,
   showBackToDashboard = true,
+  showBackToLoginPage = false,
 }: ErrorPopupProps) => {
   const [isOpen, setIsOpen] = useState(open);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
@@ -54,6 +58,14 @@ const ErrorPopup = ({
       onBackToDashboard();
     } else {
       navigate("/");
+    }
+  };
+
+  const handleBackToLoginPage = () => {
+    if (onBackToLoginPage) {
+      onBackToLoginPage();
+    } else {
+      navigate("/signin");
     }
   };
 
@@ -118,6 +130,25 @@ const ErrorPopup = ({
                 >
                   <Home className="w-4 h-4 mr-2" />
                   Back to Dashboard
+                </button>
+              )}
+              {showBackToLoginPage && (
+                <button
+                  onClick={handleBackToLoginPage}
+                  className="flex items-center border-(--accent) text-(--accent) bg-(--theme) cursor-pointer justify-center px-4 py-3 rounded-xl font-medium border-2 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-50"
+                  onMouseEnter={(e) => {
+                    (e.target as HTMLButtonElement).style.backgroundColor = "var(--accent-soft)";
+                    (e.target as HTMLButtonElement).style.borderColor = "var(--accent-hard)";
+                    (e.target as HTMLButtonElement).style.color = "var(--theme-reverse)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.target as HTMLButtonElement).style.backgroundColor = "var(--white)";
+                    (e.target as HTMLButtonElement).style.borderColor = "var(--accent)";
+                    (e.target as HTMLButtonElement).style.color = "var(--accent)";
+                  }}
+                >
+                  <User2 className="w-4 h-4 mr-2" />
+                  Back to Login Page
                 </button>
               )}
             </div>

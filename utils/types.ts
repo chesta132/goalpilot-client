@@ -1,0 +1,46 @@
+export type TaskData = {
+  _id: string;
+  goalId: string;
+  task: string;
+  description: string;
+  isCompleted: boolean;
+  completedAt: Date | null;
+  deletedAt: Date | null;
+  difficulty: "easy" | "medium" | "hard" | "very hard";
+  isRecycled: boolean;
+  rewardPoints: number;
+  targetDate: Date | null;
+  __v?: number;
+};
+
+export type GoalData = {
+  _id: string;
+  userId: string;
+  title: string;
+  description: string;
+  createdAt: Date;
+  progress: number;
+  isPublic: boolean;
+  status: string;
+  targetDate: Date | null;
+  tasks: TaskData[];
+  isRecycled: boolean;
+  deleteAt: Date | null;
+  __v?: number;
+};
+
+export type UserData = {
+  _id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  createdAt: Date;
+  lastActive: Date;
+  goals: GoalData[];
+  goalsCompleted: number;
+  tasksCompleted: number;
+  level: number;
+  points: number;
+  role: "user" | "admin" | "tester";
+  __v?: number;
+};

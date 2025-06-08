@@ -4,25 +4,17 @@ import { Link } from "react-router";
 import { Settings } from "lucide-react";
 import { useViewportWidth } from "../../../hooks/useViewport";
 import useScrollNavigation from "../../../hooks/useScrollNavigation";
+import type { UserData } from "../../../utils/types";
 
-interface Goal {
-  _id?: string;
-  title?: string;
-  progress?: number;
-}
-
-interface NavProps {
-  data?: {
-    fullName?: string;
-    goals?: Goal[];
-  } | null;
+type NavProps = {
+  data?: UserData | null;
   param?: string;
 }
 
 const Nav = ({ data, param }: NavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const width = useViewportWidth();
-  const { navRef } = useScrollNavigation();
+  const { navRef, timelineStatus } = useScrollNavigation();
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -33,39 +25,29 @@ const Nav = ({ data, param }: NavProps) => {
 
   // Close the menu when the user navigates to a different goal
   useEffect(() => {
-    setIsOpen(false);
-  }, [param]);
+    if (width < 1024) setIsOpen(false);
+  }, [param, width]);
 
   // Close the menu when clicking outside of it
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Element | null;
-      if (target && !target.closest("nav") && !target.closest(".navbar")) {
+      if (width < 1024 && target && !target.closest("nav") && !target.closest(".navbar")) {
         setIsOpen(false);
       }
     };
 
     document.body.addEventListener("click", handleClickOutside);
-
     return () => {
       document.body.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  }, [width]);
 
   // Close the menu when the user scrolls
   useEffect(() => {
-    const handleScroll = () => {
-      if (isOpen) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isOpen]);
+    if (timelineStatus) setIsOpen(false);
+    else if (width >= 1024) setIsOpen(true);
+  }, [timelineStatus, width]);
 
   return (
     <div>
@@ -99,7 +81,7 @@ const Nav = ({ data, param }: NavProps) => {
       >
         <h1 className="navbar text-[20px] font-bold mt-4">My Goals</h1>
         {data && data.goals && data.goals.length > 0 ? (
-          <div className="mt-2">
+          <div className="mt-2 flex flex-col gap-3">
             {data.goals.map((goal) => (
               <Link to={`/goal/${goal._id}`} className="text-(--theme-reverse)" key={goal._id}>
                 <div
