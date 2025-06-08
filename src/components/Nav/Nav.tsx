@@ -9,7 +9,7 @@ import type { UserData } from "../../../utils/types";
 type NavProps = {
   data?: UserData | null;
   param?: string;
-}
+};
 
 const Nav = ({ data, param }: NavProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,8 +45,8 @@ const Nav = ({ data, param }: NavProps) => {
 
   // Close the menu when the user scrolls
   useEffect(() => {
-    if (timelineStatus) setIsOpen(false);
-    else if (width >= 1024) setIsOpen(true);
+    if (timelineStatus && width >= 1024) setIsOpen(true);
+    else if (timelineStatus) setIsOpen(false);
   }, [timelineStatus, width]);
 
   return (
@@ -77,7 +77,7 @@ const Nav = ({ data, param }: NavProps) => {
       <div
         className={`fixed navbar left-0 top-16 h-[100dvh] w-[50%] md:w-[35%] lg:w-[20%] px-4 bg-(--theme) z-40 ${
           isOpen ? "-translate-x-0" : "-translate-x-[100%]"
-        } transition-transform duration-500 ease-in-out shadow-md`}
+        } ${timelineStatus && "lg:top-0"} transition-all duration-500 ease-in-out shadow-md`}
       >
         <h1 className="navbar text-[20px] font-bold mt-4">My Goals</h1>
         {data && data.goals && data.goals.length > 0 ? (

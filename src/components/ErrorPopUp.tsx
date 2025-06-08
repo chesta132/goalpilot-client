@@ -73,7 +73,7 @@ const ErrorPopup = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1b1b1b11] backdrop-blur-xs">
-      <div className="relative w-full max-w-md transform transition-all duration-300 ease-out">
+      <div className="relative close-goal-popup-exception w-full max-w-md transform transition-all duration-300 ease-out">
         {/* Main Error Modal */}
         <div
           className={`bg-(--theme) rounded-2xl shadow-2xl border border-(--theme-darker) overflow-hidden ${

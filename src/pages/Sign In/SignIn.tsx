@@ -7,6 +7,7 @@ import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import callApi from "../../../utils/callApi";
+import errorHandler from "../../../utils/errorHandler";
 
 type Value = {
   email: string;
@@ -80,20 +81,7 @@ const SignIn = () => {
       }
       navigate("/");
     } catch (err) {
-      interface ErrorResponse {
-        code?: string;
-        message: string;
-        name?: string;
-      }
-      const response: ErrorResponse | undefined = (err as { data?: ErrorResponse })?.data;
-      if (response?.code === "EMAIL_NOT_FOUND") setError((prev) => ({ ...prev, email: response.message }));
-      else if (response?.code === "INCORRECT_PASSWORD") setError((prev) => ({ ...prev, password: response.message }));
-      else {
-        setError((prev) => ({
-          ...prev,
-          error: { message: response?.message, title: response?.name },
-        }));
-      }
+      errorHandler(err, setError)
     } finally {
       setSubmiting(false);
     }

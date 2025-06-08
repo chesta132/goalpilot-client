@@ -14,18 +14,18 @@ type InputProps = {
   optional?: boolean;
 };
 
-const Input = ({ type = "text", placeholder, error, label, value, onChange, className, password, optional }: InputProps) => {
-  const [internalValue, setInternalValue] = useState(value || "");
+const Input = ({ type = "text", placeholder, error, label, value = "", onChange, className, password, optional }: InputProps) => {
+  const [internalValue, setInternalValue] = useState(value);
   const [isFocus, setIsFocus] = useState(false);
   const [whatType, setWhatType] = useState(type);
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <input
         className={`
           w-full px-3 py-3 border-2 border-(--theme-darker) rounded-lg 
           transition-all duration-200 ease-in-out
-          focus:outline-none focus:border-(--accent) ${password && "pr-8"} ${className}
+          focus:outline-none focus:border-(--accent) ${password && "pr-8"}
         `}
         type={whatType}
         id={label}

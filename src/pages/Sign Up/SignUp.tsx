@@ -7,6 +7,7 @@ import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import ErrorPopUp from "../../components/ErrorPopUp.tsx";
 import callApi from "../../../utils/callApi";
+import errorHandler from '../../../utils/errorHandler'
 
 type Value = {
   username: string;
@@ -127,20 +128,7 @@ const SignUp = () => {
       }
       navigate("/");
     } catch (err) {
-      interface ErrorResponse {
-        code?: string;
-        message: string;
-        name?: string;
-      }
-      const response: ErrorResponse | undefined = (err as { data?: ErrorResponse })?.data;
-      if (response?.code === "EMAIL_UNAVAILABLE") setError((prev) => ({ ...prev, email: response.message }));
-      else if (response?.code === "USERNAME_UNAVAILABLE") setError((prev) => ({ ...prev, username: response.message }));
-      else if (response) {
-        setError((prev) => ({
-          ...prev,
-          error: { message: response.message, title: response.name ?? "Error" },
-        }));
-      }
+      errorHandler(err, setError)
     } finally {
       setSubmiting(false);
     }

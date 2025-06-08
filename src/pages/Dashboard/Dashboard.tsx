@@ -1,28 +1,29 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import Nav from "../../components/Nav/Nav";
 import callApi from "../../../utils/callApi";
 import ErrorPopup from "../../components/ErrorPopUp";
 import type { UserData } from "../../../utils/types";
 import Loading from "../../components/Loading";
-
-type ErrorResponse = {
-  title: string;
-  message: string;
-  code: string;
-  name: string;
-};
+import { Plus } from "lucide-react";
+import AddGoalPopup from "../../components/Add Goal Popup/AddGoalPopup";
+import Button from "../../components/Button";
+import errorHandler from "../../../utils/errorHandler";
 
 type Error = {
-  title?: string;
-  message?: string;
-  code?: string;
+  error: {
+    title?: string;
+    message?: string;
+    code?: string;
+  };
 } | null;
 
 const Dashboard = () => {
   const [data, setData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>(null);
+  const [addNewGoalOpen, setAddNewGoalOpen] = useState(false);
+  const [forceReload, setForceReload] = useState(0);
   const navigate = useNavigate();
   const params = useParams();
 
@@ -35,18 +36,16 @@ const Dashboard = () => {
         const response = await callApi(`/user`, { method: "PATCH", token: true });
         setData(response.data);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        const response = (error as { data?: ErrorResponse })?.data;
-        setError({ title: response?.name, message: response?.message, code: response?.code });
+        errorHandler(error, setError);
       } finally {
         setLoading(false);
       }
     };
 
     getData();
-  }, [navigate]);
+  }, [navigate, forceReload]);
 
-  const errorAuth = error?.code === "TOKEN_EXPIRED" || error?.code === "USER_NOT_FOUND" || error?.code === "INVALID_AUTH";
+  const errorAuth = error?.error.code === "TOKEN_EXPIRED" || error?.error.code === "USER_NOT_FOUND" || error?.error.code === "INVALID_AUTH";
 
   const handleBackToLoginPage = () => {
     sessionStorage.removeItem("jwt-token");
@@ -65,18 +64,51 @@ const Dashboard = () => {
 
   if (loading) return <Loading />;
 
+  const existingGoals = data?.goals.filter((goal) => !goal.isRecycled);
+
   return (
     <div>
       <Nav data={data} param={params.goalId} />
       {error && (
         <ErrorPopup
-          title={error.title}
-          message={error.message}
+          title={error.error.title}
+          message={error.error.message}
           showBackToDashboard={!errorAuth}
           showBackToLoginPage={errorAuth}
           onBackToLoginPage={handleBackToLoginPage}
         />
       )}
+      <div className="lg:pl-[22%] pt-22 px-6">
+        <div>
+          {existingGoals && existingGoals.length > 0 && (
+            <>
+              <h1 className="text-2xl font-bold p-3">My Goals</h1>
+              <div className="flex flex-col gap-5">
+                {existingGoals.map((goal) => (
+                  <Link
+                    to={`/goal/${goal._id}`}
+                    key={goal._id}
+                    className="w-full bg-(--theme) px-4 py-6 gap-5 flex flex-col border-(--gray) border rounded-md shadow-lg"
+                  >
+                    <div className="flex justify-between">
+                      <h2>{goal.title}</h2>
+                      <h2>{goal.progress}% Completed</h2>
+                    </div>
+                    <div className="bg-(--theme-darker) h-1.5 rounded-2xl">
+                      <div className="bg-(--accent) h-1.5 rounded-2xl" style={{ width: `${goal.progress}%` }} />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </>
+            // tambahin kalo gada goalnya
+          )}
+        </div>
+      </div>
+      <div className="flex justify-center mt-20">
+        <Button text="Create New Goal" icon={<Plus />} onClick={() => setAddNewGoalOpen(true)} className="close-goal-popup-exception" />
+        {addNewGoalOpen && <AddGoalPopup setToClose={() => setAddNewGoalOpen(false)} reload={() => setForceReload((prev) => (prev += 1))} />}
+      </div>
     </div>
   );
 };
