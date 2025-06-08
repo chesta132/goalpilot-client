@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #66b2ff;
+  --accent-hard: #2a94ff;
+  --accent-soft: #9fcfff;
+  --gray: #6b7280;
+  --white: #ffffff;
+
+  --theme: #fafbfc;
+  --theme-reverse: #1f2937;
+  --theme-darker: #e0e2e4;
+}
