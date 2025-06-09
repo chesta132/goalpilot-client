@@ -7,83 +7,19 @@ import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import ErrorPopUp from "../../components/ErrorPopUp.tsx";
 import callApi from "../../../utils/callApi";
-import errorHandler from '../../../utils/errorHandler'
-
-type Value = {
-  username: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-};
-
-type SetError = React.Dispatch<
-  React.SetStateAction<{
-    email: string | null;
-    password: string | null;
-    username: string | null;
-    firstName: string | null;
-    error: {
-      message: string;
-      title: string;
-    } | null;
-  }>
->;
+import errorHandler from "../../../utils/errorHandler";
+import validateForms from "../../../utils/validateForms.ts";
 
 type Error = {
-  email: string | null;
-  password: string | null;
-  username: string | null;
-  firstName: string | null;
-  error: {
-    message: string | undefined;
-    title: string | undefined;
+  email?: string ;
+  password?: string ;
+  username?: string ;
+  firstName?: string ;
+  error?: {
+    message?: string;
+    title?: string;
+    code?: string;
   } | null;
-};
-
-const validateForm = (value: Value, setError: SetError): boolean | undefined => {
-  let err;
-  // Custom requires
-  if (value.username.includes(" ")) {
-    setError((prev) => ({ ...prev, username: "Username can't have spaces" }));
-    err = true;
-  }
-
-  if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value.email)) {
-    setError((prev) => ({ ...prev, email: "Please input a valid email" }));
-    err = true;
-  }
-
-  if (value.email.includes(" ")) {
-    setError((prev) => ({ ...prev, email: "Email can't have spaces" }));
-    err = true;
-  }
-
-  //  Validate requires of email
-  if (value.email.trim() === "") {
-    setError((prev) => ({ ...prev, email: "Email is required" }));
-    err = true;
-  }
-
-  //  Validate requires of password
-  if (value.password.trim() === "") {
-    setError((prev) => ({ ...prev, password: "Password is required" }));
-    err = true;
-  }
-
-  // Validate requires of username
-  if (value.username.trim() === "") {
-    setError((prev) => ({ ...prev, username: "Username is required" }));
-    err = true;
-  }
-
-  // Validate requires of first name
-  if (value.firstName.trim() === "") {
-    setError((prev) => ({ ...prev, firstName: "First name is required" }));
-    err = true;
-  }
-
-  return err;
 };
 
 const SignUp = () => {
@@ -94,7 +30,7 @@ const SignUp = () => {
     firstName: "",
     lastName: "",
   });
-  const [error, setError] = useState<Error>({ email: null, password: null, username: null, firstName: null, error: null });
+  const [error, setError] = useState<Error>({ email: '', password: '', username: '', firstName: '', error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -104,9 +40,17 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
-    setError({ email: null, password: null, username: null, firstName: null, error: null });
+    setError({ email: '', password: '', username: '', firstName: '', error: null });
 
-    const validate = validateForm(value, setError as SetError);
+    const validate = validateForms(value, setError, {
+      usernameSpace: true,
+      regexEmail: true,
+      email: true,
+      emailSpace: true,
+      password: true,
+      username: true,
+      firstName: true,
+    });
     if (validate) {
       setSubmiting(false);
       return;
@@ -128,7 +72,7 @@ const SignUp = () => {
       }
       navigate("/");
     } catch (err) {
-      errorHandler(err, setError)
+      errorHandler(err, setError);
     } finally {
       setSubmiting(false);
     }
@@ -187,7 +131,12 @@ const SignUp = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
             />
             <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
-            <button disabled={submiting} className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress">Create Account</button>
+            <button
+              disabled={submiting}
+              className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress"
+            >
+              Create Account
+            </button>
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">

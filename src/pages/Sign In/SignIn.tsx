@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 import ErrorPopUp from "../../components/ErrorPopUp";
 import callApi from "../../../utils/callApi";
 import errorHandler from "../../../utils/errorHandler";
+import validateForms from "../../../utils/validateForms";
 
 type Value = {
   email: string;
@@ -15,34 +16,12 @@ type Value = {
 };
 
 type Error = {
-  email: string | null;
-  password: string | null;
-  error: {
-    message: string | undefined;
-    title: string | undefined;
+  email?: string ;
+  password?: string ;
+  error?: {
+    message?: string ;
+    title?: string;
   } | null;
-};
-
-const validateForm = (value: Value, setError: React.Dispatch<React.SetStateAction<Error>>) => {
-  let err;
-  // Custom requires
-  if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value.email)) {
-    setError((prev) => ({ ...prev, email: "Please input a valid email" }));
-    err = true;
-  }
-
-  //  Validate requires of email
-  if (value.email.trim() === "") {
-    setError((prev) => ({ ...prev, email: "Email is required" }));
-    err = true;
-  }
-  //  Validate requires of password
-  if (value.password.trim() === "") {
-    setError((prev) => ({ ...prev, password: "Password is required" }));
-    err = true;
-  }
-
-  return err;
 };
 
 const SignIn = () => {
@@ -50,7 +29,7 @@ const SignIn = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState<Error>({ email: null, password: null, error: null });
+  const [error, setError] = useState<Error>({ email: '', password: '', error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -60,9 +39,9 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
-    setError({ email: null, password: null, error: null });
+    setError({ email: '', password: '', error: null });
 
-    const validate = validateForm(value, setError);
+    const validate = validateForms(value, setError, { regexEmail: true, email: true, password: true });
     if (validate) {
       setSubmiting(false);
       return;
@@ -81,7 +60,7 @@ const SignIn = () => {
       }
       navigate("/");
     } catch (err) {
-      errorHandler(err, setError)
+      errorHandler(err, setError);
     } finally {
       setSubmiting(false);
     }
@@ -123,7 +102,12 @@ const SignIn = () => {
                 Forgot Password?
               </a>
             </div>
-            <button disabled={submiting} className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress">Sign In</button>
+            <button
+              disabled={submiting}
+              className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress"
+            >
+              Sign In
+            </button>
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">

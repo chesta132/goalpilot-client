@@ -4,69 +4,60 @@ import Slider from "../Slider";
 import { DatePicker } from "antd";
 import { X } from "lucide-react";
 import Button from "../Button";
-import callApi from "../../../utils/callApi";
 import errorHandler from "../../../utils/errorHandler";
 import ErrorPopup from "../ErrorPopUp";
 import { useNavigate } from "react-router";
+import validateForms from "../../../utils/validateForms";
 
 type Error = {
-  title: string;
-  description: string;
-  date: string;
+  title?: string;
+  description?: string;
+  targetDate?: Date | string;
   error?: {
     message?: string;
     title?: string;
-    code?: string
-  }
+    code?: string;
+  } | null
 };
 
 interface Value extends Error {
   isPublic: boolean;
 }
 
+type CreateGoalValue = {
+  title: string;
+  description: string;
+  targetDate: Date | string;
+  isPublic: boolean;
+};
+
 type AddGoalPopupProps = {
   setToClose: () => void;
-  reload: () => void
+  submit: () => void;
+  value: Value;
+  setValue: React.Dispatch<React.SetStateAction<CreateGoalValue>>;
 };
 
-const validateForm = (value: Value, setError: React.Dispatch<React.SetStateAction<Error>>): boolean => {
-  let err = false;
-  if (value.title.trim() === "") {
-    setError((prev) => ({ ...prev, title: "Title is required" }));
-    err = true;
-  }
-  if (value.description.trim() === "") {
-    setError((prev) => ({ ...prev, description: "Description is required" }));
-    err = true;
-  }
-  if (value.date.trim() === "") {
-    setError((prev) => ({ ...prev, date: "Date is required" }));
-    err = true;
-  }
-  return err;
-};
-
-const AddGoalPopup = ({ setToClose, reload }: AddGoalPopupProps) => {
-  const [value, setValue] = useState<Value>({ title: "", description: "", isPublic: true, date: "" });
-  const [error, setError] = useState<Error>({ title: "", description: "", date: "" });
+const AddGoalPopup = ({ setToClose, submit, value, setValue }: AddGoalPopupProps) => {
+  const [error, setError] = useState<Error>({ title: "", description: "", targetDate: "", error: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError({ title: "", description: "", targetDate: "", error: null });
     // console.log(e);
-    const validate = validateForm(value, setError);
+    const validate = validateForms(value, setError, { title: true, description: true, targetDate: true });
     // console.log(value);
+    console.log(error);
     if (validate) {
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const date = new Date(value.date);
-      await callApi("/goal", { method: "POST", token: true, body: { ...value, date } });
-      reload()
+      submit();
       setToClose();
     } catch (err) {
       errorHandler(err, setError);
@@ -97,8 +88,11 @@ const AddGoalPopup = ({ setToClose, reload }: AddGoalPopupProps) => {
   };
 
   return (
-    <div className="z-50 absolute w-full h-full left-1/2 top-1/2 -translate-1/2 bg-[#1b1b1b0a] backdrop-blur-[2px] items-center flex justify-center shadow-2xl border-(--theme-darker)">
-      <form onSubmit={handleSubmit} className="close-goal-popup-exception bg-(--theme) p-10 rounded-2xl w-100 gap-3 flex flex-col relative">
+    <div className="z-50 fixed w-full h-full left-1/2 top-1/2 -translate-1/2 bg-[#1b1b1b0a] backdrop-blur-[2px] items-center flex justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="close-goal-popup-exception bg-(--theme) p-10 rounded-2xl w-100 gap-3 flex flex-col relative shadow-2xl border-(--theme-darker)"
+      >
         <X className="absolute right-0 top-0 m-5 cursor-pointer" onClick={() => setToClose()} />
         <h2 className="text-2xl font-bold text-center mb-3">Create New Goal</h2>
         <Input
@@ -119,9 +113,11 @@ const AddGoalPopup = ({ setToClose, reload }: AddGoalPopupProps) => {
             placeholder="Add target goal date"
             classNames={{ popup: { root: "close-goal-popup-exception" } }}
             id="date"
-            onChange={(e: { $d: Date | null }) => e.$d && setValue((prev) => ({ ...prev, date: e.$d!.toString() }))}
+            onChange={(e: { $d: Date | null }) => e.$d && setValue((prev) => ({ ...prev, targetDate: e.$d! }))}
           />
-          {error.date !== "" && <p className="text-red-500 text-[12px] text-start">{error.date}</p>}
+          {error.targetDate && error.targetDate.toString() !== "" && (
+            <p className="text-red-500 text-[12px] text-start">{error.targetDate as string}</p>
+          )}
         </div>
         <Slider
           bgColor="bg-(--gray)"

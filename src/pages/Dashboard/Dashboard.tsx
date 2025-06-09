@@ -18,12 +18,21 @@ type Error = {
   };
 } | null;
 
+type CreateGoalValue = {
+  title: string;
+  description: string;
+  targetDate: Date | string;
+  isPublic: boolean;
+};
+
 const Dashboard = () => {
   const [data, setData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error>(null);
   const [addNewGoalOpen, setAddNewGoalOpen] = useState(false);
-  const [forceReload, setForceReload] = useState(0);
+  const [createGoalValue, setCreateGoalValue] = useState<CreateGoalValue>({ title: "", description: "", isPublic: true, targetDate: "" });
+  const [createGoalSubmit, setCreateGoalSUbmit] = useState(0);
+
   const navigate = useNavigate();
   const params = useParams();
 
@@ -43,7 +52,19 @@ const Dashboard = () => {
     };
 
     getData();
-  }, [navigate, forceReload]);
+  }, [navigate]);
+
+  useEffect(() => {
+    const addData = async () => {
+      if (createGoalValue.title) {
+        const response = await callApi("/goal", { method: "POST", token: true, body: createGoalValue });
+        setCreateGoalValue({ title: "", description: "", isPublic: true, targetDate: "" });
+        setData((prev) => prev && { ...prev, goals: [response.data, ...prev.goals] });
+      }
+    };
+    addData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createGoalSubmit]);
 
   const errorAuth = error?.error.code === "TOKEN_EXPIRED" || error?.error.code === "USER_NOT_FOUND" || error?.error.code === "INVALID_AUTH";
 
@@ -107,7 +128,14 @@ const Dashboard = () => {
       </div>
       <div className="flex justify-center mt-20">
         <Button text="Create New Goal" icon={<Plus />} onClick={() => setAddNewGoalOpen(true)} className="close-goal-popup-exception" />
-        {addNewGoalOpen && <AddGoalPopup setToClose={() => setAddNewGoalOpen(false)} reload={() => setForceReload((prev) => (prev += 1))} />}
+        {addNewGoalOpen && (
+          <AddGoalPopup
+            setToClose={() => setAddNewGoalOpen(false)}
+            submit={() => setCreateGoalSUbmit((prev) => (prev += 1))}
+            value={createGoalValue}
+            setValue={setCreateGoalValue}
+          />
+        )}
       </div>
     </div>
   );

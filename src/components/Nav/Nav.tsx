@@ -75,7 +75,9 @@ const Nav = ({ data, param }: NavProps) => {
         </div>
       </nav>
       <div
-        className={`fixed navbar left-0 top-16 h-[100dvh] w-[50%] md:w-[35%] lg:w-[20%] px-4 bg-(--theme) z-40 ${
+        className={`fixed overflow-auto [&::-webkit-scrollbar]:w-1
+        [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-thumb]:bg-gray-300 navbar left-0 top-16 h-[100dvh] w-[50%] md:w-[35%] lg:w-[20%] px-4 bg-(--theme) z-40 ${
           isOpen ? "-translate-x-0" : "-translate-x-[100%]"
         } ${timelineStatus && "lg:top-0"} transition-all duration-500 ease-in-out shadow-md`}
       >
