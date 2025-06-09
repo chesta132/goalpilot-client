@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useState } from "react";
 
 type SliderProps = {
@@ -18,7 +19,7 @@ const Slider = ({ bgColor, color, onClick, label = "", className, size, bgSize, 
     setisActive(!isActive);
   };
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={clsx('flex items-center gap-3', className)}>
       <div
         className={`py-0.5 px-0.5 ${bgSize ? bgSize : "w-9"} rounded-2xl flex cursor-pointer ${
           !isActive ? `justify-start ${bgColor || "bg-(--theme-reverse)"}` : "justify-end bg-(--accent)"

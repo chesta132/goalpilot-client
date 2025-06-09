@@ -9,6 +9,7 @@ import ErrorPopUp from "../../components/ErrorPopUp.tsx";
 import callApi from "../../../utils/callApi";
 import errorHandler from "../../../utils/errorHandler";
 import validateForms from "../../../utils/validateForms.ts";
+import Button from "../../components/Button.tsx";
 
 type Error = {
   email?: string ;
@@ -82,7 +83,7 @@ const SignUp = () => {
   return (
     <div className="flex flex-row-reverse justify-center lg:justify-between items-center h-full m-0 p-0">
       <div className="flex flex-col justify-center items-center gap-5 py-10" style={{ width: width > 1024 ? "50%" : "100%" }}>
-        {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} />}
+        {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8">
             <span className="text-(--accent)">Goal</span>Pilot
@@ -102,6 +103,7 @@ const SignUp = () => {
             <div className="flex flex-1/2 gap-3">
               <Input
                 placeholder={"Enter your first name"}
+                labelClass="top-4.5 left-3 text-xs text-(--gray)"
                 error={error.firstName}
                 label={"First Name"}
                 type="text"
@@ -109,6 +111,7 @@ const SignUp = () => {
               />
               <Input
                 placeholder={"Enter your last name"}
+                labelClass="top-4.5 left-3 text-xs text-(--gray)"
                 label={"Last Name"}
                 optional
                 type="text"
@@ -131,12 +134,7 @@ const SignUp = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
             />
             <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
-            <button
-              disabled={submiting}
-              className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress"
-            >
-              Create Account
-            </button>
+            <Button text="Create Account" className="!p-3 z-10" disabled={submiting}/>
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">

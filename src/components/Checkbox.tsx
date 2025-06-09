@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Check } from "lucide-react";
 
 type CheckboxProps = {
@@ -9,7 +10,7 @@ type CheckboxProps = {
 
 const Checkbox = ({ id, className, label, size }: CheckboxProps) => {
   return (
-    <label htmlFor={id} className={`flex gap-2 text-(--gray) items-center ${className}`}>
+    <label htmlFor={id} className={clsx("flex gap-2 text-(--gray) items-center cursor-pointer", className)}>
       <input
         type="checkbox"
         id={id}
@@ -17,7 +18,7 @@ const Checkbox = ({ id, className, label, size }: CheckboxProps) => {
         className="appearance-none peer relative rounded-[2px] border border-(--theme-reverse) checked:bg-(--accent) checked:border-transparent transition-all outline-0"
       />
       <Check className="absolute opacity-0 peer-checked:opacity-100 transition-all" size={size || 16} color="var(--theme)" />
-      <label htmlFor={id} style={{fontSize: size}} className="cursor-pointer">
+      <label htmlFor={id} style={{ fontSize: size }} className="cursor-pointer">
         {label}
       </label>
     </label>

@@ -9,6 +9,7 @@ import ErrorPopUp from "../../components/ErrorPopUp";
 import callApi from "../../../utils/callApi";
 import errorHandler from "../../../utils/errorHandler";
 import validateForms from "../../../utils/validateForms";
+import Button from "../../components/Button";
 
 type Value = {
   email: string;
@@ -68,8 +69,8 @@ const SignIn = () => {
 
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
-    <div className="flex justify-center lg:justify-between items-center">
-      {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} />}
+    <div className="flex justify-center lg:justify-between items-center px-5 lg:px-0">
+      {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
       {/* LEFT IN LG */}
       <div className="my-7 flex flex-col justify-center items-center gap-5" style={{ width: width > 1024 ? "50%" : "100%" }}>
         <div className="flex flex-col text-center gap-2">
@@ -102,12 +103,7 @@ const SignIn = () => {
                 Forgot Password?
               </a>
             </div>
-            <button
-              disabled={submiting}
-              className="cursor-pointer rounded-[8px] bg-(--accent) text-(--theme) p-3 disabled:opacity-70 disabled:cursor-progress"
-            >
-              Sign In
-            </button>
+            <Button text="Sign In" disabled={submiting} className="!p-3 z-10" />
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">
