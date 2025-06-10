@@ -1,21 +1,21 @@
 import { useState } from "react";
-import Input from "../../components/Input.tsx";
-import Checkbox from "../../components/Checkbox.tsx";
-import GoogleAuth from "../../components/GoogleAuth.tsx";
-import { useViewportWidth, useViewportHeight } from "../../../hooks/useViewport.ts";
+import Input from "@/components/Input.tsx";
+import Checkbox from "@/components/Checkbox.tsx";
+import GoogleAuth from "@/components/GoogleAuth.tsx";
+import { useViewportWidth, useViewportHeight } from "@/hooks/useViewport.ts";
 import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
-import ErrorPopUp from "../../components/ErrorPopUp.tsx";
-import callApi from "../../../utils/callApi";
-import errorHandler from "../../../utils/errorHandler";
-import validateForms from "../../../utils/validateForms.ts";
-import Button from "../../components/Button.tsx";
+import ErrorPopUp from "@/components/ErrorPopUp.tsx";
+import callApi from "@/utils/callApi.ts";
+import errorHandler from "@/utils/errorHandler.ts";
+import validateForms from "@/utils/validateForms.ts";
+import Button from "@/components/Button.tsx";
 
 type Error = {
-  email?: string ;
-  password?: string ;
-  username?: string ;
-  firstName?: string ;
+  email?: string;
+  password?: string;
+  username?: string;
+  firstName?: string;
   error?: {
     message?: string;
     title?: string;
@@ -31,7 +31,7 @@ const SignUp = () => {
     firstName: "",
     lastName: "",
   });
-  const [error, setError] = useState<Error>({ email: '', password: '', username: '', firstName: '', error: null });
+  const [error, setError] = useState<Error>({ email: "", password: "", username: "", firstName: "", error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -41,7 +41,7 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
-    setError({ email: '', password: '', username: '', firstName: '', error: null });
+    setError({ email: "", password: "", username: "", firstName: "", error: null });
 
     const validate = validateForms(value, setError, {
       usernameSpace: true,
@@ -134,7 +134,7 @@ const SignUp = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
             />
             <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
-            <Button text="Create Account" className="!p-3 z-10" disabled={submiting}/>
+            <Button text="Create Account" className="!p-3 z-10" disabled={submiting} />
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">

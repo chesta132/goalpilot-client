@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import Input from "../../components/Input";
-import Checkbox from "../../components/Checkbox";
-import GoogleAuth from "../../components/GoogleAuth";
-import { useViewportWidth, useViewportHeight } from "../../../hooks/useViewport";
+import Input from "@/components/Input";
+import Checkbox from "@/components/Checkbox";
+import GoogleAuth from "@/components/GoogleAuth";
+import { useViewportWidth, useViewportHeight } from "@/hooks/useViewport";
 import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
-import ErrorPopUp from "../../components/ErrorPopUp";
-import callApi from "../../../utils/callApi";
-import errorHandler from "../../../utils/errorHandler";
-import validateForms from "../../../utils/validateForms";
-import Button from "../../components/Button";
+import ErrorPopUp from "@/components/ErrorPopUp";
+import callApi from "@/utils/callApi";
+import errorHandler from "@/utils/errorHandler";
+import validateForms from "@/utils/validateForms";
+import Button from "@/components/Button";
 
 type Value = {
   email: string;
@@ -17,10 +17,10 @@ type Value = {
 };
 
 type Error = {
-  email?: string ;
-  password?: string ;
+  email?: string;
+  password?: string;
   error?: {
-    message?: string ;
+    message?: string;
     title?: string;
   } | null;
 };
@@ -30,7 +30,7 @@ const SignIn = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState<Error>({ email: '', password: '', error: null });
+  const [error, setError] = useState<Error>({ email: "", password: "", error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -40,7 +40,7 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
-    setError({ email: '', password: '', error: null });
+    setError({ email: "", password: "", error: null });
 
     const validate = validateForms(value, setError, { regexEmail: true, email: true, password: true });
     if (validate) {

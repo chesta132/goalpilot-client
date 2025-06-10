@@ -1,6 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
 
 :root {
+  font-family: "Manrope", sans-serif;
   --accent: #66b2ff;
   --accent-hard: #2a94ff;
   --accent-soft: #9fcfff;
@@ -9,5 +11,10 @@
 
   --theme: #fafbfc;
   --theme-reverse: #1f2937;
-  --theme-darker: #e0e2e4;
+  --theme-soft-dark: #f3f3f3;
+  --theme-darker: #e5e8ea;
+}
+
+.font-heading {
+  font-family: "Inter", sans-serif;
 }

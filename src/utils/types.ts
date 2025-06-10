@@ -24,6 +24,7 @@ export type GoalData = {
   status: string;
   targetDate: Date | null;
   tasks: TaskData[];
+  color: string;
   isRecycled: boolean;
   deleteAt: Date | null;
   __v?: number;
