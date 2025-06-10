@@ -64,23 +64,23 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
     <nav>
       <div
         ref={navRef}
-        className="bg-(--theme) py-2 lg:py-4 text-(--theme-reverse) justify-between shadow-md pr-4 items-center fixed flex top-0 left-0 w-full z-50"
+        className="bg-theme py-2 lg:py-4 text-theme-reverse justify-between shadow-md pr-4 items-center fixed flex top-0 left-0 w-full z-50"
       >
         <div className="flex items-center">
           <div className={clsx("lg:hidden", !showNavbar && "opacity-0 w-0 -z-10")}>
             <Hamburger toggled={isOpen} toggle={setIsOpen} size={24} />
           </div>
           <p className="text-[18px] font-heading font-bold leading-7 text-center ml-4">
-            <span className="text-(--accent)">Goal</span>Pilot
+            <span className="text-accent">Goal</span>Pilot
           </p>
         </div>
         <div className="flex items-center">
-          <Link to="/profile" className="hover:text-(--accent) ml-4">
-            <div className="bg-(--accent) text-(--theme) rounded-full w-8 h-8 flex items-center justify-center">
+          <Link to="/profile" className="hover:text-accent ml-4">
+            <div className="bg-accent text-theme rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}
             </div>
           </Link>
-          <Link to="/settings" className="hover:text-(--accent) ml-4">
+          <Link to="/settings" className="ml-4">
             <Settings />
           </Link>
         </div>
@@ -89,7 +89,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
         <div
           className={`fixed overflow-auto [&::-webkit-scrollbar]:w-1
         [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-thumb]:bg-gray-300 navbar left-0 pt-16 h-[100dvh] w-[50%] md:w-[35%] lg:w-[20%] px-4 bg-(--theme) z-40 ${
+        [&::-webkit-scrollbar-thumb]:bg-gray-300 navbar left-0 pt-16 h-[100dvh] w-[50%] md:w-[35%] lg:w-[20%] px-4 bg-theme z-40 ${
           isOpen ? "-translate-x-0" : "-translate-x-[100%]"
         } ${timelineStatus && "lg:top-0"} transition-all duration-500 ease-in-out shadow-md`}
         >
@@ -97,17 +97,17 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
           {filteredGoal && filteredGoal.length > 0 ? (
             <div className="mt-2 flex flex-col gap-3 pb-5">
               {filteredGoal.map((goal) => (
-                <Link to={`/goal/${goal._id}`} className="text-(--theme-reverse)" key={goal._id}>
+                <Link to={`/goal/${goal._id}`} className="text-theme-reverse" key={goal._id}>
                   <div
                     className={`p-3.5 gap-1 flex flex-col rounded-lg border-2 ${
-                      goal._id === param ? "border-(--accent) bg-(--accent)/[0.2]" : "border-(--theme-darker)"
+                      goal._id === param ? "border-accent bg-accent/[0.2]" : "border-theme-darker"
                     } `}
                   >
                     <p className="text-[14px]">{goal.title}</p>
                     <div>
-                      <p className="text-[12px] text-(--gray)">{goal.progress}%</p>
-                      <div className="bg-(--theme-darker) h-1.5 rounded-2xl">
-                        <div className="bg-(--accent) h-1.5 rounded-2xl" style={{ width: `${goal.progress}%` }}></div>
+                      <p className="text-[12px] text-gray">{goal.progress}%</p>
+                      <div className="bg-theme-darker h-1.5 rounded-2xl">
+                        <div className="bg-accent h-1.5 rounded-2xl" style={{ width: `${goal.progress}%` }}></div>
                       </div>
                     </div>
                   </div>

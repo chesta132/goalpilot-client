@@ -14,20 +14,35 @@ type InputProps = {
   password?: boolean;
   optional?: boolean;
   labelClass?: string;
+  initialFocus?: boolean;
+  classWhenError?: string;
 };
 
-const Input = ({ type = "text", placeholder, error, label, value = "", onChange, className, password, optional, labelClass }: InputProps) => {
+const Input = ({
+  type = "text",
+  placeholder,
+  error,
+  label,
+  value = "",
+  onChange,
+  className,
+  password,
+  optional,
+  labelClass,
+  initialFocus,
+  classWhenError,
+}: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
-  const [isFocus, setIsFocus] = useState(false);
+  const [isFocus, setIsFocus] = useState(initialFocus);
   const [whatType, setWhatType] = useState(type);
 
   return (
-    <div className={clsx("relative", error && "mb-3", className)}>
+    <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
       <input
         className={`
-          w-full px-3 py-3 border-2 border-(--theme-darker) rounded-lg 
+          w-full px-3 py-3 border-2 border-theme-darker rounded-lg 
           transition-all duration-200 ease-in-out
-          focus:outline-none focus:border-(--accent) ${password && "pr-8"}
+          focus:outline-none focus:border-accent ${password && "pr-8"}
         `}
         type={whatType}
         id={label}
@@ -40,18 +55,18 @@ const Input = ({ type = "text", placeholder, error, label, value = "", onChange,
       <label
         className={clsx(
           "absolute transition-all duration-200 ease-in-out pointer-events-none select-none whitespace-nowrap",
-          isFocus ? "-top-2.5 left-3 text-xs text-(--accent) font-medium bg-(--theme) px-1" : labelClass || "top-3.5 left-3 text-sm text-(--gray)"
+          isFocus ? "-top-2.5 left-3 text-xs text-accent font-medium bg-theme px-1" : labelClass || "top-3.5 left-3 text-sm text-gray"
         )}
         htmlFor={label}
       >
-        {isFocus ? toCapitalize(label || "") : placeholder} {isFocus && optional && <span className="text-(--gray)">(Optional)</span>}
+        {isFocus ? toCapitalize(label || "") : placeholder} {isFocus && optional && <span className="text-gray">(Optional)</span>}
       </label>
       {password && (
         <div className="cursor-pointer absolute top-0 right-0 h-full flex items-center pr-2">
           {whatType === "password" ? (
-            <EyeOff size={20} color="var(--gray)" onClick={() => setWhatType("text")} />
+            <EyeOff size={20} color="vargray" onClick={() => setWhatType("text")} />
           ) : (
-            <Eye size={20} color="var(--gray)" onClick={() => setWhatType("password")} />
+            <Eye size={20} color="vargray" onClick={() => setWhatType("password")} />
           )}
         </div>
       )}

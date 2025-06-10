@@ -1,5 +1,24 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
+@custom-variant hover (&:hover);
+@theme {
+  --font-heading: "Inter", sans-serif;
+  --color-gray: #6b7280;
+  --color-white: #ffffff;
+
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-hard);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-theme: var(--theme);
+  --color-theme-reverse: var(--theme-reverse);
+  --color-theme-dark: var(--theme-dark);
+  --color-theme-darker: var(--theme-darker);
+}
+
+/* @utility {
+  
+} */
 
 :root {
   font-family: "Manrope", sans-serif;
@@ -11,10 +30,6 @@
 
   --theme: #fafbfc;
   --theme-reverse: #1f2937;
-  --theme-soft-dark: #f3f3f3;
+  --theme-dark: #f3f3f3;
   --theme-darker: #e5e8ea;
-}
-
-.font-heading {
-  font-family: "Inter", sans-serif;
 }

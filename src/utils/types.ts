@@ -45,3 +45,19 @@ export type UserData = {
   role: "user" | "admin" | "tester";
   __v?: number;
 };
+
+export type TnewGoalValue = {
+  title: string;
+  description: string;
+  targetDate: string;
+  color: string;
+  isPublic: boolean;
+};
+
+export type Error = {
+  error?: {
+    title?: string;
+    message?: string;
+    code?: string;
+  } | null;
+}

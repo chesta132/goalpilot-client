@@ -10,17 +10,13 @@ import callApi from "@/utils/callApi.ts";
 import errorHandler from "@/utils/errorHandler.ts";
 import validateForms from "@/utils/validateForms.ts";
 import Button from "@/components/Button.tsx";
+import type { Error } from "@/utils/types";
 
-type Error = {
+type ErrorState = Error & {
   email?: string;
   password?: string;
   username?: string;
   firstName?: string;
-  error?: {
-    message?: string;
-    title?: string;
-    code?: string;
-  } | null;
 };
 
 const SignUp = () => {
@@ -31,7 +27,7 @@ const SignUp = () => {
     firstName: "",
     lastName: "",
   });
-  const [error, setError] = useState<Error>({ email: "", password: "", username: "", firstName: "", error: null });
+  const [error, setError] = useState<ErrorState>({ email: "", password: "", username: "", firstName: "", error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -46,6 +42,7 @@ const SignUp = () => {
     const validate = validateForms(value, setError, {
       usernameSpace: true,
       regexEmail: true,
+      usernameLowerCased: true,
       email: true,
       emailSpace: true,
       password: true,
@@ -86,13 +83,13 @@ const SignUp = () => {
         {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8">
-            <span className="text-(--accent)">Goal</span>Pilot
+            <span className="text-accent">Goal</span>Pilot
           </h1>
           <p>Create your account to start achieving your goals</p>
         </div>
-        <div className="border-1 bg-(--theme) border-(--theme-darker) pt-5 text-center rounded-[12px] gap-10 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-[90%] mb-10">
+        <div className="border-1 bg-theme border-theme-darker pt-5 text-center rounded-[12px] gap-10 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-[90%] mb-10">
           <form onSubmit={handleSubmit} className="gap-3.5 flex flex-col justify-center">
-            <h1 className="font-bold text-2xl text-(--theme-reverse)">Sign up</h1>
+            <h1 className="font-bold text-2xl text-theme-reverse">Sign up</h1>
             <Input
               placeholder={"Enter your username"}
               error={error.username}
@@ -103,7 +100,7 @@ const SignUp = () => {
             <div className="flex flex-1/2 gap-3">
               <Input
                 placeholder={"Enter your first name"}
-                labelClass="top-4.5 left-3 text-xs text-(--gray)"
+                labelClass="top-4.5 left-3 text-xs text-gray"
                 error={error.firstName}
                 label={"First Name"}
                 type="text"
@@ -111,7 +108,7 @@ const SignUp = () => {
               />
               <Input
                 placeholder={"Enter your last name"}
-                labelClass="top-4.5 left-3 text-xs text-(--gray)"
+                labelClass="top-4.5 left-3 text-xs text-gray"
                 label={"Last Name"}
                 optional
                 type="text"
@@ -138,13 +135,13 @@ const SignUp = () => {
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">
-              <div className="relative border w-full border-(--gray)" />
-              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-(--theme) px-1 text-(--gray) text-[13px]">Or continue with</p>
+              <div className="relative border w-full border-gray" />
+              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-theme px-1 text-gray text-[13px]">Or continue with</p>
             </div>
             <GoogleAuth label={"Sign up with Google"} />
-            <p className="text-(--theme-reverse) text-[13px]">
+            <p className="text-theme-reverse text-[13px]">
               Already have account?{" "}
-              <a href="/signin" className="text-(--accent) hover:underline">
+              <a href="/signin" className="text-accent hover:underline">
                 Sign in
               </a>
             </p>
@@ -153,7 +150,7 @@ const SignUp = () => {
       </div>
       {/* RIGHT IN MD */}
       {width > 768 && (
-        <div className="bg-linear-270 from-[#66B2FF] to-[#4F46E5] text-(--white) text-center w-[50%] relative m-0" style={{ height: height }}>
+        <div className="bg-linear-270 from-[#66B2FF] to-[#4F46E5] text-white text-center w-[50%] relative m-0" style={{ height: height }}>
           <div className="absolute left-[50%] top-[50%] -translate-[50%] gap-10 w-full items-center flex flex-col">
             <h1 className="text-3xl font-bold leading-7">Achieve Your Goals with AI</h1>
             <p className="text-[18px] max-w-[80%]">

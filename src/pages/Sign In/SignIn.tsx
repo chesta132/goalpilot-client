@@ -10,19 +10,16 @@ import callApi from "@/utils/callApi";
 import errorHandler from "@/utils/errorHandler";
 import validateForms from "@/utils/validateForms";
 import Button from "@/components/Button";
+import type { Error } from "@/utils/types";
 
 type Value = {
   email: string;
   password: string;
 };
 
-type Error = {
+type ErrorProps = Error & {
   email?: string;
   password?: string;
-  error?: {
-    message?: string;
-    title?: string;
-  } | null;
 };
 
 const SignIn = () => {
@@ -30,7 +27,7 @@ const SignIn = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState<Error>({ email: "", password: "", error: null });
+  const [error, setError] = useState<ErrorProps>({ email: "", password: "", error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -75,13 +72,13 @@ const SignIn = () => {
       <div className="my-7 flex flex-col justify-center items-center gap-5" style={{ width: width > 1024 ? "50%" : "100%" }}>
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8">
-            <span className="text-(--accent)">Goal</span>Pilot
+            <span className="text-accent">Goal</span>Pilot
           </h1>
           <p>Welcome back! Sign in to continue and achieve your goals</p>
         </div>
-        <div className="border-1 bg-(--theme) border-(--theme-darker) pt-5 text-center rounded-[12px] gap-10 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-full">
+        <div className="border-1 bg-theme border-theme-darker pt-5 text-center rounded-[12px] gap-10 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-full">
           <form onSubmit={handleSubmit} className="gap-5 flex flex-col justify-center">
-            <h1 className="font-bold text-2xl text-(--theme-reverse)">Sign in</h1>
+            <h1 className="font-bold text-2xl text-theme-reverse">Sign in</h1>
             <Input
               placeholder={"Enter your email"}
               error={error.email}
@@ -99,7 +96,7 @@ const SignIn = () => {
             />
             <div className="flex justify-between">
               <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
-              <a href="/forgot-password" className="text-(--accent) hover:underline text-[13px]">
+              <a href="/forgot-password" className="text-accent hover:underline text-[13px]">
                 Forgot Password?
               </a>
             </div>
@@ -107,13 +104,13 @@ const SignIn = () => {
           </form>
           <div className="gap-5 flex flex-col justify-center text-center">
             <div className="flex justify-center relative">
-              <div className="relative border w-full border-(--gray)" />
-              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-(--theme) px-1 text-(--gray) text-[13px]">Or continue with</p>
+              <div className="relative border w-full border-gray" />
+              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-theme px-1 text-gray text-[13px]">Or continue with</p>
             </div>
             <GoogleAuth label={"Sign in with Google"} />
-            <p className="text-(--theme-reverse) text-[13px]">
+            <p className="text-theme-reverse text-[13px]">
               Don't have an account?{" "}
-              <a href="/signup" className="text-(--accent) hover:underline">
+              <a href="/signup" className="text-accent hover:underline">
                 Create account
               </a>
             </p>
@@ -122,7 +119,7 @@ const SignIn = () => {
       </div>
       {/* RIGHT IN LG */}
       {width > 768 && (
-        <div className="bg-linear-90 from-[#66B2FF] to-[#4F46E5] text-(--white) text-center w-[50%] relative" style={{ height: height }}>
+        <div className="bg-linear-90 from-[#66B2FF] to-[#4F46E5] text-white text-center w-[50%] relative" style={{ height: height }}>
           <div className="absolute left-[50%] top-[50%] -translate-[50%] gap-10 w-full items-center flex flex-col">
             <h1 className="text-3xl font-bold leading-7">Welcome Back to GoalPilot</h1>
             <p className="text-[18px] max-w-[80%]">

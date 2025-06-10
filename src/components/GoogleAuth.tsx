@@ -10,7 +10,7 @@ const GoogleAuth = ({ label, onClick }: GoogleAuthProps) => {
     <Link className="w-full" to={`${import.meta.env.VITE_API_URL}/auth/google`}>
       <button
         onClick={onClick}
-        className="cursor-pointer rounded-[8px] border border-(--gray) text-[14px] p-3 items-center gap-x-3 flex justify-center w-full"
+        className="cursor-pointer rounded-[8px] border border-gray text-[14px] p-3 items-center gap-x-3 flex justify-center w-full"
       >
         <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 48 48">
           <path

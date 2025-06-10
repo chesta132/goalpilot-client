@@ -1,3 +1,5 @@
+import type { Error } from "./types";
+
 type Value = {
   title?: string;
   description?: string;
@@ -6,6 +8,7 @@ type Value = {
   email?: string;
   password?: string;
   firstName?: string;
+  color?: string;
 };
 
 type DynamicConfig<T> = {
@@ -16,17 +19,12 @@ type Config = DynamicConfig<Value> & {
   regexEmail?: boolean;
   usernameSpace?: boolean;
   emailSpace?: boolean;
+  usernameLowerCased?: boolean
 };
 
-interface Error extends Value {
-  error?: {
-    message?: string;
-    title?: string;
-    code?: string;
-  } | null;
-}
+type ErrorProps = Error & Value
 
-const validateForms = (value: Value, setError: React.Dispatch<React.SetStateAction<Error>>, config: Config): boolean => {
+const validateForms = (value: Value, setError: React.Dispatch<React.SetStateAction<ErrorProps>>, config: Config): boolean => {
   let err = false;
 
   if (config.title && (value.title === undefined || value.title.trim() === "")) {
@@ -38,7 +36,7 @@ const validateForms = (value: Value, setError: React.Dispatch<React.SetStateActi
     err = true;
   }
   if (config.targetDate && (value.targetDate === undefined || value.targetDate === "")) {
-    setError((prev) => ({ ...prev, targetDate: "Date is required" }));
+    setError((prev) => ({ ...prev, targetDate: "Target Date is required" }));
     err = true;
   }
   if (config.email && (value.email === undefined || value.email.trim() === "")) {
@@ -56,6 +54,10 @@ const validateForms = (value: Value, setError: React.Dispatch<React.SetStateActi
   if (config.firstName && (value.firstName === undefined || value.firstName.trim() === "")) {
     setError((prev) => ({ ...prev, firstName: "First name is required" }));
     err = true;
+    if ((config.color && value.color === undefined) || value.color?.trim() === "") {
+      setError((prev) => ({ ...prev, color: "Color is required" }));
+      err = true;
+    }
   }
   if (config.regexEmail && value.email !== undefined && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value.email)) {
     setError((prev) => ({ ...prev, email: "Please input a valid email" }));
@@ -68,6 +70,10 @@ const validateForms = (value: Value, setError: React.Dispatch<React.SetStateActi
   if (config.emailSpace && value.email !== undefined && value.email.includes(" ")) {
     setError((prev) => ({ ...prev, email: "Email can't have spaces" }));
     err = true;
+  }
+  if (config.usernameLowerCased && value.username !== value.username?.toLowerCase()) {
+    setError((prev) => ({ ...prev, username: "Username must be lowercased" }));
+    err = true
   }
 
   return err;

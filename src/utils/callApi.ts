@@ -2,7 +2,7 @@ import axios from "axios";
 
 type Options =
   | {
-      method: string;
+      method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
       body?: null | object;
       headers?: object;
       token?: boolean;
