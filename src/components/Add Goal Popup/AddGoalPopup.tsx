@@ -72,7 +72,7 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
         <form className="flex flex-col gap-3" onSubmit={submitter}>
           <Input
             classWhenError="mb-5"
-            initialFocus={error.title !== ""}
+            initialFocus={value.title !== ""}
             error={error.title}
             label="Goal Title"
             placeholder="Enter your goal title"
@@ -81,25 +81,43 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
           />
           <TextArea
             classWhenError="mb-5"
-            initialFocus={error.description !== "" && true}
+            initialFocus={value.description !== "" && true}
             error={error.description}
             value={value.description}
             label="Descripton"
             placeholder="Enter description of goal"
             onChange={(e) => setValue((prev) => ({ ...prev, description: e.target.value }))}
           />
+          <div className="flex justify-between items-center bg-theme-darker/30 border-gray rounded-[8px] p-4.5">
+            <div>
+              <h2 className="text-[14px] font-medium">Make Public</h2>
+              <p className="text-gray text-[12px]">Allow others to see this goal</p>
+            </div>
+            <Switch onChange={(e) => setValue((prev) => ({ ...prev, isPublic: e.valueOf() }))} value={value.isPublic} />
+          </div>
           <div className="flex flex-1/2 items-center gap-6">
             <div className="w-full">
               <DatePicker
-                className="w-full h-12"
+                styles={{
+                  root: { background: "var(--theme)", color: "var(--theme-reverse)" },
+                  popup: { root: { background: "var(--theme)", color: "var(--theme-reverse)" } },
+                }}
+                needConfirm
+                status={error.targetDate && "error"}
+                size="small"
+                color="var(--theme)"
+                className="w-full h-12 text-theme-reverse"
                 placeholder="Choose target date of goal"
                 onChange={(e) => (e ? setValue((prev) => ({ ...prev, targetDate: e.format() })) : setValue((prev) => ({ ...prev, targetDate: "" })))}
               />
               {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
             </div>
             <div className={clsx("flex flex-col", error.targetDate && !error.color && "pb-4.5")}>
-              <p className="text-gray whitespace-nowrap text-[13px]">Color Theme</p>
+              <p className="text-theme-reverse-dark whitespace-nowrap text-[13px]">Color Theme</p>
               <ColorPicker
+                styles={{
+                  popupOverlayInner: { background: "var(--theme)", color: "var(--theme-revers)" },
+                }}
                 showText
                 format="hex"
                 value={value.color}
@@ -108,19 +126,12 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
               {error.color && <p className="text-red-500 text-[12px] text-start">{error.color}</p>}
             </div>
           </div>
-          <div className="flex justify-between items-center bg-theme-darker/30 border-gray rounded-[8px] p-4.5">
-            <div>
-              <h2 className="text-[14px] font-medium">Make Public</h2>
-              <p className="text-gray text-[12px]">Allow others to see this goal</p>
-            </div>
-            <Switch onChange={(e) => setValue((prev) => ({ ...prev, isPublic: e.valueOf() }))} value={value.isPublic} />
-          </div>
           <div className="flex gap-3 mt-5">
             <Button
               type="button"
               onClick={handleCancel}
               text="Cancel"
-              className="bg-theme text-theme-reverse border w-1/2 border-gray hover:bg-theme hover:text-theme-reverse shadow-none"
+              className="bg-theme !text-theme-reverse border w-1/2 border-gray hover:bg-theme shadow-none"
             />
             <Button disabled={submitting} text="Create Goal" className="shadow-none whitespace-nowrap w-1/2" />
           </div>

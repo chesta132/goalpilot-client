@@ -34,9 +34,9 @@ const TextArea = ({
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
       <textarea
         className="
-          w-full px-3 py-3 border-2 border-theme-darker rounded-lg 
+          w-full px-3 py-3 border border-gray rounded-lg 
           transition-all duration-200 ease-in-out h-full
-          focus:outline-none focus:border-accent
+          focus:outline-none focus:border-accent focus:border-2
         "
         id={label}
         value={internalValue}

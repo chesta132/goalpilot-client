@@ -78,18 +78,25 @@ const SignUp = () => {
 
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
-    <div className="flex flex-row-reverse justify-center lg:justify-between items-center h-full m-0 p-0">
+    <div className="flex flex-row-reverse justify-center lg:justify-between items-center h-full m-0 p-0 bg-theme text-theme-reverse">
       <div className="flex flex-col justify-center items-center gap-5 py-10" style={{ width: width > 1024 ? "50%" : "100%" }}>
         {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
         <div className="flex flex-col text-center gap-2">
-          <h1 className="font-bold text-2xl leading-8">
+          <h1 className="font-bold text-2xl leading-8 font-heading">
             <span className="text-accent">Goal</span>Pilot
           </h1>
           <p>Create your account to start achieving your goals</p>
         </div>
-        <div className="border-1 bg-theme border-theme-darker pt-5 text-center rounded-[12px] gap-10 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-[90%] mb-10">
+        <div className="border-1 bg-theme-dark border-theme-darker pt-5 text-center rounded-[12px] gap-6 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-[90%] mb-10">
+          <h1 className="font-bold text-2xl text-theme-reverse font-heading mb-4">Sign up</h1>
+          <div className="gap-5 flex flex-col justify-center text-center">
+            <GoogleAuth label={"Sign up with Google"} />
+            <div className="flex justify-center relative">
+              <div className="relative border w-full border-gray" />
+              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-theme-dark px-1 text-gray text-[13px]">Or continue with</p>
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="gap-3.5 flex flex-col justify-center">
-            <h1 className="font-bold text-2xl text-theme-reverse">Sign up</h1>
             <Input
               placeholder={"Enter your username"}
               error={error.username}
@@ -133,19 +140,12 @@ const SignUp = () => {
             <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
             <Button text="Create Account" className="!p-3 z-10" disabled={submiting} />
           </form>
-          <div className="gap-5 flex flex-col justify-center text-center">
-            <div className="flex justify-center relative">
-              <div className="relative border w-full border-gray" />
-              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-theme px-1 text-gray text-[13px]">Or continue with</p>
-            </div>
-            <GoogleAuth label={"Sign up with Google"} />
-            <p className="text-theme-reverse text-[13px]">
-              Already have account?{" "}
-              <a href="/signin" className="text-accent hover:underline">
-                Sign in
-              </a>
-            </p>
-          </div>
+          <p className="text-theme-reverse text-[13px]">
+            Already have account?{" "}
+            <a href="/signin" className="text-accent hover:underline">
+              Sign in
+            </a>
+          </p>
         </div>
       </div>
       {/* RIGHT IN MD */}

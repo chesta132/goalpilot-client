@@ -76,7 +76,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
         </div>
         <div className="flex items-center">
           <Link to="/profile" className="hover:text-accent ml-4">
-            <div className="bg-accent text-theme rounded-full w-8 h-8 flex items-center justify-center">
+            <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}
             </div>
           </Link>

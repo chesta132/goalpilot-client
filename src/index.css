@@ -7,29 +7,54 @@
   --color-white: #ffffff;
 
   --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-hard);
+  --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
 
   --color-theme: var(--theme);
-  --color-theme-reverse: var(--theme-reverse);
   --color-theme-dark: var(--theme-dark);
   --color-theme-darker: var(--theme-darker);
+  --color-theme-reverse: var(--theme-reverse);
+  --color-theme-reverse-dark: var(--theme-reverse-dark);
+  --color-theme-reverse-darker: var(--theme-reverse-darker);
 }
 
 /* @utility {
   
 } */
 
+/* DARK */
+
+/* :root {
+  font-family: "Manrope", sans-serif;
+  --gray: #6b7280;
+  --white: #ffffff;
+  
+  --accent: #66b2ff;
+  --accent-strong: #2a94ff;
+  --accent-soft: #9fcfff;
+
+  --theme: #2c2c2c;
+  --theme-dark: #1e1e1e;
+  --theme-darker: #0f0f0f;
+  --theme-reverse: #fafbfc;
+  --theme-reverse-dark: #d2d2d2;
+  --theme-reverse-darker: #b1b1b1;
+  } */
+
+/* LIGHT */
 :root {
   font-family: "Manrope", sans-serif;
-  --accent: #66b2ff;
-  --accent-hard: #2a94ff;
-  --accent-soft: #9fcfff;
   --gray: #6b7280;
   --white: #ffffff;
 
+  --accent: #66b2ff;
+  --accent-strong: #2a94ff;
+  --accent-soft: #9fcfff;
+
   --theme: #fafbfc;
-  --theme-reverse: #1f2937;
   --theme-dark: #f3f3f3;
   --theme-darker: #e5e8ea;
+  --theme-reverse: #2c2c2c;
+  --theme-reverse-dark: #1e1e1e;
+  --theme-reverse-darker: #0e0e0e;
 }

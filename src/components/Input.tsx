@@ -40,8 +40,8 @@ const Input = ({
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
       <input
         className={`
-          w-full px-3 py-3 border-2 border-theme-darker rounded-lg 
-          transition-all duration-200 ease-in-out
+          w-full px-3 py-3 border border-gray rounded-lg 
+          transition-all duration-200 ease-in-out focus:border-2
           focus:outline-none focus:border-accent ${password && "pr-8"}
         `}
         type={whatType}
@@ -64,9 +64,9 @@ const Input = ({
       {password && (
         <div className="cursor-pointer absolute top-0 right-0 h-full flex items-center pr-2">
           {whatType === "password" ? (
-            <EyeOff size={20} color="vargray" onClick={() => setWhatType("text")} />
+            <EyeOff size={20} className="text-gray" onClick={() => setWhatType("text")} />
           ) : (
-            <Eye size={20} color="vargray" onClick={() => setWhatType("password")} />
+            <Eye size={20} className="text-gray" onClick={() => setWhatType("password")} />
           )}
         </div>
       )}

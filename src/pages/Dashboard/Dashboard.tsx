@@ -33,13 +33,18 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const params = useParams();
 
+  const getData = async (direct: boolean = false) => {
+    setError(null);
+    const response = await callApi("/user", { method: "PATCH", token: true, directToken: direct });
+    return response;
+  };
+
   useEffect(() => {
     // Fetch data for the dashboard
-    const getData = async () => {
+    const initiateData = async () => {
       setLoading(true);
-      setError(null);
       try {
-        const response = await callApi(`/user`, { method: "PATCH", token: true, directToken: true });
+        const response = await getData(true);
         setData(response.data);
       } catch (error) {
         errorHandler(error, setError);
@@ -48,7 +53,7 @@ const Dashboard = () => {
       }
     };
 
-    getData();
+    initiateData();
   }, [navigate]);
 
   const errorAuth =
@@ -74,8 +79,9 @@ const Dashboard = () => {
   const handleNewGoal = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await callApi("/goal", { method: "POST", token: true, body: newGoalValue });
-      data?.goals.unshift(response.data);
+      await callApi("/goal", { method: "POST", token: true, body: newGoalValue });
+      const response = await getData(false);
+      setData(response.data);
       setGoalPopup(false);
       setNewGoalValue({ title: "", description: "", targetDate: "", color: "#66b2ff", isPublic: true });
     } catch (err) {
@@ -177,7 +183,7 @@ const Dashboard = () => {
                       {goal.progress}%
                     </h2>
                   </div>
-                  <div className="rounded-full bg-theme-darker h-3">
+                  <div className="rounded-full bg-theme-dark h-3">
                     <div className="rounded-full h-full" style={{ width: `${goal.progress}%`, background: goal.color }} />
                   </div>
                 </div>

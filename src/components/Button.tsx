@@ -19,7 +19,7 @@ const Button = ({ text, icon, onClick, className, disabled = false, type }: Butt
     <button
       onClick={handleClick}
       className={clsx(
-        "flex gap-2 justify-center cursor-pointer shadow-2xl py-4 rounded-lg items-center bg-accent px-15 text-theme disabled:opacity-70 disabled:cursor-progress transition-all  hover:bg-accent-strong",
+        "flex gap-2 justify-center cursor-pointer shadow-2xl py-4 rounded-lg items-center bg-accent px-15 text-white disabled:opacity-70 disabled:cursor-progress transition-all hover:bg-accent-strong",
         className
       )}
       disabled={disabled}

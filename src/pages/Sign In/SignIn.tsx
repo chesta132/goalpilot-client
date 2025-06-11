@@ -66,19 +66,26 @@ const SignIn = () => {
 
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
-    <div className="flex justify-center lg:justify-between items-center px-5 lg:px-0">
+    <div className="flex justify-center lg:justify-between items-center px-5 lg:px-0 bg-theme text-theme-reverse">
       {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
       {/* LEFT IN LG */}
       <div className="my-7 flex flex-col justify-center items-center gap-5" style={{ width: width > 1024 ? "50%" : "100%" }}>
         <div className="flex flex-col text-center gap-2">
-          <h1 className="font-bold text-2xl leading-8">
+          <h1 className="font-bold text-2xl leading-8 font-heading">
             <span className="text-accent">Goal</span>Pilot
           </h1>
           <p>Welcome back! Sign in to continue and achieve your goals</p>
         </div>
-        <div className="border-1 bg-theme border-theme-darker pt-5 text-center rounded-[12px] gap-10 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-full">
+        <div className="border-1 bg-theme-dark border-theme-darker pt-5 text-center rounded-[12px] gap-6 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-full">
+          <h1 className="font-bold text-2xl text-theme-reverse font-heading mb-4">Sign in</h1>
+          <div className="gap-5 flex flex-col justify-center text-center">
+            <GoogleAuth label={"Sign in with Google"} />
+            <div className="flex justify-center relative">
+              <div className="relative border w-full border-gray" />
+              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-theme-dark px-1 text-gray text-[13px]">Or continue with</p>
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="gap-5 flex flex-col justify-center">
-            <h1 className="font-bold text-2xl text-theme-reverse">Sign in</h1>
             <Input
               placeholder={"Enter your email"}
               error={error.email}
@@ -102,19 +109,12 @@ const SignIn = () => {
             </div>
             <Button text="Sign In" disabled={submiting} className="!p-3 z-10" />
           </form>
-          <div className="gap-5 flex flex-col justify-center text-center">
-            <div className="flex justify-center relative">
-              <div className="relative border w-full border-gray" />
-              <p className="absolute left-[50%] top-[50%] -translate-[50%] bg-theme px-1 text-gray text-[13px]">Or continue with</p>
-            </div>
-            <GoogleAuth label={"Sign in with Google"} />
-            <p className="text-theme-reverse text-[13px]">
-              Don't have an account?{" "}
-              <a href="/signup" className="text-accent hover:underline">
-                Create account
-              </a>
-            </p>
-          </div>
+          <p className="text-theme-reverse text-[13px]">
+            Don't have an account?{" "}
+            <a href="/signup" className="text-accent hover:underline">
+              Create account
+            </a>
+          </p>
         </div>
       </div>
       {/* RIGHT IN LG */}

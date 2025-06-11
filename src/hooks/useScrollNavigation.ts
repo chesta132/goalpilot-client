@@ -40,7 +40,7 @@ const useScrollNavigation = () => {
       // If scrolling down more than 50px from previous scroll position
       if (currentScrollY > lastScrollYRef.current + 50) {
         // Only animate if navigation is not already being hidden
-        if (!isScrollingRef.current) {
+        if (!isScrollingRef.current && navRef.current) {
           isScrollingRef.current = true;
 
           // Animation to hide navigation by moving it up
@@ -58,7 +58,7 @@ const useScrollNavigation = () => {
       // If scrolling up more than 50px from previous scroll position
       else if (currentScrollY < lastScrollYRef.current - 50) {
         // Only animate if navigation is currently hidden
-        if (isScrollingRef.current) {
+        if (isScrollingRef.current && navRef.current) {
           isScrollingRef.current = false;
 
           // Animation to show navigation by moving it back to original position
