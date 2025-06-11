@@ -146,7 +146,7 @@ const ErrorPopup = ({
                 <div className="flex space-x-3">
                   <button
                     onClick={cancelClose}
-                    className="flex-1 text-gray px-4 cursor-pointer py-2 rounded-lg font-medium border border-gray-300 transition-colors duration-200 hover:bg-gray-50"
+                    className="flex-1 text-gray bg-theme px-4 cursor-pointer py-2 rounded-lg font-medium border border-gray transition-colors duration-200 hover:bg-theme-reverse hover:text-theme"
                   >
                     Cancel
                   </button>

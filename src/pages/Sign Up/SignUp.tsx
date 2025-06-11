@@ -1,15 +1,15 @@
 import { useState } from "react";
-import Input from "@/components/Input.tsx";
-import Checkbox from "@/components/Checkbox.tsx";
-import GoogleAuth from "@/components/GoogleAuth.tsx";
+import Input from "@/components/Inputs/Input";
+import Checkbox from "@/components/Inputs/Checkbox";
+import GoogleAuth from "@/components/Inputs/GoogleAuth";
 import { useViewportWidth, useViewportHeight } from "@/hooks/useViewport.ts";
 import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
-import ErrorPopUp from "@/components/ErrorPopUp.tsx";
+import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi.ts";
 import errorHandler from "@/utils/errorHandler.ts";
 import validateForms from "@/utils/validateForms.ts";
-import Button from "@/components/Button.tsx";
+import Button from "@/components/Inputs/Button";
 import type { Error } from "@/utils/types";
 
 type ErrorState = Error & {

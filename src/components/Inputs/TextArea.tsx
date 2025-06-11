@@ -1,5 +1,5 @@
 import { useState } from "react";
-import toCapitalize from "../utils/toCapitalize";
+import toCapitalize from "../../utils/toCapitalize";
 import clsx from "clsx";
 
 type TextAreaProps = {

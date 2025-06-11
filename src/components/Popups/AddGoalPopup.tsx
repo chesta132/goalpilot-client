@@ -1,10 +1,10 @@
 import { X } from "lucide-react";
-import Input from "../Input";
+import Input from "../Inputs/Input";
 import clsx from "clsx";
-import TextArea from "../TextArea";
+import TextArea from "../Inputs/TextArea";
 import { ColorPicker, DatePicker, Switch } from "antd";
 import React, { useEffect, useState } from "react";
-import Button from "../Button";
+import Button from "../Inputs/Button";
 import validateForms from "@/utils/validateForms";
 import type { TnewGoalValue } from "@/utils/types";
 

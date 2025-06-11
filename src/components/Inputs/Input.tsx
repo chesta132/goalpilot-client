@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import toCapitalize from "../utils/toCapitalize";
+import toCapitalize from "../../utils/toCapitalize";
 import clsx from "clsx";
 
 type InputProps = {

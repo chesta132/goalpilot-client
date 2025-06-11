@@ -18,17 +18,13 @@
   --color-theme-reverse-darker: var(--theme-reverse-darker);
 }
 
-/* @utility {
-  
-} */
-
 /* DARK */
 
 /* :root {
   font-family: "Manrope", sans-serif;
   --gray: #6b7280;
   --white: #ffffff;
-  
+
   --accent: #66b2ff;
   --accent-strong: #2a94ff;
   --accent-soft: #9fcfff;
@@ -39,7 +35,7 @@
   --theme-reverse: #fafbfc;
   --theme-reverse-dark: #d2d2d2;
   --theme-reverse-darker: #b1b1b1;
-  } */
+} */
 
 /* LIGHT */
 :root {
@@ -53,7 +49,7 @@
 
   --theme: #fafbfc;
   --theme-dark: #f3f3f3;
-  --theme-darker: #e5e8ea;
+  --theme-darker: #eae8e5;
   --theme-reverse: #2c2c2c;
   --theme-reverse-dark: #1e1e1e;
   --theme-reverse-darker: #0e0e0e;

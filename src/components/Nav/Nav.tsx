@@ -6,6 +6,8 @@ import { useViewportWidth } from "../../hooks/useViewport";
 import useScrollNavigation from "../../hooks/useScrollNavigation";
 import type { UserData } from "../../utils/types";
 import clsx from "clsx";
+import { Switch } from "antd";
+import { getSettings, setSettings, setTheme } from "@/utils/setTheme";
 
 type scrollNav = {
   navRef: React.RefObject<null>;
@@ -24,8 +26,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
   const width = useViewportWidth();
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
-
-  const filteredGoal = data?.goals.filter((goal) => !goal.isRecycled);
+  const [themeValue, setThemeValue] = useState(getSettings().lightDark === "light");
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -60,6 +61,16 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
     else if (timelineStatus) setIsOpen(false);
   }, [timelineStatus, width]);
 
+  const handleChangeTheme = (value: boolean) => {
+    const settings = getSettings();
+    if (value) {
+      localStorage.setItem("settings", JSON.stringify({ ...settings, lightDark: "light" }));
+    } else localStorage.setItem("settings", JSON.stringify({ ...settings, lightDark: "dark" }));
+    setSettings();
+    setTheme();
+    setThemeValue(getSettings().lightDark === "light");
+  };
+
   return (
     <nav>
       <div
@@ -75,6 +86,8 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
           </p>
         </div>
         <div className="flex items-center">
+          {/* DEBUG ONLY */}
+          <Switch value={themeValue} onChange={(e) => handleChangeTheme(e)} />
           <Link to="/profile" className="hover:text-accent ml-4">
             <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}
@@ -85,40 +98,6 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
           </Link>
         </div>
       </div>
-      {showNavbar && (
-        <div
-          className={`fixed overflow-auto [&::-webkit-scrollbar]:w-1
-        [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-thumb]:bg-gray-300 navbar left-0 pt-16 h-[100dvh] w-[50%] md:w-[35%] lg:w-[20%] px-4 bg-theme z-40 ${
-          isOpen ? "-translate-x-0" : "-translate-x-[100%]"
-        } ${timelineStatus && "lg:top-0"} transition-all duration-500 ease-in-out shadow-md`}
-        >
-          <h1 className="navbar text-[20px] font-bold mt-4">My Goals</h1>
-          {filteredGoal && filteredGoal.length > 0 ? (
-            <div className="mt-2 flex flex-col gap-3 pb-5">
-              {filteredGoal.map((goal) => (
-                <Link to={`/goal/${goal._id}`} className="text-theme-reverse" key={goal._id}>
-                  <div
-                    className={`p-3.5 gap-1 flex flex-col rounded-lg border-2 ${
-                      goal._id === param ? "border-accent bg-accent/[0.2]" : "border-theme-darker"
-                    } `}
-                  >
-                    <p className="text-[14px]">{goal.title}</p>
-                    <div>
-                      <p className="text-[12px] text-gray">{goal.progress}%</p>
-                      <div className="bg-theme-darker h-1.5 rounded-2xl">
-                        <div className="bg-accent h-1.5 rounded-2xl" style={{ width: `${goal.progress}%` }}></div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-2">No goals found.</p>
-          )}
-        </div>
-      )}
     </nav>
   );
 };
