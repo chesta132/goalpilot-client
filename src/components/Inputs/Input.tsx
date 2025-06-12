@@ -16,6 +16,7 @@ type InputProps = {
   labelClass?: string;
   initialFocus?: boolean;
   classWhenError?: string;
+  labelFocus?: string;
 };
 
 const Input = ({
@@ -31,6 +32,7 @@ const Input = ({
   labelClass,
   initialFocus,
   classWhenError,
+  labelFocus,
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
   const [isFocus, setIsFocus] = useState(initialFocus);
@@ -55,7 +57,7 @@ const Input = ({
       <label
         className={clsx(
           "absolute transition-all duration-200 ease-in-out pointer-events-none select-none whitespace-nowrap",
-          isFocus ? "-top-2.5 left-3 text-xs text-accent font-medium bg-theme px-1" : labelClass || "top-3.5 left-3 text-sm text-gray"
+          isFocus ? labelFocus || "-top-2.5 left-3 text-xs text-accent font-medium bg-theme px-1" : labelClass || "top-3.5 left-3 text-sm text-gray"
         )}
         htmlFor={label}
       >

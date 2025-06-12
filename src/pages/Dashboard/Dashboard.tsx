@@ -8,18 +8,20 @@ import Loading from "@/components/Static UI/Loading";
 import errorHandler from "@/utils/errorHandler";
 import { avgCalc } from "@/utils/math";
 import { ChartLineIcon, Goal, Plus, Verified } from "lucide-react";
-import Button from "@/components/Inputs/Button";
+import ButtonV from "@/components/Inputs/ButtonV";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import clsx from "clsx";
 import AddGoalPopup from "@/components/Popups/AddGoalPopup";
-import type { TnewGoalValue, Error } from "@/utils/types";
+import type { TnewGoalValue, TError } from "@/utils/types";
 import GoalCard from "@/components/Cards/GoalCard";
 import StatsCard from "@/components/Cards/StatsCard";
+import { useNotification } from "@/contexts/NotificationContext";
+import { Empty } from "antd";
 
 const Dashboard = () => {
   const [data, setData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<TError | null>(null);
   const [goalPopup, setGoalPopup] = useState(false);
   const { navRef, timelineStatus } = useScrollNavigation();
   const [newGoalValue, setNewGoalValue] = useState<TnewGoalValue>({
@@ -30,6 +32,7 @@ const Dashboard = () => {
     isPublic: true,
   });
   const [newGoalSubmitting, setNewGoalSubmitting] = useState(false);
+  const { openNotification } = useNotification();
 
   const navigate = useNavigate();
   const params = useParams();
@@ -52,10 +55,7 @@ const Dashboard = () => {
     initiateData();
   }, [navigate]);
 
-  const errorAuth =
-    (error && error.error && error?.error.code === "TOKEN_EXPIRED") ||
-    (error && error.error && error?.error.code === "USER_NOT_FOUND") ||
-    (error && error.error && error?.error.code === "INVALID_AUTH");
+  const errorAuth = ["TOKEN_EXPIRED", "USER_NOT_FOUND", "INVALID_AUTH"].includes(error?.error?.code ?? "");
 
   // Handle back to login page (used for error popup)
   const handleBackToLoginPage = () => {
@@ -74,13 +74,13 @@ const Dashboard = () => {
   }, []);
 
   // Handle create new goal
-  const handleNewGoal = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNewGoal = async () => {
     try {
       const response = await callApi("/goal", { method: "POST", token: true, body: newGoalValue });
       setData(response.data);
       setGoalPopup(false);
       setNewGoalValue({ title: "", description: "", targetDate: "", color: "#66b2ff", isPublic: true });
+      openNotification({ message: response.data.notification, type: "success", button: "default" });
     } catch (err) {
       errorHandler(err, setError);
     } finally {
@@ -90,10 +90,11 @@ const Dashboard = () => {
 
   if (loading) return <Loading />;
 
-  const existingGoals = data?.goals.filter((goal) => !goal.isRecycled);
+  const existingGoals = data?.goals?.filter((goal) => !goal.isRecycled) || [];
 
   return (
     <div>
+      {/* Header/absolute */}
       <AddGoalPopup
         appear={goalPopup}
         setAppear={setGoalPopup}
@@ -106,14 +107,15 @@ const Dashboard = () => {
       <Nav data={data} param={params.goalId} scrollNav={{ navRef, timelineStatus }} />
       {error && (
         <ErrorPopup
-          title={error && error.error ? error.error.title : undefined}
-          message={error && error.error ? error.error.message : undefined}
+          title={error && error.error?.title}
+          message={error && error.error?.message}
           showBackToDashboard={!errorAuth}
-          showBackToLoginPage={errorAuth !== null && errorAuth}
+          showBackToLoginPage={errorAuth}
           onBackToLoginPage={handleBackToLoginPage}
         />
       )}
-      <div className={clsx("lg:pl-[25%] pt-22 px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10")}>
+      {/* Dashboard */}
+      <div className={clsx("lg:pl-[25%] pt-22 px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10")}>
         <div
           className={clsx(
             "bg-theme-dark rounded-lg px-4 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
@@ -122,10 +124,10 @@ const Dashboard = () => {
         >
           <h1 className="text-[20px] font-[600] font-heading mb-2">Quick Stats</h1>
           <StatsCard
-            className="!bg-theme"
             header="Total Goals"
-            icon={<Goal className="h-8 bg-accent w-8 p-1 object-contain rounded-md" />}
-            stats={existingGoals! && existingGoals.length.toString()}
+            className="!bg-theme"
+            icon={<Goal className="h-8 bg-accent w-8 p-1 object-contain rounded-md " />}
+            stats={existingGoals && existingGoals.length.toString()}
           />
           <StatsCard
             header="Avg Progress"
@@ -134,11 +136,11 @@ const Dashboard = () => {
           />
           <StatsCard
             header="Completed Goals"
-            icon={<Verified className="h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-black stroke-[#F59E0B]" />}
-            stats={existingGoals! && existingGoals.filter((goal) => goal.progress === 100).length.toString()}
+            icon={<Verified className="h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]" />}
+            stats={existingGoals && existingGoals.filter((goal) => goal.progress === 100).length.toString()}
           />
           <div className="mt-10 w-full">
-            <Button
+            <ButtonV
               text="Create New Goal"
               icon={<Plus className="bg-transparent lg:hidden" />}
               className="shadow-sm whitespace-nowrap w-full"
@@ -146,24 +148,38 @@ const Dashboard = () => {
             />
           </div>
         </div>
-        <div className="bg-theme-dark rounded-lg px-4 py-8 text-theme-reverse shadow-md flex flex-col gap-10">
-          <div className="flex flex-col gap-4 relative">
+        <div className="bg-theme-dark rounded-lg px-3 lg:px-4 py-8 text-theme-reverse shadow-md flex flex-col gap-10">
+          <div className="flex flex-col gap-4 relative px-1 lg:px-0">
             <h1 className="text-2xl font-bold font-heading">My Goals</h1>
-            <h2 className="font-medium">Hi, {data?.fullName.split(" ")[0]}! Ready to crush your goals today?</h2>
+            <h2 className="font-medium">
+              Hi, {data?.fullName.split(" ")[0]}! Ready to {data && data?.goals.length > 0 ? "crush" : "create"} your goals today?
+            </h2>
             <div className="absolute top-0 right-0 bg-theme-darker rounded-full px-3 py-1.5">
               <p className="text-gray text-[14px]">{data?.goals.length} goals</p>
             </div>
           </div>
           <div className="flex flex-col gap-6">
-            {data?.goals.map((goal) => (
-              <Link to={`/goal/${goal._id}`} key={goal._id}>
-                <GoalCard goal={goal} />
-              </Link>
-            ))}
+            {data && data?.goals.length > 0 ? (
+              data?.goals.map((goal) => (
+                <Link to={`/goal/${goal._id}`} key={goal._id}>
+                  <GoalCard goal={goal} />
+                </Link>
+              ))
+            ) : (
+              <Empty className="flex flex-col justify-center">
+                <p className="text-gray">No Goal Found</p>
+                <div className="relative h-12">
+                  <ButtonV
+                    text="Create New Goal"
+                    className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm"
+                    onClick={() => setGoalPopup(true)}
+                  />
+                </div>
+              </Empty>
+            )}
           </div>
         </div>
       </div>
-      <div className="h-[200vh]"></div>
     </div>
   );
 };

@@ -9,10 +9,10 @@ import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi.ts";
 import errorHandler from "@/utils/errorHandler.ts";
 import validateForms from "@/utils/validateForms.ts";
-import Button from "@/components/Inputs/Button";
-import type { Error } from "@/utils/types";
+import ButtonV from "@/components/Inputs/ButtonV";
+import type { TError } from "@/utils/types";
 
-type ErrorState = Error & {
+type ErrorState = TError & {
   email?: string;
   password?: string;
   username?: string;
@@ -87,7 +87,7 @@ const SignUp = () => {
           </h1>
           <p>Create your account to start achieving your goals</p>
         </div>
-        <div className="border-1 bg-theme-dark border-theme-darker pt-5 text-center rounded-[12px] gap-6 flex flex-col justify-center p-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-[90%] mb-10">
+        <div className="border-1 bg-theme-dark border-theme-darker text-center rounded-[12px] gap-6 flex flex-col justify-center py-8 px-4 md:px-8 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] lg:w-[70%] w-[90%] mb-10">
           <h1 className="font-bold text-2xl text-theme-reverse font-heading mb-4">Sign up</h1>
           <div className="gap-5 flex flex-col justify-center text-center">
             <GoogleAuth label={"Sign up with Google"} />
@@ -98,6 +98,7 @@ const SignUp = () => {
           </div>
           <form onSubmit={handleSubmit} className="gap-3.5 flex flex-col justify-center">
             <Input
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your username"}
               error={error.username}
               label={"Username"}
@@ -106,6 +107,7 @@ const SignUp = () => {
             />
             <div className="flex flex-1/2 gap-3">
               <Input
+                labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
                 placeholder={"Enter your first name"}
                 labelClass="top-4.5 left-3 text-xs text-gray"
                 error={error.firstName}
@@ -114,6 +116,7 @@ const SignUp = () => {
                 onChange={(e) => setValue((prev) => ({ ...prev, firstName: e.target.value }))}
               />
               <Input
+                labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
                 placeholder={"Enter your last name"}
                 labelClass="top-4.5 left-3 text-xs text-gray"
                 label={"Last Name"}
@@ -123,6 +126,7 @@ const SignUp = () => {
               />
             </div>
             <Input
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your email"}
               error={error.email}
               label={"Email"}
@@ -130,6 +134,7 @@ const SignUp = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, email: e.target.value }))}
             />
             <Input
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your password"}
               error={error.password}
               label={"Password"}
@@ -138,7 +143,7 @@ const SignUp = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
             />
             <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
-            <Button text="Create Account" className="!p-3 z-10" disabled={submiting} />
+            <ButtonV text="Create Account" className="!p-3 z-10" disabled={submiting} />
           </form>
           <p className="text-theme-reverse text-[13px]">
             Already have account?{" "}

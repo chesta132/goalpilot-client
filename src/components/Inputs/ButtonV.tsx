@@ -10,7 +10,7 @@ type ButtonProps = {
   type?: "button" | "submit" | "reset";
 };
 
-const Button = ({ text, icon, onClick, className, disabled = false, type }: ButtonProps) => {
+const ButtonV = ({ text, icon, onClick, className, disabled = false, type }: ButtonProps) => {
   const handleClick = () => {
     if (onClick) onClick();
   };
@@ -31,4 +31,4 @@ const Button = ({ text, icon, onClick, className, disabled = false, type }: Butt
   );
 };
 
-export default Button;
+export default ButtonV;

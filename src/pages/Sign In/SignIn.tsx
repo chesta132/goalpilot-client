@@ -9,15 +9,15 @@ import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi";
 import errorHandler from "@/utils/errorHandler";
 import validateForms from "@/utils/validateForms";
-import Button from "@/components/Inputs/Button";
-import type { Error } from "@/utils/types";
+import ButtonV from "@/components/Inputs/ButtonV";
+import type { TError } from "@/utils/types";
 
 type Value = {
   email: string;
   password: string;
 };
 
-type ErrorProps = Error & {
+type ErrorProps = TError & {
   email?: string;
   password?: string;
 };
@@ -87,6 +87,7 @@ const SignIn = () => {
           </div>
           <form onSubmit={handleSubmit} className="gap-5 flex flex-col justify-center">
             <Input
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your email"}
               error={error.email}
               label={"email"}
@@ -94,6 +95,7 @@ const SignIn = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, email: e.target.value }))}
             />
             <Input
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your password"}
               error={error.password}
               label={"password"}
@@ -107,7 +109,7 @@ const SignIn = () => {
                 Forgot Password?
               </a>
             </div>
-            <Button text="Sign In" disabled={submiting} className="!p-3 z-10" />
+            <ButtonV text="Sign In" disabled={submiting} className="!p-3 z-10" />
           </form>
           <p className="text-theme-reverse text-[13px]">
             Don't have an account?{" "}

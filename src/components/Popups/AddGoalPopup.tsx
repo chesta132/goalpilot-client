@@ -4,7 +4,7 @@ import clsx from "clsx";
 import TextArea from "../Inputs/TextArea";
 import { ColorPicker, DatePicker, Switch } from "antd";
 import React, { useEffect, useState } from "react";
-import Button from "../Inputs/Button";
+import ButtonV from "../Inputs/ButtonV";
 import validateForms from "@/utils/validateForms";
 import type { TnewGoalValue } from "@/utils/types";
 
@@ -13,7 +13,7 @@ type AddGoalPopupProps = {
   setAppear?: React.Dispatch<React.SetStateAction<boolean>>;
   value: TnewGoalValue;
   setValue: React.Dispatch<React.SetStateAction<TnewGoalValue>>;
-  handleSubmit: (e: React.FormEvent) => void;
+  handleSubmit: () => void;
   submitting: boolean;
   setSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -35,7 +35,7 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
     if (validate) return;
 
     setSubmitting(true);
-    handleSubmit(e);
+    handleSubmit();
   };
 
   const handleCancel = () => {
@@ -63,11 +63,11 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
   if (!appear) return;
 
   return (
-    <div className="flex backdrop-blur-[2px] backdrop-brightness-90 h-[100dvh] fixed w-full px-8 justify-center items-center z-[100] transition-all">
+    <div className="flex backdrop-blur-[2px] backdrop-brightness-90 h-[100dvh] fixed w-full px-4 md:px-8 justify-center items-center z-[100] transition-all">
       <div className="px-6 py-10 bg-theme max-w-[580px] text-theme-reverse w-full rounded-2xl shadow-lg">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold font-heading">Create New Goal</h1>
-          <X className="cursor-pointer text-gray size-7 p-1" size={20} onClick={() => setAppear && setAppear(false)} />
+          <X className="cursor-pointer text-gray size-7 p-1" size={20} onClick={handleCancel} />
         </div>
         <form className="flex flex-col gap-3" onSubmit={submitter}>
           <Input
@@ -127,13 +127,13 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
             </div>
           </div>
           <div className="flex gap-3 mt-5">
-            <Button
+            <ButtonV
               type="button"
               onClick={handleCancel}
               text="Cancel"
               className="bg-theme !text-theme-reverse border w-1/2 border-gray hover:bg-theme shadow-none"
             />
-            <Button disabled={submitting} text="Create Goal" className="shadow-none whitespace-nowrap w-1/2" />
+            <ButtonV disabled={submitting} text="Create Goal" className="shadow-none whitespace-nowrap w-1/2" />
           </div>
         </form>
       </div>
