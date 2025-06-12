@@ -1,5 +1,5 @@
 import { Button, notification } from "antd";
-import React, { createContext, useContext } from "react";
+import React, { createContext } from "react";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -15,9 +15,10 @@ type TopenNotification = {
 type TNotificationContext = {
   openNotification: (params: TopenNotification) => void;
 };
+
 const NotificationContext = createContext<TNotificationContext | undefined>(undefined);
 
-export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
+const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, contextHolder] = notification.useNotification();
   const openNotification = ({ message, type, description, placement = "bottomRight", pauseOnHover = false, button }: TopenNotification) => {
     const key = `open${Date.now()}`;
@@ -57,11 +58,4 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useNotification = () => {
-  const context = useContext(NotificationContext);
-  if (!context) {
-    throw new Error("useNotification must be used within a NotificationProvider");
-  }
-  return context;
-};
+export {NotificationContext, NotificationProvider}

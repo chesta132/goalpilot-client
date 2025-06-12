@@ -7,7 +7,7 @@ import useScrollNavigation from "../../hooks/useScrollNavigation";
 import type { UserData } from "../../utils/types";
 import clsx from "clsx";
 import { Switch } from "antd";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/contexts/UseContexts";
 
 type scrollNav = {
   navRef: React.RefObject<null>;
@@ -76,12 +76,16 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
             <Hamburger toggled={isOpen} toggle={setIsOpen} size={24} />
           </div>
           <p className="text-[18px] font-heading font-bold leading-7 text-center ml-4">
-            <span className="text-accent">Goal</span>Pilot
+            <span className="text-primary">Goal</span>Pilot
           </p>
         </div>
         <div className="flex items-center">
           {/* DEBUG ONLY */}
-          <Switch value={settings.themeMode === "light"} onChange={handleChangeTheme} />
+          <Switch
+            value={settings.themeMode === "light"}
+            style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-dark)" }}
+            onChange={handleChangeTheme}
+          />
           <Link to="/profile" className="hover:text-accent ml-4">
             <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}

@@ -5,6 +5,7 @@
   --font-heading: "Inter", sans-serif;
   --color-gray: #6b7280;
   --color-white: #ffffff;
+  --color-primary: #66b2ff;
 
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);

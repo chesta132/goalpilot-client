@@ -14,9 +14,8 @@ import AddGoalPopup from "@/components/Popups/AddGoalPopup";
 import type { TnewGoalValue } from "@/utils/types";
 import GoalCard from "@/components/Cards/GoalCard";
 import StatsCard from "@/components/Cards/StatsCard";
-import { useNotification } from "@/contexts/NotificationContext";
-import { Empty } from "antd";
-import { useUserData } from "@/contexts/UserContext";
+import { ColorPicker, Empty } from "antd";
+import { useUserData, useNotification, useTheme } from "@/contexts/UseContexts";
 
 const Dashboard = () => {
   const { data, refetchData, loading, error, setError } = useUserData();
@@ -31,6 +30,7 @@ const Dashboard = () => {
     color: "#66b2ff",
     isPublic: true,
   });
+  const {updateSettings} = useTheme()
 
   const navigate = useNavigate();
   const params = useParams();
@@ -93,6 +93,12 @@ const Dashboard = () => {
             timelineStatus && "lg:!pt-8"
           )}
         >
+          <ColorPicker onChangeComplete={(e) => updateSettings({accent: e.toCssString()})} />
+          <div className="flex">
+            <div className="size-50 bg-accent-soft" />
+            <div className="size-50 bg-accent" />
+            <div className="size-50 bg-accent-strong" />
+          </div>
           <h1 className="text-[20px] font-[600] font-heading mb-2">Quick Stats</h1>
           <StatsCard
             header="Total Goals"

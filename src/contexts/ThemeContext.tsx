@@ -1,13 +1,14 @@
-import { createContext, useState, useEffect, useContext, type ReactNode } from "react";
+import { createContext, useState, useEffect, type ReactNode } from "react";
+import { generateAccentColors } from "@/utils/colorUtils";
 
-type Settings = {
+type ThemeSettings = {
   themeMode: "light" | "dark";
   accent: string;
   accentSoft: string;
   accentStrong: string;
 };
 
-const defaultSettings: Settings = {
+const defaultSettings: ThemeSettings = {
   themeMode: "light",
   accent: "#66b2ff",
   accentSoft: "#9fcfff",
@@ -15,8 +16,8 @@ const defaultSettings: Settings = {
 };
 
 interface ThemeContextType {
-  settings: Settings;
-  updateSettings: (newValues: Partial<Settings>) => void;
+  settings: ThemeSettings;
+  updateSettings: (newValues: Partial<ThemeSettings>) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -24,10 +25,10 @@ const ThemeContext = createContext<ThemeContextType>({
   updateSettings: () => {},
 });
 
-const getSettingsFromLocalStorage = (): Settings => {
+const getSettingsFromLocalStorage = (): ThemeSettings => {
   try {
     const storedSettings = localStorage.getItem("settings");
-    const parsedSettings: Partial<Settings> = storedSettings ? JSON.parse(storedSettings) : {};
+    const parsedSettings: Partial<ThemeSettings> = storedSettings ? JSON.parse(storedSettings) : {};
 
     return {
       themeMode: parsedSettings.themeMode ?? defaultSettings.themeMode,
@@ -41,8 +42,8 @@ const getSettingsFromLocalStorage = (): Settings => {
   }
 };
 
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<Settings>(getSettingsFromLocalStorage());
+const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [settings, setSettings] = useState<ThemeSettings>(getSettingsFromLocalStorage());
 
   useEffect(() => {
     const dynamicCssVar = {
@@ -68,8 +69,17 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [settings]);
 
-  const updateSettings = (newValues: Partial<Settings>) => {
-    const updated = { ...settings, ...newValues };
+  const updateSettings = (newValues: Partial<ThemeSettings>) => {
+    let updated = { ...settings, ...newValues };
+    if (newValues.accent && newValues.accent !== settings.accent) {
+      const generatedColors = generateAccentColors(newValues.accent);
+      updated = {
+        ...updated,
+        accent: generatedColors.accent,
+        accentSoft: generatedColors.accentSoft,
+        accentStrong: generatedColors.accentStrong,
+      };
+    }
     setSettings(updated);
     localStorage.setItem("settings", JSON.stringify(updated));
   };
@@ -82,11 +92,4 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
-};
+export { ThemeContext, ThemeProvider };

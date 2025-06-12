@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext, type ReactNode } from "react";
+import { createContext, useState, useEffect, type ReactNode } from "react";
 import callApi from "@/utils/callApi";
 import errorHandler from "@/utils/errorHandler";
 import type { UserData, TError } from "@/utils/types";
@@ -21,7 +21,7 @@ const UserContext = createContext<IUserContent>({
   setError: () => {},
 });
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+const UserProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<TError | null>(null);
@@ -62,11 +62,4 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useUserData = () => {
-  const context = useContext(UserContext);
-  if (context === undefined) {
-    throw new Error("useData must be used within a DataProvider");
-  }
-  return context;
-};
+export { UserContext, UserProvider };

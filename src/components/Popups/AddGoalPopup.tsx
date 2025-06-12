@@ -93,7 +93,11 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
               <h2 className="text-[14px] font-medium">Make Public</h2>
               <p className="text-gray text-[12px]">Allow others to see this goal</p>
             </div>
-            <Switch onChange={(e) => setValue((prev) => ({ ...prev, isPublic: e.valueOf() }))} value={value.isPublic} />
+            <Switch
+              style={{ backgroundColor: value.isPublic ? "var(--accent)" : "var(--theme-darker)" }}
+              onChange={(e) => setValue((prev) => ({ ...prev, isPublic: e.valueOf() }))}
+              value={value.isPublic}
+            />
           </div>
           <div className="flex flex-1/2 items-center gap-6">
             <div className="w-full">

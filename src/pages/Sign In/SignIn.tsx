@@ -72,7 +72,7 @@ const SignIn = () => {
       <div className="my-7 flex flex-col justify-center items-center gap-5" style={{ width: width > 1024 ? "50%" : "100%" }}>
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8 font-heading">
-            <span className="text-accent">Goal</span>Pilot
+            <span className="text-primary">Goal</span>Pilot
           </h1>
           <p>Welcome back! Sign in to continue and achieve your goals</p>
         </div>

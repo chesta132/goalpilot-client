@@ -83,7 +83,7 @@ const SignUp = () => {
         {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8 font-heading">
-            <span className="text-accent">Goal</span>Pilot
+            <span className="text-primary">Goal</span>Pilot
           </h1>
           <p>Create your account to start achieving your goals</p>
         </div>
