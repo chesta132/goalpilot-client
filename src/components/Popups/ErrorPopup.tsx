@@ -15,6 +15,7 @@ type ErrorPopupProps = {
   showBackToLoginPage?: boolean;
 };
 
+
 const ErrorPopup = ({
   open = true,
   title = "Oops! Something went wrong",

@@ -58,10 +58,10 @@ export type TnewGoalValue = {
 
 export type TError = {
   error?: {
-    title?: string;
-    message?: string;
+    title: string;
+    message: string;
     code?: string;
-  } | null;
+  } | null
 };
 
 export type TNotification = {

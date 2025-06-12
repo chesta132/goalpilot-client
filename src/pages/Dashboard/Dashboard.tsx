@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import Nav from "@/components/Nav/Nav";
 import callApi from "@/utils/callApi";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import type { UserData } from "@/utils/types";
 import Loading from "@/components/Static UI/Loading";
 import errorHandler from "@/utils/errorHandler";
 import { avgCalc } from "@/utils/math";
@@ -12,18 +11,19 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import clsx from "clsx";
 import AddGoalPopup from "@/components/Popups/AddGoalPopup";
-import type { TnewGoalValue, TError } from "@/utils/types";
+import type { TnewGoalValue } from "@/utils/types";
 import GoalCard from "@/components/Cards/GoalCard";
 import StatsCard from "@/components/Cards/StatsCard";
 import { useNotification } from "@/contexts/NotificationContext";
 import { Empty } from "antd";
+import { useUserData } from "@/contexts/UserContext";
 
 const Dashboard = () => {
-  const [data, setData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<TError | null>(null);
+  const { data, refetchData, loading, error, setError } = useUserData();
   const [goalPopup, setGoalPopup] = useState(false);
   const { navRef, timelineStatus } = useScrollNavigation();
+  const [newGoalSubmitting, setNewGoalSubmitting] = useState(false);
+  const { openNotification } = useNotification();
   const [newGoalValue, setNewGoalValue] = useState<TnewGoalValue>({
     title: "",
     description: "",
@@ -31,29 +31,9 @@ const Dashboard = () => {
     color: "#66b2ff",
     isPublic: true,
   });
-  const [newGoalSubmitting, setNewGoalSubmitting] = useState(false);
-  const { openNotification } = useNotification();
 
   const navigate = useNavigate();
   const params = useParams();
-
-  // Fetch data for the dashboard
-  useEffect(() => {
-    setError(null);
-    const initiateData = async () => {
-      setLoading(true);
-      try {
-        const response = await callApi("/user", { method: "PATCH", token: true, directToken: true });
-        setData(response.data);
-      } catch (error) {
-        errorHandler(error, setError);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initiateData();
-  }, [navigate]);
 
   const errorAuth = ["TOKEN_EXPIRED", "USER_NOT_FOUND", "INVALID_AUTH"].includes(error?.error?.code ?? "");
 
@@ -64,20 +44,11 @@ const Dashboard = () => {
     navigate("/signin");
   };
 
-  useEffect(() => {
-    // Heartbeat to keep the session alive
-    const interval = setInterval(() => {
-      callApi("/user/heartbeat", { method: "PATCH", token: true });
-    }, 50000); // 50 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Handle create new goal
   const handleNewGoal = async () => {
     try {
       const response = await callApi("/goal", { method: "POST", token: true, body: newGoalValue });
-      setData(response.data);
+      await refetchData(false);
       setGoalPopup(false);
       setNewGoalValue({ title: "", description: "", targetDate: "", color: "#66b2ff", isPublic: true });
       openNotification({ message: response.data.notification, type: "success", button: "default" });

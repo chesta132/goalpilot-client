@@ -7,7 +7,7 @@ import useScrollNavigation from "../../hooks/useScrollNavigation";
 import type { UserData } from "../../utils/types";
 import clsx from "clsx";
 import { Switch } from "antd";
-import { getSettings, setSettings, setTheme } from "@/utils/setTheme";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type scrollNav = {
   navRef: React.RefObject<null>;
@@ -26,7 +26,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
   const width = useViewportWidth();
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
-  const [themeValue, setThemeValue] = useState(getSettings().lightDark === "light");
+  const { settings, updateSettings } = useTheme();
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -61,14 +61,8 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
     else if (timelineStatus) setIsOpen(false);
   }, [timelineStatus, width]);
 
-  const handleChangeTheme = (value: boolean) => {
-    const settings = getSettings();
-    if (value) {
-      localStorage.setItem("settings", JSON.stringify({ ...settings, lightDark: "light" }));
-    } else localStorage.setItem("settings", JSON.stringify({ ...settings, lightDark: "dark" }));
-    setSettings();
-    setTheme();
-    setThemeValue(getSettings().lightDark === "light");
+  const handleChangeTheme = () => {
+    updateSettings({ themeMode: settings.themeMode === "light" ? "dark" : "light" });
   };
 
   return (
@@ -87,7 +81,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
         </div>
         <div className="flex items-center">
           {/* DEBUG ONLY */}
-          <Switch value={themeValue} onChange={(e) => handleChangeTheme(e)} />
+          <Switch value={settings.themeMode === "light"} onChange={handleChangeTheme} />
           <Link to="/profile" className="hover:text-accent ml-4">
             <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}

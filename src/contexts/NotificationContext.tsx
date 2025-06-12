@@ -17,7 +17,7 @@ type TNotificationContext = {
 };
 const NotificationContext = createContext<TNotificationContext | undefined>(undefined);
 
-export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, contextHolder] = notification.useNotification();
   const openNotification = ({ message, type, description, placement = "bottomRight", pauseOnHover = false, button }: TopenNotification) => {
     const key = `open${Date.now()}`;
