@@ -10,7 +10,7 @@ export type TaskData = {
   isRecycled: boolean;
   rewardPoints: number;
   targetDate: Date | null;
-  notification?: string
+  notification?: string;
   __v?: number;
 };
 
@@ -28,7 +28,7 @@ export type GoalData = {
   color: string;
   isRecycled: boolean;
   deleteAt: Date | null;
-  notification?: string
+  notification?: string;
   __v?: number;
 };
 
@@ -56,16 +56,36 @@ export type TnewGoalValue = {
   isPublic: boolean;
 };
 
+export type TNotification = {
+  message: string;
+  undoable?: boolean;
+  id?: string;
+};
+
 export type TError = {
   error?: {
     title: string;
     message: string;
     code?: string;
-  } | null
+  } | null;
 };
 
-export type TNotification = {
+export type Values = {
+  title?: string;
+  description?: string;
+  targetDate?: Date | string;
+  username?: string;
+  email?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  color?: string;
+};
+
+export type ErrorWithValues = TError & Values;
+
+export type ApiErrorResponseData = {
+  code?: string;
   message: string;
-  undoable?: boolean;
-  id?: string;
+  name?: string;
 };

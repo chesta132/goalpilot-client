@@ -4,7 +4,7 @@ import Nav from "@/components/Nav/Nav";
 import callApi from "@/utils/callApi";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import Loading from "@/components/Static UI/Loading";
-import errorHandler from "@/utils/errorHandler";
+import { handleFormError } from "@/utils/errorHandler";
 import { avgCalc } from "@/utils/math";
 import { ChartLineIcon, Goal, Plus, Verified } from "lucide-react";
 import ButtonV from "@/components/Inputs/ButtonV";
@@ -30,7 +30,7 @@ const Dashboard = () => {
     color: "#66b2ff",
     isPublic: true,
   });
-  const {updateSettings} = useTheme()
+  const { updateSettings } = useTheme();
 
   const navigate = useNavigate();
   const params = useParams();
@@ -46,6 +46,7 @@ const Dashboard = () => {
 
   // Handle create new goal
   const handleNewGoal = async () => {
+    setError({ error: null });
     try {
       const response = await callApi("/goal", { method: "POST", token: true, body: newGoalValue });
       await refetchData(false);
@@ -53,13 +54,14 @@ const Dashboard = () => {
       setNewGoalValue({ title: "", description: "", targetDate: "", color: "#66b2ff", isPublic: true });
       openNotification({ message: response.data.notification, type: "success", button: "default" });
     } catch (err) {
-      errorHandler(err, setError);
+      handleFormError(err, setError);
     } finally {
       setNewGoalSubmitting(false);
     }
   };
 
   if (loading) return <Loading />;
+  console.log(error);
 
   const existingGoals = data?.goals?.filter((goal) => !goal.isRecycled) || [];
 
@@ -76,11 +78,11 @@ const Dashboard = () => {
         setSubmitting={setNewGoalSubmitting}
       />
       <Nav data={data} param={params.goalId} scrollNav={{ navRef, timelineStatus }} />
-      {error && (
+      {error.error && (
         <ErrorPopup
-          title={error && error.error?.title}
-          message={error && error.error?.message}
-          showBackToDashboard={!errorAuth}
+          title={error && error.error.title}
+          message={error && error.error.message}
+          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK"}
           showBackToLoginPage={errorAuth}
           onBackToLoginPage={handleBackToLoginPage}
         />
@@ -93,7 +95,7 @@ const Dashboard = () => {
             timelineStatus && "lg:!pt-8"
           )}
         >
-          <ColorPicker onChangeComplete={(e) => updateSettings({accent: e.toCssString()})} />
+          <ColorPicker onChangeComplete={(e) => updateSettings({ accent: e.toCssString() })} />
           <div className="flex">
             <div className="size-50 bg-accent-soft" />
             <div className="size-50 bg-accent" />

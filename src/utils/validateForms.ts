@@ -1,30 +1,17 @@
-import type { Error } from "./types";
-
-type Value = {
-  title?: string;
-  description?: string;
-  targetDate?: Date | string;
-  username?: string;
-  email?: string;
-  password?: string;
-  firstName?: string;
-  color?: string;
-};
+import type { Values, ErrorWithValues } from "./types";
 
 type DynamicConfig<T> = {
   [K in keyof T]?: boolean;
 };
 
-type Config = DynamicConfig<Value> & {
+type Config = DynamicConfig<Values> & {
   regexEmail?: boolean;
   usernameSpace?: boolean;
   emailSpace?: boolean;
-  usernameLowerCased?: boolean
+  usernameLowerCased?: boolean;
 };
 
-type ErrorProps = Error & Value
-
-const validateForms = (value: Value, setError: React.Dispatch<React.SetStateAction<ErrorProps>>, config: Config): boolean => {
+const validateForms = (value: Values, setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>, config: Config): boolean => {
   let err = false;
 
   if (config.title && (value.title === undefined || value.title.trim() === "")) {
@@ -73,7 +60,7 @@ const validateForms = (value: Value, setError: React.Dispatch<React.SetStateActi
   }
   if (config.usernameLowerCased && value.username !== value.username?.toLowerCase()) {
     setError((prev) => ({ ...prev, username: "Username must be lowercased" }));
-    err = true
+    err = true;
   }
 
   return err;

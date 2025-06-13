@@ -18,7 +18,7 @@ export default async function callApi(
   const sessionToken = sessionStorage.getItem("jwt-token");
   const localToken = localStorage.getItem("jwt-token");
   if (options.directToken) {
-    if (!localToken && !sessionToken) {
+    if (!localToken && !sessionToken && window.location.pathname !== '/signin') {
       window.location.href = "/signin";
       return { data: { message: "Error Authentication" } };
     }
@@ -40,7 +40,6 @@ export default async function callApi(
     return response;
   } catch (error) {
     console.error("Error in API call:", error);
-    if (axios.isAxiosError(error) && error.response) throw error.response;
-    else throw error;
+    throw error;
   }
 }

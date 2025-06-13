@@ -7,27 +7,17 @@ import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi";
-import errorHandler from "@/utils/errorHandler";
+import { handleFormError } from "@/utils/errorHandler";
 import validateForms from "@/utils/validateForms";
 import ButtonV from "@/components/Inputs/ButtonV";
-import type { TError } from "@/utils/types";
-
-type Value = {
-  email: string;
-  password: string;
-};
-
-type ErrorProps = TError & {
-  email?: string;
-  password?: string;
-};
+import type { ErrorWithValues, Values } from "@/utils/types";
 
 const SignIn = () => {
-  const [value, setValue] = useState<Value>({
+  const [value, setValue] = useState<Values>({
     email: "",
     password: "",
   });
-  const [error, setError] = useState<ErrorProps>({ email: "", password: "", error: null });
+  const [error, setError] = useState<ErrorWithValues>({ email: "", password: "", error: null });
   const [submiting, setSubmiting] = useState(false);
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -58,7 +48,7 @@ const SignIn = () => {
       }
       navigate("/");
     } catch (err) {
-      errorHandler(err, setError);
+      handleFormError(err, setError);
     } finally {
       setSubmiting(false);
     }
