@@ -44,3 +44,7 @@ export function handleFormError<T extends ErrorWithValues>(err: unknown, setErro
     handleError(err, setError);
   }
 }
+
+export function errorAuthBool(error: TError):boolean {
+  return ["TOKEN_EXPIRED", "USER_NOT_FOUND", "INVALID_AUTH"].includes(error?.error?.code ?? "");
+}

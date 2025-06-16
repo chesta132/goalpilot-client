@@ -4,6 +4,8 @@ import SignUp from "./pages/Sign Up/SignUp.tsx";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import Callback from "./pages/Google Callback/Callback.tsx";
 import { UserProvider, ThemeProvider, NotificationProvider } from "./contexts/UseContexts.tsx";
+import GoalPage from "./pages/Goal Page/GoalPage.tsx";
+import Layout from "./Layout.tsx";
 
 const App = () => {
   return (
@@ -14,9 +16,11 @@ const App = () => {
             <Routes>
               <Route path="/signin" index element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/google/callback" element={<Callback />} />
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/goal/:goalId" element={<Dashboard />} />
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="/google/callback" element={<Callback />} />
+                <Route path="/goal/:goalId" element={<GoalPage />} />
+              </Route>
             </Routes>
           </BrowserRouter>
         </ThemeProvider>

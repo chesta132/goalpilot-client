@@ -33,7 +33,6 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
       const response = await callApi("/user", { method: "PATCH", token: true, directToken: direct });
       setData(response.data);
     } catch (err) {
-      console.log(err);
       handleError(err, setError);
     } finally {
       setLoading(false);

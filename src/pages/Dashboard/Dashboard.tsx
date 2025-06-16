@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
-import Nav from "@/components/Nav/Nav";
+import { Link } from "react-router";
 import callApi from "@/utils/callApi";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import Loading from "@/components/Static UI/Loading";
-import { handleFormError } from "@/utils/errorHandler";
+import { errorAuthBool, handleFormError } from "@/utils/errorHandler";
 import { avgCalc } from "@/utils/math";
 import { ChartLineIcon, Goal, Plus, Verified } from "lucide-react";
 import ButtonV from "@/components/Inputs/ButtonV";
@@ -18,11 +17,8 @@ import { ColorPicker, Empty } from "antd";
 import { useUserData, useNotification, useTheme } from "@/contexts/UseContexts";
 
 const Dashboard = () => {
-  const { data, refetchData, loading, error, setError } = useUserData();
   const [goalPopup, setGoalPopup] = useState(false);
-  const { navRef, timelineStatus } = useScrollNavigation();
   const [newGoalSubmitting, setNewGoalSubmitting] = useState(false);
-  const { openNotification } = useNotification();
   const [newGoalValue, setNewGoalValue] = useState<TnewGoalValue>({
     title: "",
     description: "",
@@ -30,23 +26,17 @@ const Dashboard = () => {
     color: "#66b2ff",
     isPublic: true,
   });
+
+  const { openNotification } = useNotification();
+  const { data, refetchData, loading, error, setError, clearError } = useUserData();
+  const { timelineStatus } = useScrollNavigation();
   const { updateSettings } = useTheme();
 
-  const navigate = useNavigate();
-  const params = useParams();
-
-  const errorAuth = ["TOKEN_EXPIRED", "USER_NOT_FOUND", "INVALID_AUTH"].includes(error?.error?.code ?? "");
-
-  // Handle back to login page (used for error popup)
-  const handleBackToLoginPage = () => {
-    sessionStorage.removeItem("jwt-token");
-    localStorage.removeItem("jwt-token");
-    navigate("/signin");
-  };
+  const errorAuth = errorAuthBool(error);
 
   // Handle create new goal
   const handleNewGoal = async () => {
-    setError({ error: null });
+    clearError();
     try {
       const response = await callApi("/goal", { method: "POST", token: true, body: newGoalValue });
       await refetchData(false);
@@ -61,7 +51,6 @@ const Dashboard = () => {
   };
 
   if (loading) return <Loading />;
-  console.log(error);
 
   const existingGoals = data?.goals?.filter((goal) => !goal.isRecycled) || [];
 
@@ -77,14 +66,12 @@ const Dashboard = () => {
         submitting={newGoalSubmitting}
         setSubmitting={setNewGoalSubmitting}
       />
-      <Nav data={data} param={params.goalId} scrollNav={{ navRef, timelineStatus }} />
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}
           message={error && error.error.message}
           showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK"}
           showBackToLoginPage={errorAuth}
-          onBackToLoginPage={handleBackToLoginPage}
         />
       )}
       {/* Dashboard */}
@@ -95,12 +82,12 @@ const Dashboard = () => {
             timelineStatus && "lg:!pt-8"
           )}
         >
-          <ColorPicker onChangeComplete={(e) => updateSettings({ accent: e.toCssString() })} />
+          {/* <ColorPicker onChangeComplete={(e) => updateSettings({ accent: e.toCssString() })} />
           <div className="flex">
             <div className="size-50 bg-accent-soft" />
             <div className="size-50 bg-accent" />
             <div className="size-50 bg-accent-strong" />
-          </div>
+          </div> */}
           <h1 className="text-[20px] font-[600] font-heading mb-2">Quick Stats</h1>
           <StatsCard
             header="Total Goals"

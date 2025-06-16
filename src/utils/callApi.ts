@@ -18,7 +18,7 @@ export default async function callApi(
   const sessionToken = sessionStorage.getItem("jwt-token");
   const localToken = localStorage.getItem("jwt-token");
   if (options.directToken) {
-    if (!localToken && !sessionToken && window.location.pathname !== '/signin') {
+    if (!localToken && !sessionToken && window.location.pathname !== "/signin" && window.location.pathname !== "/signup") {
       window.location.href = "/signin";
       return { data: { message: "Error Authentication" } };
     }

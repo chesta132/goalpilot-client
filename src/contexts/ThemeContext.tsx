@@ -18,11 +18,13 @@ const defaultSettings: ThemeSettings = {
 interface ThemeContextType {
   settings: ThemeSettings;
   updateSettings: (newValues: Partial<ThemeSettings>) => void;
+  dark: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   settings: defaultSettings,
   updateSettings: () => {},
+  dark: false,
 });
 
 const getSettingsFromLocalStorage = (): ThemeSettings => {
@@ -44,6 +46,7 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
 
 const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<ThemeSettings>(getSettingsFromLocalStorage());
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     const dynamicCssVar = {
@@ -84,9 +87,15 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("settings", JSON.stringify(updated));
   };
 
+  useEffect(() => {
+    if (settings.themeMode === "light") setDark(false);
+    else setDark(true);
+  }, [settings]);
+
   const contextValue: ThemeContextType = {
     settings,
     updateSettings,
+    dark,
   };
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;

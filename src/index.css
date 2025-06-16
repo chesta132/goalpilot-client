@@ -55,3 +55,7 @@
   --theme-reverse-dark: #1e1e1e;
   --theme-reverse-darker: #0e0e0e;
 }
+
+body {
+  background: var(--theme);
+}

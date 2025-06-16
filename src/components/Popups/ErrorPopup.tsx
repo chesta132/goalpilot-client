@@ -15,7 +15,6 @@ type ErrorPopupProps = {
   showBackToLoginPage?: boolean;
 };
 
-
 const ErrorPopup = ({
   open = true,
   title = "Oops! Something went wrong",
@@ -66,6 +65,8 @@ const ErrorPopup = ({
     if (onBackToLoginPage) {
       onBackToLoginPage();
     } else {
+      sessionStorage.removeItem("jwt-token");
+      localStorage.removeItem("jwt-token");
       navigate("/signin");
     }
   };

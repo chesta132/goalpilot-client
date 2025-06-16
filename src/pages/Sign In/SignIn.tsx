@@ -11,6 +11,7 @@ import { handleFormError } from "@/utils/errorHandler";
 import validateForms from "@/utils/validateForms";
 import ButtonV from "@/components/Inputs/ButtonV";
 import type { ErrorWithValues, Values } from "@/utils/types";
+import { useUserData } from "@/contexts/UseContexts";
 
 const SignIn = () => {
   const [value, setValue] = useState<Values>({
@@ -19,6 +20,9 @@ const SignIn = () => {
   });
   const [error, setError] = useState<ErrorWithValues>({ email: "", password: "", error: null });
   const [submiting, setSubmiting] = useState(false);
+
+  const { clearError, refetchData } = useUserData();
+
   const width = useViewportWidth(300);
   const height = useViewportHeight();
   const navigate = useNavigate();
@@ -46,11 +50,13 @@ const SignIn = () => {
         sessionStorage.setItem("jwt-token", response.data.token);
         localStorage.removeItem("jwt-token");
       }
+      refetchData(true, true);
       navigate("/");
     } catch (err) {
       handleFormError(err, setError);
     } finally {
       setSubmiting(false);
+      clearError();
     }
   };
 

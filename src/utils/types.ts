@@ -11,6 +11,7 @@ export type TaskData = {
   rewardPoints: number;
   targetDate: Date | null;
   notification?: string;
+  createdAt: Date;
   __v?: number;
 };
 
