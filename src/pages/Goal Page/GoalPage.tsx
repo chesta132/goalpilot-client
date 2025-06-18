@@ -8,46 +8,85 @@ import { useParams } from "react-router";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import StatsCard from "@/components/Cards/StatsCard";
 import ButtonV from "@/components/Inputs/ButtonV";
-import { Goal, Verified, Plus, Calendar, Minus } from "lucide-react";
+import { Goal, Verified, Plus, Calendar, Minus, X } from "lucide-react";
 import toCapitalize from "@/utils/toCapitalize";
-import Loading from "@/components/Static UI/Loading";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
+import { defaultGoalData } from "@/utils/defaultData";
+import AddTaskPopup from "@/components/Popups/AddTaskPopup";
+import { useNotification } from "@/contexts/UseContexts";
+import TextArea from "@/components/Inputs/TextArea";
+
+type AiInput = {
+  value: string;
+  error: null | string;
+  loading: boolean;
+};
 
 const GoalPage = () => {
-  const [data, setData] = useState<GoalData | null>(null);
+  const [data, setData] = useState<GoalData>(defaultGoalData);
   const [error, setError] = useState<TError>({ error: null });
   const [loading, setLoading] = useState(true);
-  const [addTaskPopup, setAddTaskPopup] = useState(false); // Card
+  const [taskPopupAppear, setTaskPopupAppear] = useState(false); // Card
   const [addTaskButton, setaddTaskButton] = useState(false); // Toggle show button
+  const [addTaskAIInput, setAddTaskAIInput] = useState(false);
+  const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
 
   const goalId = useParams().goalId;
   const errorAuth = errorAuthBool(error);
   const { timelineStatus } = useScrollNavigation();
+  const { openNotification } = useNotification();
+
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const response = await callApi(`/goal?goalId=${goalId}`, { method: "GET", token: true });
+      setData(response.data);
+    } catch (err) {
+      handleError(err, setError);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const initiateData = async () => {
-      setLoading(true);
-      try {
-        const response = await callApi(`/goal?goalId=${goalId}`, { method: "GET", token: true });
-        setData(response.data);
-      } catch (err) {
-        handleError(err, setError);
-      } finally {
-        setLoading(false);
-      }
-    };
-    initiateData();
+    getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalId]);
 
-  if (loading) return <Loading />;
-  if (!data) return;
+  const generateWithAI = async () => {
+    setError({ error: null });
+    if (!addTaskAIInput) {
+      setAddTaskAIInput(true);
+      return;
+    }
+    if (aiInput.value.length < 20) {
+      setAiInput((prev) => ({ ...prev, error: "Minimum input is 20 character" }));
+      return;
+    }
+
+    try {
+      setAiInput((prev) => ({ ...prev, loading: true, error: null }));
+      const response = await callApi("/ai", { method: "POST", body: { query: aiInput.value, goalId }, token: true });
+      openNotification({ message: response.data.notification, type: "success", button: "default" });
+      getData();
+    } catch (err) {
+      handleError(err, setError);
+    } finally {
+      setAiInput((prev) => ({ ...prev, loading: false }));
+    }
+  };
+
+  useEffect(() => {
+    if (taskPopupAppear) document.body.classList.add("overflow-hidden");
+    else document.body.classList.remove("overflow-hidden");
+  }, [taskPopupAppear]);
 
   const { color, description, progress, tasks, title, status } = data;
   const createdAt = new Date(data.createdAt);
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
 
-  const existingTasks = tasks.filter((task) => !task.isRecycled);
+  const existingTasks = tasks.filter((task: { isRecycled: boolean }) => !task.isRecycled);
 
   return (
     <div>
@@ -56,10 +95,11 @@ const GoalPage = () => {
         <ErrorPopup
           title={error && error.error.title}
           message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK"}
+          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
           showBackToLoginPage={errorAuth}
         />
       )}
+      {taskPopupAppear && <AddTaskPopup setAppear={setTaskPopupAppear} goalId={data._id} refetch={getData} />}
 
       {/* Goal Page */}
       <div className="lg:pl-[25%] pt-22 lg:pt-13 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
@@ -70,8 +110,8 @@ const GoalPage = () => {
               timelineStatus && "lg:!pt-8"
             )}
           >
-            <div className="flex gap-2 flex-col lg:flex-row lg:justify-between">
-              <h1 className="text-[20px] font-[600] font-heading">{toCapitalize(title)}</h1>
+            <div className={clsx("flex gap-2 flex-col lg:flex-row lg:justify-between", loading && "animate-shimmer rounded-md")}>
+              <h1 className={clsx("text-[20px] font-[600] font-heading", loading && "!text-transparent !bg-transparent")}>{toCapitalize(title)}</h1>
               <h1
                 className={clsx(
                   "text-[13px] font-heading mb-2 size-fit rounded-2xl px-2 py-1 text-white",
@@ -81,48 +121,82 @@ const GoalPage = () => {
                     ? "bg-yellow-600"
                     : status === "Paused" || status === "Canceled"
                     ? "bg-red-700"
-                    : status === "Completed" && "bg-green-500 !text-black"
+                    : status === "Completed" && "bg-green-500 !text-black",
+                  loading && "!text-transparent !bg-transparent"
                 )}
               >
                 {status}
               </h1>
             </div>
             <StatsCard
+              loading={loading}
               header="Description"
               className="!bg-theme"
               classStats="text-[15px] font-medium mt-2"
-              icon={<Goal className="h-8 w-8 p-1 object-contain rounded-md " style={{ background: data.color }} />}
+              icon={<Goal className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
               stats={description}
             />
             <StatsCard
+              loading={loading}
               className="!bg-theme"
               header="Progress"
               classStats="text-[17px] font-medium mt-2"
-              icon={<Verified className="h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]" />}
+              icon={
+                <Verified
+                  className={clsx("h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]", loading && "hidden")}
+                />
+              }
               stats={progress.toString() + "%"}
             >
-              <div className="rounded-full bg-theme-dark h-3 w-full">
-                <div className="rounded-full h-full" style={{ width: `${progress}%`, background: color }} />
+              <div className={clsx("rounded-full bg-theme-dark h-3 w-full", loading && "bg-transparent")}>
+                <div className={clsx("rounded-full h-full", loading && "hidden")} style={{ width: `${progress}%`, background: color }} />
               </div>
             </StatsCard>
             <StatsCard
+              loading={loading}
               header={targetDate ? "Target Date" : "Created Date"}
               classStats="text-[15px] font-medium mt-2"
-              icon={<Calendar className="h-8 bg-accent w-8 object-contain rounded-md p-1.5" />}
+              icon={<Calendar className={clsx("h-8 w-8 object-contain rounded-md p-1.5", loading && "hidden")} style={{ background: data.color }} />}
               stats={
                 targetDate
                   ? new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()).toDateString()
                   : new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate()).toDateString()
               }
             />
-            <div className={clsx("mt-10 w-full flex flex-col gap-3 lg:absolute lg:bottom-0 lg:mb-5 lg:w-auto")}>
+            <div className={clsx("mt-10 w-full flex flex-col gap-3 lg:absolute lg:bottom-0 lg:mb-5 lg:w-auto transition-all")}>
               <ButtonV
+                style={{ background: data.color }}
                 text="Create New Task"
                 icon={<Plus className="bg-transparent" />}
                 className={clsx("shadow-sm whitespace-nowrap w-full lg:-translate-x-[100dvh] lg:duration-500", addTaskButton && "!translate-0")}
-                onClick={() => setAddTaskPopup(true)}
+                onClick={() => !loading && setTaskPopupAppear(true)}
               />
+              {addTaskAIInput && (
+                <div className="flex justify-between items-center gap-5">
+                  <div className="w-full">
+                    <TextArea
+                      label="Generate Task"
+                      placeholder="Generate with Gemini"
+                      className="my-2 w-full"
+                      labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
+                      onChange={(e) => setAiInput((prev) => ({ ...prev, value: e.target.value }))}
+                      value={aiInput.value}
+                    />
+                    {aiInput.error && <p className="text-red-500 text-[12px] text-start">{aiInput.error}</p>}
+                  </div>
+                  <button
+                    className="p-2 rounded-lg cursor-pointer bg-accent hover:bg-transparent border border-transparent hover:border-accent transition"
+                    onClick={() => {
+                      setAddTaskAIInput(false);
+                      setAiInput((prev) => ({ ...prev, value: "", error: null }));
+                    }}
+                  >
+                    <X />
+                  </button>
+                </div>
+              )}
               <ButtonV
+                disabled={aiInput.loading}
                 text="Generate Tasks With AI"
                 icon={
                   <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -141,10 +215,12 @@ const GoalPage = () => {
                   </svg>
                 }
                 className={clsx(
-                  "shadow-sm whitespace-nowrap lg:-translate-x-[100dvh] lg:duration-500 lg:delay-50 w-full !text-theme-reverse lg:text-[14px] bg-theme border-accent border hover:bg-theme-dark hover:border-violet-500",
-                  addTaskButton && "!translate-0"
+                  "shadow-sm whitespace-nowrap lg:-translate-x-[100dvh] lg:duration-500 lg:delay-50 w-full !text-theme-reverse lg:text-[14px] bg-transparent border-accent border hover:bg-theme-dark hover:border-violet-500",
+                  addTaskButton && "!translate-0",
+                  aiInput.loading &&
+                    "animate-transparent-shimmer -bg-linear-45 from-transparent from-40% via-violet-500 via-50% to-transparent to-60%"
                 )}
-                onClick={() => setAddTaskPopup(true)}
+                onClick={generateWithAI}
               />
             </div>
           </div>
@@ -152,7 +228,7 @@ const GoalPage = () => {
         <div className="flex flex-col gap-6 bg-theme-dark px-3 py-10 mx-1 rounded-xl shadow-lg">
           <h1 className="text-[20px] font-[600] font-heading ml-3">Tasks of {toCapitalize(title)}</h1>
           {existingTasks.length > 0 ? (
-            existingTasks.map((task) => <TaskCard task={task} goal={data} />)
+            existingTasks.map((task) => <TaskCard task={task} setError={setError} key={task._id} goal={data} />)
           ) : (
             <Empty className="flex flex-col justify-center">
               <p className="text-gray">No Task Found</p>
@@ -160,7 +236,7 @@ const GoalPage = () => {
                 <ButtonV
                   text="Create New Task"
                   className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm"
-                  onClick={() => setAddTaskPopup(true)}
+                  onClick={() => !loading && setTaskPopupAppear(true)}
                 />
               </div>
             </Empty>

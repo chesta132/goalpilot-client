@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 
 type ButtonProps = {
   text: string;
@@ -8,9 +8,10 @@ type ButtonProps = {
   className?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
+  style?: CSSProperties;
 };
 
-const ButtonV = ({ text, icon, onClick, className, disabled = false, type }: ButtonProps) => {
+const ButtonV = ({ text, icon, onClick, className, disabled = false, type, style }: ButtonProps) => {
   const handleClick = () => {
     if (onClick) onClick();
   };
@@ -24,6 +25,7 @@ const ButtonV = ({ text, icon, onClick, className, disabled = false, type }: But
       )}
       disabled={disabled}
       type={type || "submit"}
+      style={style}
     >
       {icon && icon}
       {text}

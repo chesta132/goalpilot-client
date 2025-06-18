@@ -3,17 +3,17 @@ import Input from "../Inputs/Input";
 import clsx from "clsx";
 import TextArea from "../Inputs/TextArea";
 import { ColorPicker, DatePicker, Switch } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ButtonV from "../Inputs/ButtonV";
 import validateForms from "@/utils/validateForms";
+import { defaultNewGoalData } from "@/utils/defaultData";
+import { useNotification, useUserData } from "@/contexts/UseContexts";
+import callApi from "@/utils/callApi";
+import { handleFormError } from "@/utils/errorHandler";
 import type { TnewGoalValue } from "@/utils/types";
 
 type AddGoalPopupProps = {
-  appear?: boolean;
   setAppear?: React.Dispatch<React.SetStateAction<boolean>>;
-  value: TnewGoalValue;
-  setValue: React.Dispatch<React.SetStateAction<TnewGoalValue>>;
-  handleSubmit: () => void;
   submitting: boolean;
   setSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -25,42 +25,40 @@ type Error = {
   color?: string;
 };
 
-const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submitting, setSubmitting }: AddGoalPopupProps) => {
+const AddGoalPopup = ({ setAppear, submitting, setSubmitting }: AddGoalPopupProps) => {
   const [error, setError] = useState<Error>({ title: "", description: "", targetDate: "", color: "" });
+  const [value, setValue] = useState<TnewGoalValue>(defaultNewGoalData);
+  const { clearError, refetchData } = useUserData();
+  const { openNotification } = useNotification();
 
-  const submitter = (e: React.FormEvent) => {
+  const submitter = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     setError({ title: "", description: "", targetDate: "", color: "" });
     const validate = validateForms(value, setError, { title: true, description: true, targetDate: true, color: true });
     if (validate) return;
 
     setSubmitting(true);
-    handleSubmit();
+
+    try {
+      const response = await callApi("/goal", { method: "POST", token: true, body: value });
+      await refetchData(false);
+      openNotification({ message: response.data.notification, type: "success", button: "default" });
+      if (setAppear) setAppear(false);
+    } catch (err) {
+      handleFormError(err, setError);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
     if (setAppear) {
       setError({ title: "", description: "", targetDate: "", color: "" });
-      setValue({
-        title: "",
-        description: "",
-        targetDate: "",
-        color: "#66b2ff",
-        isPublic: true,
-      });
+      setValue(defaultNewGoalData);
       setAppear(false);
     }
   };
-
-  useEffect(() => {
-    const handleToggle = () => {
-      if (appear) document.body.classList.add("overflow-hidden");
-      if (!appear) document.body.classList.remove("overflow-hidden");
-    };
-    handleToggle();
-  }, [appear]);
-
-  if (!appear) return;
 
   return (
     <div className="flex backdrop-blur-[2px] backdrop-brightness-90 h-[100dvh] fixed w-full px-4 md:px-8 justify-center items-center z-[100] transition-all">
@@ -102,10 +100,6 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
           <div className="flex flex-1/2 items-center gap-6">
             <div className="w-full">
               <DatePicker
-                styles={{
-                  root: { background: "var(--theme)", color: "var(--theme-reverse)" },
-                  popup: { root: { background: "var(--theme)", color: "var(--theme-reverse)" } },
-                }}
                 needConfirm
                 status={error.targetDate && "error"}
                 size="small"
@@ -119,9 +113,6 @@ const AddGoalPopup = ({ appear, setAppear, value, setValue, handleSubmit, submit
             <div className={clsx("flex flex-col", error.targetDate && !error.color && "pb-4.5")}>
               <p className="text-theme-reverse-dark whitespace-nowrap text-[13px]">Color Theme</p>
               <ColorPicker
-                styles={{
-                  popupOverlayInner: { background: "var(--theme)", color: "var(--theme-revers)" },
-                }}
                 showText
                 format="hex"
                 value={value.color}

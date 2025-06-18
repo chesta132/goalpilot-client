@@ -3,21 +3,22 @@ import type { ApiErrorResponseData, ErrorWithValues, TError } from "./types"; //
 
 function isAxiosErrorWithResponseData(error: unknown): error is AxiosError<ApiErrorResponseData> {
   if (!axios.isAxiosError(error)) return false;
-  if (!error.response || typeof error.response.data !== "object" || error.response.data === null) return false;
-  const responseData = error.response.data as Partial<ApiErrorResponseData>;
-  if (!("message" in responseData)) return false;
+  if (!error.response || error.response.data === null) return false;
   return true;
 }
 
 export function handleError<T extends TError>(err: unknown, setError: React.Dispatch<React.SetStateAction<T>>) {
   if (isAxiosErrorWithResponseData(err)) {
-    const responseData = err.response?.data;
-    setError((prev) => ({ ...prev, error: { message: responseData?.message, title: err?.name, code: responseData?.code || err.code } } as T));
-  } else if (axios.isAxiosError(err) && err.code === "ERR_NETWORK") {
-    setError((prev) => ({ ...prev, error: { title: err.message, message: "Network Error, please check your connection", code: err.code } } as T));
-  } else if (axios.isAxiosError(err) && err.response?.data.code === "INVALID_AUTH")
-    setError((prev) => ({ ...prev, error: { title: err.response?.data.message, message: err.response?.data.message, code: err.code } }));
-  else {
+    if (err.status === 429)
+      setError((prev) => ({ ...prev, error: { title: err.response?.statusText, message: err.response?.data, code: err.code } } as T));
+    else if (err.code === "ERR_NETWORK")
+      setError((prev) => ({ ...prev, error: { title: err.message, message: "Network Error, please check your connection", code: err.code } } as T));
+    else if (err.response?.data.code === "INVALID_AUTH")
+      setError((prev) => ({ ...prev, error: { title: err.response?.data.message, message: err.response?.data.message, code: err.code } } as T));
+    else {
+      setError((prev) => ({ ...prev, error: { title: undefined, message: undefined } } as T));
+    }
+  } else {
     setError((prev) => ({ ...prev, error: { title: undefined, message: undefined } } as T));
   }
 }
@@ -45,6 +46,6 @@ export function handleFormError<T extends ErrorWithValues>(err: unknown, setErro
   }
 }
 
-export function errorAuthBool(error: TError):boolean {
+export function errorAuthBool(error: TError): boolean {
   return ["TOKEN_EXPIRED", "USER_NOT_FOUND", "INVALID_AUTH"].includes(error?.error?.code ?? "");
 }

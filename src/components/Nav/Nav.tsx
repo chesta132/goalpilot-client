@@ -69,15 +69,15 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
     <nav>
       <div
         ref={navRef}
-        className="bg-theme py-2 lg:py-4 text-theme-reverse justify-between shadow-md pr-4 items-center fixed flex top-0 left-0 w-full z-50"
+        className="bg-theme py-2 lg:py-4 text-theme-reverse justify-between shadow-[0_5px_10px_-3px] shadow-theme-reverse-darker/20 pr-4 items-center fixed flex top-0 left-0 w-full z-50"
       >
         <div className="flex items-center">
           <div className={clsx("lg:hidden", !showNavbar && "opacity-0 w-0 -z-10")}>
             <Hamburger toggled={isOpen} toggle={setIsOpen} size={24} />
           </div>
-          <p className="text-[18px] font-heading font-bold leading-7 text-center ml-4">
+          <Link to={'/'} className="text-[18px] font-heading font-bold leading-7 text-center ml-4">
             <span className="text-primary">Goal</span>Pilot
-          </p>
+          </Link>
         </div>
         <div className="flex items-center">
           {/* DEBUG ONLY */}

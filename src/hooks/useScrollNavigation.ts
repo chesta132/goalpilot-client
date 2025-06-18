@@ -10,7 +10,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * @returns {React.RefObject} navRef - Reference to attach to the navigation element
  * @returns {boolean} timelineStatus - Current animation state (true when nav is hidden)
  */
-const useScrollNavigation = () => {
+const useScrollNavigation = (scrollYTrigger?: number) => {
   // Reference to track if navigation is currently being animated/hidden
   const isScrollingRef = useRef(false);
 
@@ -38,7 +38,7 @@ const useScrollNavigation = () => {
       const currentScrollY = window.scrollY;
 
       // If scrolling down more than 50px from previous scroll position
-      if (currentScrollY > lastScrollYRef.current + 50) {
+      if (currentScrollY > lastScrollYRef.current + (scrollYTrigger || 50)) {
         // Only animate if navigation is not already being hidden
         if (!isScrollingRef.current && navRef.current) {
           isScrollingRef.current = true;
@@ -56,7 +56,7 @@ const useScrollNavigation = () => {
         setTimelineStatus(true);
       }
       // If scrolling up more than 50px from previous scroll position
-      else if (currentScrollY < lastScrollYRef.current - 50) {
+      else if (currentScrollY < lastScrollYRef.current - (scrollYTrigger || 50)) {
         // Only animate if navigation is currently hidden
         if (isScrollingRef.current && navRef.current) {
           isScrollingRef.current = false;
@@ -82,7 +82,7 @@ const useScrollNavigation = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, [scrollYTrigger]); // Empty dependency array means this effect runs once on mount
 
   // Return the navigation reference and current timeline status
   return {

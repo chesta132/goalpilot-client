@@ -41,7 +41,6 @@ const SignUp = () => {
       regexEmail: true,
       usernameLowerCased: true,
       email: true,
-      emailSpace: true,
       password: true,
       username: true,
       firstName: true,

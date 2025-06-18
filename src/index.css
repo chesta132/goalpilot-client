@@ -17,6 +17,33 @@
   --color-theme-reverse: var(--theme-reverse);
   --color-theme-reverse-dark: var(--theme-reverse-dark);
   --color-theme-reverse-darker: var(--theme-reverse-darker);
+
+  --animate-shimmer: shimmer 1s infinite;
+  --animate-transparent-shimmer: transparent-shimmer 1s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background: linear-gradient(-45deg, #eee 40%, #fafafa 50%, #eee 60%);
+    background-size: 200%;
+    background-position: 100%;
+  }
+  100% {
+    background: linear-gradient(-45deg, #eee 40%, #fafafa 50%, #eee 60%);
+    background-size: 200%;
+    background-position: -100%;
+  }
+}
+
+@keyframes transparent-shimmer {
+  0% {
+    background-size: 200%;
+    background-position: 100%;
+  }
+  100% {
+    background-size: 200%;
+    background-position: -100%;
+  }
 }
 
 /* DARK */

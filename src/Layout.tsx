@@ -5,7 +5,7 @@ import useScrollNavigation from "./hooks/useScrollNavigation";
 
 const Layout = () => {
   const { data } = useUserData();
-  const { navRef, timelineStatus } = useScrollNavigation();
+  const { navRef, timelineStatus } = useScrollNavigation(20);
   const goalId = useParams().goalId;
 
   return (

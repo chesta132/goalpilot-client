@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toCapitalize from "../../utils/toCapitalize";
 import clsx from "clsx";
+import TextareaAutosize from "react-textarea-autosize";
 
 type TextAreaProps = {
   placeholder?: string;
@@ -13,6 +14,7 @@ type TextAreaProps = {
   labelClass?: string;
   initialFocus?: boolean;
   classWhenError?: string;
+  labelFocus?: string;
 };
 
 const TextArea = ({
@@ -26,13 +28,15 @@ const TextArea = ({
   labelClass,
   initialFocus,
   classWhenError,
+  labelFocus,
 }: TextAreaProps) => {
   const [internalValue, setInternalValue] = useState(value);
   const [isFocus, setIsFocus] = useState(initialFocus);
 
   return (
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
-      <textarea
+      <TextareaAutosize
+        minRows={2}
         className="
           w-full px-3 py-3 border border-gray rounded-lg 
           transition-all duration-200 ease-in-out h-full
@@ -48,7 +52,7 @@ const TextArea = ({
       <label
         className={clsx(
           "absolute transition-all duration-200 ease-in-out pointer-events-none select-none whitespace-nowrap",
-          isFocus ? "-top-2.5 left-3 text-xs text-accent font-medium bg-theme px-1" : labelClass || "top-3.5 left-3 text-sm text-gray"
+          isFocus ? labelFocus || "-top-2.5 left-3 text-xs text-accent font-medium bg-theme px-1" : labelClass || "top-3.5 left-3 text-sm text-gray"
         )}
         htmlFor={label}
       >

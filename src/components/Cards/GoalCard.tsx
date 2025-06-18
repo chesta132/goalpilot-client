@@ -14,6 +14,7 @@ const GoalCard = ({ goal }: GoalProps) => {
           <p style={{ color: goal.color }} className="bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline">
             {goal.status}
           </p>
+          <p className="text-[14px] text-gray">•</p>
           <p className="text-[14px] text-gray">{goal.progress}% Complete</p>
         </div>
       </div>

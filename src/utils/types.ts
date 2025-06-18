@@ -57,6 +57,14 @@ export type TnewGoalValue = {
   isPublic: boolean;
 };
 
+export type TnewTaskValue = {
+  goalId?: string;
+  task: string;
+  description: string;
+  targetDate: string;
+  difficulty: "easy" | "medium" | "hard" | "very hard" | "";
+};
+
 export type TNotification = {
   message: string;
   undoable?: boolean;
@@ -73,6 +81,7 @@ export type TError = {
 
 export type Values = {
   title?: string;
+  task?: string;
   description?: string;
   targetDate?: Date | string;
   username?: string;
@@ -81,6 +90,7 @@ export type Values = {
   firstName?: string;
   lastName?: string;
   color?: string;
+  difficulty?: string
 };
 
 export type ErrorWithValues = TError & Values;
