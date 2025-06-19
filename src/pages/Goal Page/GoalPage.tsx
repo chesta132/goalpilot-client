@@ -8,7 +8,7 @@ import { useParams } from "react-router";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import StatsCard from "@/components/Cards/StatsCard";
 import ButtonV from "@/components/Inputs/ButtonV";
-import { Goal, Verified, Plus, Calendar, Minus, X } from "lucide-react";
+import { Goal, Verified, Plus, Calendar, X } from "lucide-react";
 import toCapitalize from "@/utils/toCapitalize";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
@@ -16,6 +16,7 @@ import { defaultGoalData } from "@/utils/defaultData";
 import AddTaskPopup from "@/components/Popups/AddTaskPopup";
 import { useNotification } from "@/contexts/UseContexts";
 import TextArea from "@/components/Inputs/TextArea";
+import { useViewportWidth } from "@/hooks/useViewport";
 
 type AiInput = {
   value: string;
@@ -23,17 +24,118 @@ type AiInput = {
   loading: boolean;
 };
 
+type AddTaskComponentProps = {
+  data: GoalData;
+  loading: boolean;
+  setTaskPopupAppear: React.Dispatch<React.SetStateAction<boolean>>;
+  addTaskAIInput: boolean;
+  setAiInput: React.Dispatch<React.SetStateAction<AiInput>>;
+  aiInput: AiInput;
+  setAddTaskAIInput: React.Dispatch<React.SetStateAction<boolean>>;
+  generateWithAI: () => void;
+};
+
+function ReadMore({ text, title, onClose }: { text: string; title: string; onClose: () => void }) {
+  return (
+    <div className="fixed h-[100dvh] w-full z-[999] flex justify-center items-center backdrop-blur-[2px] backdrop-brightness-90">
+      <div className="w-[80%] lg:w-1/2 max-h-100 bg-theme px-8 py-10 flex flex-col rounded-2xl relative">
+        <button
+          className="absolute right-0 mr-8 translate-x-3 -translate-y-3 cursor-pointer p-1 text-theme-reverse hover:text-theme-reverse-dark transition-colors duration-400"
+          onClick={onClose}
+        >
+          <X />
+        </button>
+        <h1 className="text-start text-theme-reverse font-bold text-[19px] mb-7">{title}</h1>
+        <p className="text-theme-reverse-dark overflow-auto leading-6.5">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function AddTaskComponent({
+  data,
+  loading,
+  setTaskPopupAppear,
+  addTaskAIInput,
+  setAiInput,
+  aiInput,
+  setAddTaskAIInput,
+  generateWithAI,
+}: AddTaskComponentProps) {
+  return (
+    <div className="mt-10 lg:mt-0 w-full flex flex-col gap-3">
+      <ButtonV
+        style={{ background: data.color }}
+        text="Create New Task"
+        icon={<Plus className="bg-transparent" />}
+        className="shadow-sm whitespace-nowrap w-full"
+        onClick={() => !loading && setTaskPopupAppear(true)}
+      />
+      {addTaskAIInput && (
+        <div className="flex justify-between items-center gap-5">
+          <div className="w-full">
+            <TextArea
+              label="Generate Task"
+              placeholder="Generate with Gemini"
+              className="my-2 w-full"
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
+              onChange={(e) => setAiInput((prev) => ({ ...prev, value: e.target.value }))}
+              value={aiInput.value}
+            />
+            {aiInput.error && <p className="text-red-500 text-[12px] text-start">{aiInput.error}</p>}
+          </div>
+          <button
+            className="p-2 rounded-lg cursor-pointer bg-accent hover:bg-transparent border border-transparent hover:border-accent transition"
+            onClick={() => {
+              setAddTaskAIInput(false);
+              setAiInput((prev) => ({ ...prev, value: "", error: null }));
+            }}
+          >
+            <X />
+          </button>
+        </div>
+      )}
+      <ButtonV
+        disabled={aiInput.loading}
+        text="Generate Tasks With AI"
+        icon={
+          <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M7.00975 3L7.35 5.1L7.7 6.85L8.65993 8.32057L9.8 9.3L11.2 9.65L14 10L11.2 10.35L9.8 10.7L8.65993 11.6089L7.7 13.5L7.35 14.55L7.00975 17L6.65 14.55L6.3 13.5L5.35957 11.6089L4.2 10.7L2.8 10.35L0 10L2.8 9.65L4.2 9.3L5.35957 8.32057L6.3 6.85L6.65 5.1L7.00975 3Z"
+              className="fill-theme-reverse"
+            />
+            <path
+              d="M14.5063 14L14.725 15.2L14.95 16.2L15.5671 17.0403L16.3 17.6L17.2 17.8L19 18L17.2 18.2L16.3 18.4L15.5671 18.9193L14.95 20L14.725 20.6L14.5063 22L14.275 20.6L14.05 20L13.4454 18.9193L12.7 18.4L11.8 18.2L10 18L11.8 17.8L12.7 17.6L13.4454 17.0403L14.05 16.2L14.275 15.2L14.5063 14Z"
+              className="fill-theme-reverse"
+            />
+            <path
+              d="M17.0056 0L17.2 1.2L17.4 2.2L17.9485 3.04033L18.6 3.6L19.4 3.8L21 4L19.4 4.2L18.6 4.4L17.9485 4.91935L17.4 6L17.2 6.6L17.0056 8L16.8 6.6L16.6 6L16.0626 4.91935L15.4 4.4L14.6 4.2L13 4L14.6 3.8L15.4 3.6L16.0626 3.04033L16.6 2.2L16.8 1.2L17.0056 0Z"
+              className="fill-theme-reverse"
+            />
+          </svg>
+        }
+        className={clsx(
+          "shadow-sm whitespace-nowrap w-full !text-theme-reverse lg:text-[14px] bg-transparent border-accent border hover:bg-theme-dark hover:border-violet-500",
+          aiInput.loading && "animate-transparent-shimmer -bg-linear-45 from-transparent from-40% via-violet-500 via-50% to-transparent to-60%"
+        )}
+        onClick={generateWithAI}
+      />
+    </div>
+  );
+}
+
 const GoalPage = () => {
   const [data, setData] = useState<GoalData>(defaultGoalData);
   const [error, setError] = useState<TError>({ error: null });
   const [loading, setLoading] = useState(true);
-  const [taskPopupAppear, setTaskPopupAppear] = useState(false); // Card
-  const [addTaskButton, setaddTaskButton] = useState(false); // Toggle show button
+  const [taskPopupAppear, setTaskPopupAppear] = useState(false);
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
   const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
+  const [readMore, setReadMore] = useState({ title: false, desc: false });
 
   const goalId = useParams().goalId;
   const errorAuth = errorAuthBool(error);
+  const width = useViewportWidth();
   const { timelineStatus } = useScrollNavigation();
   const { openNotification } = useNotification();
 
@@ -70,6 +172,7 @@ const GoalPage = () => {
       const response = await callApi("/ai", { method: "POST", body: { query: aiInput.value, goalId }, token: true });
       openNotification({ message: response.data.notification, type: "success", button: "default" });
       getData();
+      setAddTaskAIInput(false);
     } catch (err) {
       handleError(err, setError);
     } finally {
@@ -78,9 +181,9 @@ const GoalPage = () => {
   };
 
   useEffect(() => {
-    if (taskPopupAppear) document.body.classList.add("overflow-hidden");
+    if (taskPopupAppear || readMore.desc || readMore.title) document.body.classList.add("overflow-hidden");
     else document.body.classList.remove("overflow-hidden");
-  }, [taskPopupAppear]);
+  }, [taskPopupAppear, readMore]);
 
   const { color, description, progress, tasks, title, status } = data;
   const createdAt = new Date(data.createdAt);
@@ -100,7 +203,8 @@ const GoalPage = () => {
         />
       )}
       {taskPopupAppear && <AddTaskPopup setAppear={setTaskPopupAppear} goalId={data._id} refetch={getData} />}
-
+      {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
+      {readMore.title && <ReadMore text={title} title="Title" onClose={() => setReadMore((prev) => ({ ...prev, title: false }))} />}
       {/* Goal Page */}
       <div className="lg:pl-[25%] pt-22 lg:pt-13 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
         <div>
@@ -111,7 +215,18 @@ const GoalPage = () => {
             )}
           >
             <div className={clsx("flex gap-2 flex-col lg:flex-row lg:justify-between", loading && "animate-shimmer rounded-md")}>
-              <h1 className={clsx("text-[20px] font-[600] font-heading", loading && "!text-transparent !bg-transparent")}>{toCapitalize(title)}</h1>
+              <h1 className={clsx("text-[20px] font-[600] font-heading", loading && "!text-transparent !bg-transparent")}>
+                {title.length > 50 ? (
+                  <>
+                    {toCapitalize(title).substring(0, 50)}
+                    <button className="text-gray cursor-pointer w-fit px-2" onClick={() => setReadMore((prev) => ({ ...prev, title: true }))}>
+                      ...Read more
+                    </button>
+                  </>
+                ) : (
+                  toCapitalize(title)
+                )}
+              </h1>
               <h1
                 className={clsx(
                   "text-[13px] font-heading mb-2 size-fit rounded-2xl px-2 py-1 text-white",
@@ -134,8 +249,19 @@ const GoalPage = () => {
               className="!bg-theme"
               classStats="text-[15px] font-medium mt-2"
               icon={<Goal className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
-              stats={description}
-            />
+              stats={
+                description.length > 100 ? (
+                  <>
+                    {description.substring(0, 100)}
+                    <button className="text-gray cursor-pointer w-fit px-2" onClick={() => setReadMore((prev) => ({ ...prev, desc: true }))}>
+                      ...Read more
+                    </button>
+                  </>
+                ) : (
+                  description
+                )
+              }
+              />
             <StatsCard
               loading={loading}
               className="!bg-theme"
@@ -143,11 +269,11 @@ const GoalPage = () => {
               classStats="text-[17px] font-medium mt-2"
               icon={
                 <Verified
-                  className={clsx("h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]", loading && "hidden")}
+                className={clsx("h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]", loading && "hidden")}
                 />
               }
               stats={progress.toString() + "%"}
-            >
+              >
               <div className={clsx("rounded-full bg-theme-dark h-3 w-full", loading && "bg-transparent")}>
                 <div className={clsx("rounded-full h-full", loading && "hidden")} style={{ width: `${progress}%`, background: color }} />
               </div>
@@ -159,74 +285,52 @@ const GoalPage = () => {
               icon={<Calendar className={clsx("h-8 w-8 object-contain rounded-md p-1.5", loading && "hidden")} style={{ background: data.color }} />}
               stats={
                 targetDate
-                  ? new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()).toDateString()
-                  : new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate()).toDateString()
+                ? new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()).toDateString()
+                : new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate()).toDateString()
               }
-            />
-            <div className={clsx("mt-10 w-full flex flex-col gap-3 lg:absolute lg:bottom-0 lg:mb-5 lg:w-auto transition-all")}>
-              <ButtonV
-                style={{ background: data.color }}
-                text="Create New Task"
-                icon={<Plus className="bg-transparent" />}
-                className={clsx("shadow-sm whitespace-nowrap w-full lg:-translate-x-[100dvh] lg:duration-500", addTaskButton && "!translate-0")}
-                onClick={() => !loading && setTaskPopupAppear(true)}
               />
-              {addTaskAIInput && (
-                <div className="flex justify-between items-center gap-5">
-                  <div className="w-full">
-                    <TextArea
-                      label="Generate Task"
-                      placeholder="Generate with Gemini"
-                      className="my-2 w-full"
-                      labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
-                      onChange={(e) => setAiInput((prev) => ({ ...prev, value: e.target.value }))}
-                      value={aiInput.value}
-                    />
-                    {aiInput.error && <p className="text-red-500 text-[12px] text-start">{aiInput.error}</p>}
-                  </div>
-                  <button
-                    className="p-2 rounded-lg cursor-pointer bg-accent hover:bg-transparent border border-transparent hover:border-accent transition"
-                    onClick={() => {
-                      setAddTaskAIInput(false);
-                      setAiInput((prev) => ({ ...prev, value: "", error: null }));
-                    }}
-                  >
-                    <X />
-                  </button>
-                </div>
-              )}
-              <ButtonV
-                disabled={aiInput.loading}
-                text="Generate Tasks With AI"
-                icon={
-                  <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M7.00975 3L7.35 5.1L7.7 6.85L8.65993 8.32057L9.8 9.3L11.2 9.65L14 10L11.2 10.35L9.8 10.7L8.65993 11.6089L7.7 13.5L7.35 14.55L7.00975 17L6.65 14.55L6.3 13.5L5.35957 11.6089L4.2 10.7L2.8 10.35L0 10L2.8 9.65L4.2 9.3L5.35957 8.32057L6.3 6.85L6.65 5.1L7.00975 3Z"
-                      className="fill-theme-reverse"
-                    />
-                    <path
-                      d="M14.5063 14L14.725 15.2L14.95 16.2L15.5671 17.0403L16.3 17.6L17.2 17.8L19 18L17.2 18.2L16.3 18.4L15.5671 18.9193L14.95 20L14.725 20.6L14.5063 22L14.275 20.6L14.05 20L13.4454 18.9193L12.7 18.4L11.8 18.2L10 18L11.8 17.8L12.7 17.6L13.4454 17.0403L14.05 16.2L14.275 15.2L14.5063 14Z"
-                      className="fill-theme-reverse"
-                    />
-                    <path
-                      d="M17.0056 0L17.2 1.2L17.4 2.2L17.9485 3.04033L18.6 3.6L19.4 3.8L21 4L19.4 4.2L18.6 4.4L17.9485 4.91935L17.4 6L17.2 6.6L17.0056 8L16.8 6.6L16.6 6L16.0626 4.91935L15.4 4.4L14.6 4.2L13 4L14.6 3.8L15.4 3.6L16.0626 3.04033L16.6 2.2L16.8 1.2L17.0056 0Z"
-                      className="fill-theme-reverse"
-                    />
-                  </svg>
-                }
-                className={clsx(
-                  "shadow-sm whitespace-nowrap lg:-translate-x-[100dvh] lg:duration-500 lg:delay-50 w-full !text-theme-reverse lg:text-[14px] bg-transparent border-accent border hover:bg-theme-dark hover:border-violet-500",
-                  addTaskButton && "!translate-0",
-                  aiInput.loading &&
-                    "animate-transparent-shimmer -bg-linear-45 from-transparent from-40% via-violet-500 via-50% to-transparent to-60%"
-                )}
-                onClick={generateWithAI}
+            {width < 1024 && (
+              <AddTaskComponent
+              data={data}
+              addTaskAIInput={addTaskAIInput}
+              aiInput={aiInput}
+              generateWithAI={generateWithAI}
+              loading={loading}
+              setAddTaskAIInput={setAddTaskAIInput}
+              setAiInput={setAiInput}
+              setTaskPopupAppear={setTaskPopupAppear}
               />
-            </div>
+            )}
           </div>
         </div>
-        <div className="flex flex-col gap-6 bg-theme-dark px-3 py-10 mx-1 rounded-xl shadow-lg">
-          <h1 className="text-[20px] font-[600] font-heading ml-3">Tasks of {toCapitalize(title)}</h1>
+        <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 mx-2 rounded-xl shadow-lg">
+          <h1 className="text-[20px] font-[600] font-heading ml-3">
+            Tasks of{" "}
+            {title.length > 30 ? (
+              <>
+                {toCapitalize(title).substring(0, 30)}
+                <button className="text-gray cursor-pointer w-fit px-2 text-[16px]" onClick={() => setReadMore((prev) => ({ ...prev, title: true }))}>
+                  ...Read more
+                </button>
+              </>
+            ) : (
+              toCapitalize(title)
+            )}
+          </h1>
+            {width >= 1024 && (
+              <div className="px-5">
+                <AddTaskComponent
+                  data={data}
+                  addTaskAIInput={addTaskAIInput}
+                  aiInput={aiInput}
+                  generateWithAI={generateWithAI}
+                  loading={loading}
+                  setAddTaskAIInput={setAddTaskAIInput}
+                  setAiInput={setAiInput}
+                  setTaskPopupAppear={setTaskPopupAppear}
+                />
+              </div>
+            )}
           {existingTasks.length > 0 ? (
             existingTasks.map((task) => <TaskCard task={task} setError={setError} key={task._id} goal={data} />)
           ) : (
@@ -242,18 +346,6 @@ const GoalPage = () => {
             </Empty>
           )}
         </div>
-      </div>
-      <div
-        className={clsx(
-          "fixed cursor-pointer hidden lg:flex bottom-0 right-0 p-2 bg-accent rounded-full mb-3 mr-3 transition duration-500",
-          timelineStatus && "translate-y-50"
-        )}
-      >
-        {addTaskButton ? (
-          <Minus size={30} className="text-theme-reverse" onClick={() => setaddTaskButton(false)} />
-        ) : (
-          <Plus size={30} className="text-theme-reverse" onClick={() => setaddTaskButton(true)} />
-        )}
       </div>
     </div>
   );

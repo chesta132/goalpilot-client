@@ -37,6 +37,7 @@ const TextArea = ({
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
       <TextareaAutosize
         minRows={2}
+        maxRows={8}
         className="
           w-full px-3 py-3 border border-gray rounded-lg 
           transition-all duration-200 ease-in-out h-full

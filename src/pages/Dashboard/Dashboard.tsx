@@ -12,6 +12,7 @@ import GoalCard from "@/components/Cards/GoalCard";
 import StatsCard from "@/components/Cards/StatsCard";
 import { ColorPicker, Empty } from "antd";
 import { useUserData, useTheme } from "@/contexts/UseContexts";
+import { useViewportWidth } from "@/hooks/useViewport";
 
 const Dashboard = () => {
   const [goalPopup, setGoalPopup] = useState(false);
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const { timelineStatus } = useScrollNavigation();
   const { updateSettings } = useTheme();
 
+  const width = useViewportWidth();
   const errorAuth = errorAuthBool(error);
 
   useEffect(() => {
@@ -33,13 +35,7 @@ const Dashboard = () => {
   return (
     <div>
       {/* Header/absolute */}
-      {goalPopup && (
-        <AddGoalPopup
-          setAppear={setGoalPopup}
-          submitting={newGoalSubmitting}
-          setSubmitting={setNewGoalSubmitting}
-        />
-      )}
+      {goalPopup && <AddGoalPopup setAppear={setGoalPopup} submitting={newGoalSubmitting} setSubmitting={setNewGoalSubmitting} />}
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}
@@ -87,14 +83,16 @@ const Dashboard = () => {
             }
             stats={existingGoals && existingGoals.filter((goal) => goal.progress === 100).length.toString()}
           />
-          <div className="mt-10 w-full lg:fixed lg:w-[20.5%] lg:bottom-0 lg:mb-4">
-            <ButtonV
-              text="Create New Goal"
-              icon={<Plus className="bg-transparent lg:hidden" />}
-              className="shadow-sm whitespace-nowrap w-full"
-              onClick={() => !loading && setGoalPopup(true)}
-            />
-          </div>
+          {width < 1024 && (
+            <div className="mt-10 w-full">
+              <ButtonV
+                text="Create New Goal"
+                icon={<Plus className="bg-transparent" />}
+                className="shadow-sm whitespace-nowrap w-full"
+                onClick={() => !loading && setGoalPopup(true)}
+              />
+            </div>
+          )}
         </div>
         <div className="bg-theme-dark rounded-lg px-3 lg:px-4 py-8 text-theme-reverse shadow-md flex flex-col gap-10">
           <div className="flex flex-col gap-4 relative px-1 lg:px-0">
@@ -106,6 +104,16 @@ const Dashboard = () => {
               <p className={clsx("text-gray text-[14px]", loading && "text-transparent cursor-default")}>{data?.goals.length} goals</p>
             </div>
           </div>
+          {width >= 1024 && (
+            <div className="mx-5 mb-4">
+              <ButtonV
+                text="Create New Goal"
+                icon={<Plus className="bg-transparent" />}
+                className="shadow-sm whitespace-nowrap w-full"
+                onClick={() => !loading && setGoalPopup(true)}
+              />
+            </div>
+          )}
           <div className="flex flex-col gap-6">
             {data && data?.goals.length > 0 ? (
               data?.goals.map((goal) => (

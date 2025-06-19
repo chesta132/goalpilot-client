@@ -35,7 +35,14 @@ const AddGoalPopup = ({ setAppear, submitting, setSubmitting }: AddGoalPopupProp
     e.preventDefault();
     clearError();
     setError({ title: "", description: "", targetDate: "", color: "" });
-    const validate = validateForms(value, setError, { title: true, description: true, targetDate: true, color: true });
+    const validate = validateForms(value, setError, {
+      title: true,
+      description: true,
+      targetDate: true,
+      color: true,
+      titleMaxChar: 100,
+      descMaxChar: 1500,
+    });
     if (validate) return;
 
     setSubmitting(true);

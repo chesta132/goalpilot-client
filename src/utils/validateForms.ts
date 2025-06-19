@@ -8,6 +8,9 @@ type Config = DynamicConfig<Values> & {
   regexEmail?: boolean;
   usernameSpace?: boolean;
   usernameLowerCased?: boolean;
+  titleMaxChar?: number;
+  taskMaxChar?: number;
+  descMaxChar?: number;
 };
 
 const validateForms = (value: Values, setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>, config: Config): boolean => {
@@ -79,6 +82,21 @@ const validateForms = (value: Values, setError: React.Dispatch<React.SetStateAct
   // Username is lowercased
   if (config.usernameLowerCased && value.username !== value.username?.toLowerCase()) {
     setError((prev) => ({ ...prev, username: "Username must be lowercased" }));
+    err = true;
+  }
+  // Title max char
+  if (config.titleMaxChar && value.title !== undefined && value.title.length > config.titleMaxChar) {
+    setError((prev) => ({ ...prev, title: `Maximum title character is ${config.titleMaxChar}` }));
+    err = true;
+  }
+  // Task max char
+  if (config.taskMaxChar && value.task !== undefined && value.task.length > config.taskMaxChar) {
+    setError((prev) => ({ ...prev, task: `Maximum task character is ${config.taskMaxChar}` }));
+    err = true;
+  }
+  // Description max char
+  if (config.descMaxChar && value.description !== undefined && value.description.length > config.descMaxChar) {
+    setError((prev) => ({ ...prev, description: `Maximum description character is ${config.descMaxChar}` }));
     err = true;
   }
 

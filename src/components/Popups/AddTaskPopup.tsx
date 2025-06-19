@@ -33,7 +33,14 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
   const submitter = async (e: FormEvent) => {
     e.preventDefault();
     setError(defaultNewTaskError);
-    const validate = validateForms(value, setError, { task: true, description: true, targetDate: true, difficulty: true });
+    const validate = validateForms(value, setError, {
+      task: true,
+      description: true,
+      targetDate: true,
+      difficulty: true,
+      taskMaxChar: 100,
+      descMaxChar: 1000,
+    });
     if (validate) return;
 
     setSubmitting(true);
@@ -99,19 +106,19 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
               {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
             </div>
             <div className="w-fit">
-            <Select
-              placeholder={"Difficulty"}
-              options={[
-                { value: "easy", label: "Easy" },
-                { value: "medium", label: "Medium" },
-                { value: "hard", label: "Hard" },
-                { value: "very hard", label: "Very hard" },
-              ]}
-              allowClear
-              onChange={(e) => setValue((prev) => ({ ...prev, difficulty: e }))}
+              <Select
+                placeholder={"Difficulty"}
+                options={[
+                  { value: "easy", label: "Easy" },
+                  { value: "medium", label: "Medium" },
+                  { value: "hard", label: "Hard" },
+                  { value: "very hard", label: "Very hard" },
+                ]}
+                allowClear
+                onChange={(e) => setValue((prev) => ({ ...prev, difficulty: e }))}
               />
               {error.difficulty && <p className="text-red-500 text-[12px] text-start">{error.difficulty.toString()}</p>}
-              </div>
+            </div>
           </div>
           <div className="flex gap-3 mt-5">
             <ButtonV
