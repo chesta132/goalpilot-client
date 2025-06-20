@@ -38,7 +38,7 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
       description: true,
       targetDate: true,
       difficulty: true,
-      taskMaxChar: 100,
+      taskMaxChar: 50,
       descMaxChar: 1000,
     });
     if (validate) return;

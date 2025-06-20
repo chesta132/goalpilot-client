@@ -10,6 +10,7 @@ type TopenNotification = {
   placement?: "topLeft" | "topRight" | "bottom" | "bottomLeft" | "bottomRight";
   pauseOnHover?: boolean;
   button?: "default" | React.ReactNode;
+  undo?: { f: (taskId: string) => void; id: string };
 };
 
 type TNotificationContext = {
@@ -20,11 +21,23 @@ const NotificationContext = createContext<TNotificationContext | undefined>(unde
 
 const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, contextHolder] = notification.useNotification();
-  const openNotification = ({ message, type, description, placement = "bottomRight", pauseOnHover = false, button }: TopenNotification) => {
+  const openNotification = ({ message, type, description, placement = "bottomRight", pauseOnHover = false, button, undo }: TopenNotification) => {
     const key = `open${Date.now()}`;
     const defaultButton = (
       <Button type="primary" size="small" onClick={() => api.destroy(key)}>
         Confirm
+      </Button>
+    );
+    const undoButton = (
+      <Button
+        type="primary"
+        size="small"
+        onClick={() => {
+          api.destroy(key);
+          if (undo) undo.f(undo.id);
+        }}
+      >
+        Undo
       </Button>
     );
     if (type)
@@ -35,7 +48,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
         placement,
         pauseOnHover,
         key,
-        btn: button && (button === "default" ? defaultButton : button),
+        btn: button ? (button === "default" ? defaultButton : button) : undo && undoButton,
       });
     else {
       api.open({
@@ -58,4 +71,4 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export {NotificationContext, NotificationProvider}
+export { NotificationContext, NotificationProvider };
