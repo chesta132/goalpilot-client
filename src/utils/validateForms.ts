@@ -13,7 +13,7 @@ type Config = DynamicConfig<Values> & {
   descMaxChar?: number;
 };
 
-const validateForms = (value: Values, setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>, config: Config): boolean => {
+const validateForms = (value: Partial<Values>, setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>, config: Config): boolean => {
   let err = false;
 
   // Title

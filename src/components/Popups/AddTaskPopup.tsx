@@ -5,7 +5,7 @@ import { DatePicker, Select } from "antd";
 import { useState, type FormEvent } from "react";
 import ButtonV from "../Inputs/ButtonV";
 import validateForms from "@/utils/validateForms";
-import type { TError, TnewTaskValue } from "@/utils/types";
+import type { ErrorWithValues, TnewTaskValue } from "@/utils/types";
 import { defaultNewTaskData, defaultNewTaskError } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
@@ -17,15 +17,8 @@ type AddTaskPopupProps = {
   refetch?: () => void;
 };
 
-type Error = TError & {
-  task?: string;
-  description?: string;
-  targetDate?: string | Date;
-  difficulty?: string;
-};
-
 const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
-  const [error, setError] = useState<Error>(defaultNewTaskError);
+  const [error, setError] = useState<Partial<ErrorWithValues>>(defaultNewTaskError);
   const [value, setValue] = useState<TnewTaskValue>(defaultNewTaskData);
   const [submitting, setSubmitting] = useState(false);
   const { openNotification } = useNotification();

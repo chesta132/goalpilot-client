@@ -1,4 +1,4 @@
-import type { GoalData, TaskData, TnewGoalValue, TnewTaskValue, UserData } from "./types";
+import type { GoalData, TaskData, TeditTaskValue, TnewGoalValue, TnewTaskValue, UserData } from "./types";
 
 export const defaultTaskData: TaskData = {
   _id: "",
@@ -11,7 +11,7 @@ export const defaultTaskData: TaskData = {
   difficulty: "easy",
   isRecycled: false,
   rewardPoints: 0,
-  targetDate: null,
+  targetDate: '',
   notification: undefined,
   createdAt: new Date(),
   __v: 0,
@@ -69,4 +69,9 @@ export const defaultNewGoalData: TnewGoalValue = {
   color: "#66b2ff",
   targetDate: "",
   isPublic: true,
+};
+
+export const defaultEditTaskData: TeditTaskValue = {
+  ...defaultNewTaskData,
+  isCompleted: false,
 };

@@ -9,7 +9,7 @@ export type TaskData = {
   difficulty: "easy" | "medium" | "hard" | "very hard";
   isRecycled: boolean;
   rewardPoints: number;
-  targetDate: Date | null;
+  targetDate: string | Date;
   notification?: string;
   createdAt: Date;
   __v?: number;
@@ -65,6 +65,8 @@ export type TnewTaskValue = {
   difficulty: "easy" | "medium" | "hard" | "very hard" | "";
 };
 
+export type TeditTaskValue = TnewTaskValue & { isCompleted?: boolean };
+
 export type TNotification = {
   message: string;
   undoable?: boolean;
@@ -80,20 +82,21 @@ export type TError = {
 };
 
 export type Values = {
-  title?: string;
-  task?: string;
-  description?: string;
-  targetDate?: Date | string;
-  username?: string;
-  email?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  color?: string;
-  difficulty?: string
+  title: string;
+  task: string;
+  description: string;
+  targetDate: Date | string;
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  color: string;
+  difficulty: string;
+  isCompleted: boolean;
 };
 
-export type ErrorWithValues = TError & Values;
+export type ErrorWithValues = TError & Partial<Values>;
 
 export type ApiErrorResponseData = {
   code?: string;

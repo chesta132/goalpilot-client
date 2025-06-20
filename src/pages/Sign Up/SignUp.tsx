@@ -14,7 +14,7 @@ import type { Values, ErrorWithValues } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
 
 const SignUp = () => {
-  const [value, setValue] = useState<Values>({
+  const [value, setValue] = useState<Partial<Values>>({
     username: "",
     email: "",
     password: "",

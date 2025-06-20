@@ -42,7 +42,7 @@ const Input = ({
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
       <input
         className={`
-          w-full px-3 py-3 border border-gray rounded-lg 
+          w-full px-3 py-3 border border-gray rounded-md 
           transition-all duration-200 ease-in-out focus:border-2
           focus:outline-none focus:border-accent ${password && "pr-8"}
         `}

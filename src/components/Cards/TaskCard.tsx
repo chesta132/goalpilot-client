@@ -14,6 +14,7 @@ type TaskProps = {
   goal: GoalData;
   setError: React.Dispatch<React.SetStateAction<Error>>;
   deletes: (taskId: string) => void;
+  refetch: () => void;
 };
 
 type Error = TError & {
@@ -22,7 +23,7 @@ type Error = TError & {
   targetDate?: string | Date;
 };
 
-const TaskCard = ({ task, setError, goal, deletes }: TaskProps) => {
+const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
   const createdAt = new Date(task.createdAt);
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
@@ -72,7 +73,16 @@ const TaskCard = ({ task, setError, goal, deletes }: TaskProps) => {
 
   return (
     <div className="border rounded-xl p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
-      {taskInfoPopup && <EditTaskPopup deletes={deleteTask} data={task} setClose={() => setTaskInfoPopup(false)} timeLeft={timeLeft} />}
+      {taskInfoPopup && (
+        <EditTaskPopup
+          setIsCompleted={setIsCompleted}
+          deletes={deleteTask}
+          data={{ ...task, isCompleted }}
+          setClose={() => setTaskInfoPopup(false)}
+          timeLeft={timeLeft}
+          refetch={refetch}
+        />
+      )}
       {deletePopup && <DeleteTaskPopup deletes={deleteTask} setClose={() => setDeletePopup(false)} />}
       <div className="flex justify-between">
         <div className="relative flex flex-col gap-3">

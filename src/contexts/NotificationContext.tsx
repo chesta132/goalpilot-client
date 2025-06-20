@@ -1,4 +1,4 @@
-import { Button, notification } from "antd";
+import { Button, notification, Space } from "antd";
 import React, { createContext } from "react";
 
 type NotificationType = "success" | "info" | "warning" | "error";
@@ -29,16 +29,19 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       </Button>
     );
     const undoButton = (
-      <Button
-        type="primary"
-        size="small"
-        onClick={() => {
-          api.destroy(key);
-          if (undo) undo.f(undo.id);
-        }}
-      >
-        Undo
-      </Button>
+      <Space>
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => {
+            api.destroy(key);
+            if (undo) undo.f(undo.id);
+          }}
+        >
+          Undo
+        </Button>
+        {defaultButton}
+      </Space>
     );
     if (type)
       api[type]({

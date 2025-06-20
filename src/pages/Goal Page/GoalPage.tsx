@@ -140,8 +140,8 @@ const GoalPage = () => {
   const { timelineStatus } = useScrollNavigation();
   const { openNotification } = useNotification();
 
-  const getData = async (loading: boolean = true) => {
-    setLoading(loading);
+  const getData = async () => {
+    setLoading(true);
     try {
       const response = await callApi(`/goal?goalId=${goalId}`, { method: "GET", token: true });
       setData(response.data);
@@ -180,23 +180,23 @@ const GoalPage = () => {
       setAiInput((prev) => ({ ...prev, loading: false }));
     }
   };
-  
+
   useEffect(() => {
     if (taskPopupAppear || readMore.desc || readMore.title || goalEditPopup) document.body.classList.add("overflow-hidden");
     else document.body.classList.remove("overflow-hidden");
   }, [taskPopupAppear, readMore, goalEditPopup]);
-  
+
   const { color, description, progress, tasks, title, status } = data;
   const createdAt = new Date(data.createdAt);
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
-  
+
   const existingTasks = tasks.filter((task: { isRecycled: boolean }) => !task.isRecycled);
-  
+
   const undoDeleteTask = async (taskId: string) => {
     try {
       const response = await callApi("/task/restore", { method: "PUT", body: { taskId }, token: true });
       openNotification({ message: response.data.notification, type: "success", button: "default" });
-      getData(false)
+      getData();
     } catch (err) {
       handleError(err, setError);
     }
@@ -360,7 +360,9 @@ const GoalPage = () => {
             </div>
           )}
           {existingTasks.length > 0 ? (
-            existingTasks.map((task) => <TaskCard deletes={deleteTask} task={task} setError={setError} key={task._id} goal={data} />)
+            existingTasks.map((task) => (
+              <TaskCard refetch={getData} deletes={deleteTask} task={task} setError={setError} key={task._id} goal={data} />
+            ))
           ) : (
             <Empty className="flex flex-col justify-center">
               <p className="text-gray">No Task Found</p>
