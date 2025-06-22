@@ -107,11 +107,13 @@ const AddGoalPopup = ({ setAppear, submitting, setSubmitting }: AddGoalPopupProp
           <div className="flex flex-1/2 items-center gap-6">
             <div className="w-full">
               <DatePicker
+                styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
+                classNames={{ popup: { root: "datepicker" } }}
                 needConfirm
                 status={error.targetDate && "error"}
                 size="small"
                 color="var(--theme)"
-                className="w-full h-12 text-theme-reverse"
+                className="w-full h-12 text-theme-reverse datepicker"
                 placeholder="Choose target date of goal"
                 onChange={(e) => (e ? setValue((prev) => ({ ...prev, targetDate: e.format() })) : setValue((prev) => ({ ...prev, targetDate: "" })))}
               />
@@ -120,6 +122,8 @@ const AddGoalPopup = ({ setAppear, submitting, setSubmitting }: AddGoalPopupProp
             <div className={clsx("flex flex-col", error.targetDate && !error.color && "pb-4.5")}>
               <p className="text-theme-reverse-dark whitespace-nowrap text-[13px]">Color Theme</p>
               <ColorPicker
+                className="colorpicker"
+                styles={{ popup: { backgroundColor: "var(--theme)" } }}
                 showText
                 format="hex"
                 value={value.color}

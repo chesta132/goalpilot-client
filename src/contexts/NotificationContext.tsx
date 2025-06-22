@@ -20,7 +20,7 @@ type TNotificationContext = {
 const NotificationContext = createContext<TNotificationContext | undefined>(undefined);
 
 const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [api, contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification({ stack: { threshold: 2 } });
   const openNotification = ({ message, type, description, placement = "bottomRight", pauseOnHover = false, button, undo }: TopenNotification) => {
     const key = `open${Date.now()}`;
     const defaultButton = (
@@ -43,26 +43,19 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
         {defaultButton}
       </Space>
     );
-    if (type)
-      api[type]({
-        message,
-        description,
-        showProgress: true,
-        placement,
-        pauseOnHover,
-        key,
-        btn: button ? (button === "default" ? defaultButton : button) : undo && undoButton,
-      });
+    const apiItems = {
+      message,
+      description,
+      showProgress: true,
+      placement,
+      pauseOnHover,
+      key,
+      btn: button ? (button === "default" ? defaultButton : button) : undo && undoButton,
+    };
+
+    if (type) api[type](apiItems);
     else {
-      api.open({
-        message,
-        description,
-        showProgress: true,
-        placement,
-        pauseOnHover,
-        key,
-        btn: button && (button === "default" ? defaultButton : button),
-      });
+      api.open(apiItems);
     }
   };
 

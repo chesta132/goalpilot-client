@@ -41,18 +41,18 @@
 
   .overflow-auto::-webkit-scrollbar-thumb:hover {
     background: var(--theme-darker);
-    border:  var(--theme-darker);
+    border: var(--theme-darker);
   }
 }
 
 @keyframes shimmer {
   0% {
-    background: linear-gradient(-45deg, #eee 40%, #fafafa 50%, #eee 60%);
+    background: linear-gradient(-45deg, var(--theme-darker) 40%, var(--theme-dark) 50%, var(--theme-darker) 60%);
     background-size: 200%;
     background-position: 100%;
   }
   100% {
-    background: linear-gradient(-45deg, #eee 40%, #fafafa 50%, #eee 60%);
+    background: linear-gradient(-45deg, var(--theme-darker) 40%, var(--theme-dark) 50%, var(--theme-darker) 60%);
     background-size: 200%;
     background-position: -100%;
   }
@@ -128,9 +128,126 @@ body::-webkit-scrollbar-thumb {
 
 body::-webkit-scrollbar-thumb:hover {
   background: var(--theme-darker);
-  border:  var(--theme-darker);
+  border: var(--theme-darker);
 }
 
 button:focus {
   outline: none;
+}
+
+body.change-theme * {
+  transition: background-color 150ms, color 150ms;
+}
+
+.datepicker {
+  @apply border-gray hover:border-accent;
+}
+
+.datepicker *:not(.ant-picker-input) {
+  @apply !bg-theme !text-theme-reverse;
+}
+
+.datepicker .ant-picker-input input {
+  @apply bg-transparent!;
+}
+
+.datepicker .ant-picker-cell .ant-picker-cell-inner {
+  @apply hover:!bg-accent focus:!bg-accent;
+}
+
+.datepicker .ant-picker-cell.ant-picker-cell-selected div,
+.datepicker.ant-picker-focused {
+  @apply !border !border-accent;
+}
+
+.datepicker .ant-picker-cell .ant-picker-cell-inner,
+.datepicker input::placeholder {
+  @apply !text-gray;
+}
+
+.datepicker .ant-picker-cell.ant-picker-cell-in-view div {
+  @apply !text-theme-reverse;
+}
+
+.datepicker .ant-picker-footer .ant-picker-now-btn {
+  @apply hover:!text-accent;
+}
+
+.datepicker .ant-picker-footer .ant-picker-ok button {
+  @apply hover:!bg-accent;
+}
+
+.datepicker .ant-picker-footer .ant-picker-ok span {
+  @apply !bg-transparent;
+}
+
+.datepicker .ant-picker-cell.ant-picker-cell-today::before {
+  @apply border-none;
+}
+
+.select *,
+.select {
+  @apply !bg-transparent !text-theme-reverse;
+}
+
+.select .ant-select-selector:not(.ant-select-status-error) {
+  @apply border-gray hover:border-accent;
+}
+
+.select.ant-select-open .ant-select-selector {
+  @apply !border-accent;
+}
+
+.select .ant-select-selection-placeholder {
+  @apply !text-gray;
+}
+
+.select .ant-select.ant-select-outlined.ant-select-status-error {
+  @apply !border-red-600;
+}
+
+.ant-select-dropdown {
+  @apply bg-theme;
+}
+
+.ant-select-dropdown .ant-select-item {
+  @apply text-gray transition;
+}
+
+.ant-select-dropdown .ant-select-item.ant-select-item-option-active {
+  @apply hover:!text-theme-reverse;
+}
+
+.ant-select-dropdown .ant-select-item.ant-select-item-option-selected {
+  @apply !bg-gray/10 text-theme-reverse;
+}
+
+.colorpicker {
+  @apply bg-transparent border-gray hover:border-accent p-1;
+}
+
+.colorpicker.ant-color-picker-trigger-active {
+  @apply border-accent;
+}
+
+.colorpicker .ant-color-picker-trigger-text {
+  @apply text-theme-reverse;
+}
+
+.ant-color-picker.ant-popover * {
+  @apply bg-theme text-theme-reverse;
+}
+
+.ant-color-picker .ant-popover-arrow {
+  @apply hidden;
+}
+
+.ant-color-picker.ant-popover .ant-color-picker-hex-input,
+.ant-color-picker.ant-popover .ant-input-number {
+  @apply border-gray;
+}
+
+.ant-color-picker.ant-popover .ant-color-picker-hex-input.ant-input-affix-wrapper-focused,
+.ant-color-picker.ant-popover .ant-input-number.ant-input-number-focused {
+  @apply border-accent;
 }

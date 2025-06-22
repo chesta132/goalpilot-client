@@ -23,7 +23,7 @@ export type GoalData = {
   createdAt: Date;
   progress: number;
   isPublic: boolean;
-  status: string;
+  status: "active" | "completed" | "paused" | "canceled" | "pending";
   targetDate: Date | null;
   tasks: TaskData[];
   color: string;
@@ -93,6 +93,7 @@ export type Values = {
   lastName: string;
   color: string;
   difficulty: string;
+  status: string;
   isCompleted: boolean;
 };
 

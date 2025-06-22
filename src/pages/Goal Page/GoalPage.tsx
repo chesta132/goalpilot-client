@@ -1,10 +1,10 @@
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi";
 import { handleError, errorAuthBool } from "@/utils/errorHandler";
-import type { TError, GoalData } from "@/utils/types";
+import type { GoalData } from "@/utils/types";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import StatsCard from "@/components/Cards/StatsCard";
 import ButtonV from "@/components/Inputs/ButtonV";
@@ -12,9 +12,8 @@ import { Goal, Verified, Plus, Calendar, X, Edit } from "lucide-react";
 import toCapitalize from "@/utils/toCapitalize";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
-import { defaultGoalData } from "@/utils/defaultData";
 import AddTaskPopup from "@/components/Popups/AddTaskPopup";
-import { useNotification } from "@/contexts/UseContexts";
+import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import TextArea from "@/components/Inputs/TextArea";
 import { useViewportWidth } from "@/hooks/useViewport";
 
@@ -75,6 +74,10 @@ function AddTaskComponent({
         <div className="flex justify-between items-center gap-5">
           <div className="w-full">
             <TextArea
+              close={() => {
+                setAddTaskAIInput(false);
+                setAiInput((prev) => ({ ...prev, value: "", error: null }));
+              }}
               label="Generate Task"
               placeholder="Generate with Gemini"
               className="my-2 w-full"
@@ -84,15 +87,6 @@ function AddTaskComponent({
             />
             {aiInput.error && <p className="text-red-500 text-[12px] text-start">{aiInput.error}</p>}
           </div>
-          <button
-            className="p-2 rounded-lg cursor-pointer bg-accent hover:bg-transparent border border-transparent hover:border-accent transition"
-            onClick={() => {
-              setAddTaskAIInput(false);
-              setAiInput((prev) => ({ ...prev, value: "", error: null }));
-            }}
-          >
-            <X />
-          </button>
         </div>
       )}
       <ButtonV
@@ -125,40 +119,26 @@ function AddTaskComponent({
 }
 
 const GoalPage = () => {
-  const [data, setData] = useState<GoalData>(defaultGoalData);
-  const [error, setError] = useState<TError>({ error: null });
-  const [loading, setLoading] = useState(true);
+  const { data, error, setError, getData, loading, clearError, setData } = useGoalData();
   const [taskPopupAppear, setTaskPopupAppear] = useState(false);
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
   const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
-  const [readMore, setReadMore] = useState({ title: false, desc: false });
-  const [goalEditPopup, setGoalEditPopup] = useState(false);
+  const [readMore, setReadMore] = useState({ title: false, desc: false, taskTitle: false });
 
   const goalId = useParams().goalId;
   const errorAuth = errorAuthBool(error);
   const width = useViewportWidth();
+  const navigate = useNavigate();
   const { timelineStatus } = useScrollNavigation();
   const { openNotification } = useNotification();
 
-  const getData = async () => {
-    setLoading(true);
-    try {
-      const response = await callApi(`/goal?goalId=${goalId}`, { method: "GET", token: true });
-      setData(response.data);
-    } catch (err) {
-      handleError(err, setError);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    getData();
+    if (goalId) getData(goalId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalId]);
 
   const generateWithAI = async () => {
-    setError({ error: null });
+    clearError();
     if (!addTaskAIInput) {
       setAddTaskAIInput(true);
       return;
@@ -172,7 +152,7 @@ const GoalPage = () => {
       setAiInput((prev) => ({ ...prev, loading: true, error: null }));
       const response = await callApi("/ai", { method: "POST", body: { query: aiInput.value, goalId }, token: true });
       openNotification({ message: response.data.notification, type: "success", button: "default" });
-      getData();
+      if (goalId) getData(goalId);
       setAddTaskAIInput(false);
     } catch (err) {
       handleError(err, setError);
@@ -182,9 +162,10 @@ const GoalPage = () => {
   };
 
   useEffect(() => {
-    if (taskPopupAppear || readMore.desc || readMore.title || goalEditPopup) document.body.classList.add("overflow-hidden");
+    if (taskPopupAppear || readMore.desc) document.body.classList.add("overflow-hidden");
     else document.body.classList.remove("overflow-hidden");
-  }, [taskPopupAppear, readMore, goalEditPopup]);
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [taskPopupAppear, readMore.desc]);
 
   const { color, description, progress, tasks, title, status } = data;
   const createdAt = new Date(data.createdAt);
@@ -196,7 +177,7 @@ const GoalPage = () => {
     try {
       const response = await callApi("/task/restore", { method: "PUT", body: { taskId }, token: true });
       openNotification({ message: response.data.notification, type: "success", button: "default" });
-      getData();
+      if (goalId) getData(goalId, false);
     } catch (err) {
       handleError(err, setError);
     }
@@ -213,6 +194,11 @@ const GoalPage = () => {
     }
   };
 
+  const handleToEdit = () => {
+    sessionStorage.setItem("goal-data", JSON.stringify(data));
+    navigate("./edit");
+  };
+
   return (
     <div>
       {/* Header/absolute */}
@@ -221,12 +207,11 @@ const GoalPage = () => {
           title={error && error.error.title}
           message={error && error.error.message}
           showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
-          showBackToLoginPage={errorAuth}
+          showBackToLoginPage={!errorAuth}
         />
       )}
-      {taskPopupAppear && <AddTaskPopup setAppear={setTaskPopupAppear} goalId={data._id} refetch={getData} />}
+      {taskPopupAppear && <AddTaskPopup setAppear={setTaskPopupAppear} goalId={data._id} refetch={() => goalId && getData(goalId, false)} />}
       {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
-      {readMore.title && <ReadMore text={title} title="Title" onClose={() => setReadMore((prev) => ({ ...prev, title: false }))} />}
 
       {/* Goal Page */}
       <div className="lg:pl-[25%] pt-22 lg:pt-13 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
@@ -238,13 +223,17 @@ const GoalPage = () => {
             )}
           >
             <div className="flex justify-between">
-              <div className={clsx("flex gap-2 flex-col lg:flex-row lg:justify-between", loading && "animate-shimmer rounded-md")}>
+              <div className={clsx("flex gap-2 flex-col", loading && "animate-shimmer rounded-md")}>
                 <h1 className={clsx("text-[20px] font-[600] font-heading", loading && "!text-transparent !bg-transparent")}>
-                  {title.length > 50 ? (
+                  {title.length > 30 ? (
                     <>
-                      {toCapitalize(title).substring(0, 50)}
-                      <button className="text-gray cursor-pointer w-fit px-2" onClick={() => setReadMore((prev) => ({ ...prev, title: true }))}>
-                        ...Read more
+                      {readMore.taskTitle ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
+                      <br />
+                      <button
+                        className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
+                        onClick={() => setReadMore((prev) => ({ ...prev, taskTitle: !prev.taskTitle }))}
+                      >
+                        {readMore.taskTitle ? "Read less" : "Read more"}
                       </button>
                     </>
                   ) : (
@@ -254,20 +243,20 @@ const GoalPage = () => {
                 <h1
                   className={clsx(
                     "text-[13px] font-heading mb-2 size-fit rounded-2xl px-2 py-1 text-white",
-                    status === "Active"
+                    status.toLowerCase() === "active"
                       ? "bg-green-700"
-                      : status === "Pending"
+                      : status.toLowerCase() === "pending"
                       ? "bg-yellow-600"
-                      : status === "Paused" || status === "Canceled"
+                      : status.toLowerCase() === "paused" || status.toLowerCase() === "canceled"
                       ? "bg-red-700"
-                      : status === "Completed" && "bg-green-500 !text-black",
+                      : status.toLowerCase() === "completed" && "bg-green-500 !text-black",
                     loading && "!text-transparent !bg-transparent"
                   )}
                 >
-                  {status}
+                  {toCapitalize(status)}
                 </h1>
               </div>
-              <div className="mx-2 cursor-pointer" onClick={() => setGoalEditPopup(true)}>
+              <div className="mx-2 cursor-pointer" onClick={handleToEdit}>
                 <Edit />
               </div>
             </div>
@@ -280,9 +269,13 @@ const GoalPage = () => {
               stats={
                 description.length > 100 ? (
                   <>
-                    {description.substring(0, 100)}
-                    <button className="text-gray cursor-pointer w-fit px-2" onClick={() => setReadMore((prev) => ({ ...prev, desc: true }))}>
-                      ...Read more
+                    {`${description.substring(0, 100)}...`}
+                    <br />
+                    <button
+                      className={clsx("text-gray cursor-pointer w-fit text-[13px] font-normal", loading && "text-transparent")}
+                      onClick={() => setReadMore((prev) => ({ ...prev, desc: true }))}
+                    >
+                      Read more
                     </button>
                   </>
                 ) : (
@@ -336,9 +329,13 @@ const GoalPage = () => {
             Tasks of{" "}
             {title.length > 30 ? (
               <>
-                {toCapitalize(title).substring(0, 30)}
-                <button className="text-gray cursor-pointer w-fit px-2 text-[16px]" onClick={() => setReadMore((prev) => ({ ...prev, title: true }))}>
-                  ...Read more
+                {readMore.title ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
+                <br />
+                <button
+                  className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
+                  onClick={() => setReadMore((prev) => ({ ...prev, title: !prev.title }))}
+                >
+                  {readMore.title ? "Read less" : "Read more"}
                 </button>
               </>
             ) : (
@@ -361,7 +358,7 @@ const GoalPage = () => {
           )}
           {existingTasks.length > 0 ? (
             existingTasks.map((task) => (
-              <TaskCard refetch={getData} deletes={deleteTask} task={task} setError={setError} key={task._id} goal={data} />
+              <TaskCard refetch={() => goalId && getData(goalId)} deletes={deleteTask} task={task} setError={setError} key={task._id} goal={data} />
             ))
           ) : (
             <Empty className="flex flex-col justify-center">

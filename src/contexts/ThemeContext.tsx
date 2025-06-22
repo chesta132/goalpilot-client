@@ -65,10 +65,17 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
       document.documentElement.style.setProperty(key, value);
     }
 
+    document.body.classList.add("change-theme");
+
+    setTimeout(() => {
+      document.body.classList.remove("change-theme");
+    }, 170);
+
     return () => {
       for (const [key] of Object.entries(dynamicCssVar)) {
         document.documentElement.style.removeProperty(key);
       }
+      document.body.classList.remove("change-theme");
     };
   }, [settings]);
 

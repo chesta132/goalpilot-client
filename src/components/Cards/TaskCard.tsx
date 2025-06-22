@@ -108,7 +108,7 @@ const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
           </div>
           <p className="text-[15px] text-theme-reverse-darker">{task.description}</p>
         </div>
-        <Info className="cursor-pointer" onClick={() => setTaskInfoPopup(true)} />
+        <Info className="cursor-pointer size-4.5" onClick={() => setTaskInfoPopup(true)} />
       </div>
       <div className="flex justify-end gap-4">
         <ButtonV

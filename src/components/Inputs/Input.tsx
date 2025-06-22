@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { useState } from "react";
 import toCapitalize from "../../utils/toCapitalize";
 import clsx from "clsx";
@@ -17,6 +17,8 @@ type InputProps = {
   initialFocus?: boolean;
   classWhenError?: string;
   labelFocus?: string;
+  close?: () => void;
+  TWBackgroundLabel?: string;
 };
 
 const Input = ({
@@ -33,6 +35,8 @@ const Input = ({
   initialFocus,
   classWhenError,
   labelFocus,
+  close,
+  TWBackgroundLabel,
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
   const [isFocus, setIsFocus] = useState(initialFocus);
@@ -41,11 +45,16 @@ const Input = ({
   return (
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
       <input
-        className={`
+        className={clsx(
+          `
           w-full px-3 py-3 border border-gray rounded-md 
           transition-all duration-200 ease-in-out focus:border-2
-          focus:outline-none focus:border-accent ${password && "pr-8"}
-        `}
+          focus:outline-none focus:border-accent
+        `,
+          close && "!pr-8",
+          password && "pr-8",
+          error && "border-red-500"
+        )}
         type={whatType}
         id={label}
         value={internalValue}
@@ -57,7 +66,8 @@ const Input = ({
       <label
         className={clsx(
           "absolute transition-all duration-200 ease-in-out pointer-events-none select-none whitespace-nowrap",
-          isFocus ? labelFocus || "-top-2.5 left-3 text-xs text-accent font-medium bg-theme px-1" : labelClass || "top-3.5 left-3 text-sm text-gray"
+          isFocus ? labelFocus || "-top-2.5 left-3 text-xs text-accent font-medium px-1" : labelClass || "top-3.5 left-3 text-sm text-gray",
+          isFocus && (TWBackgroundLabel || "bg-theme")
         )}
         htmlFor={label}
       >
@@ -73,6 +83,11 @@ const Input = ({
         </div>
       )}
       {error && <p className="absolute text-red-500 text-[12px] text-start">{error}</p>}
+      {close && (
+        <div className="absolute top-0 right-0 mt-3 flex items-center mr-2">
+          <X onClick={close} className="cursor-pointer" />
+        </div>
+      )}
     </div>
   );
 };

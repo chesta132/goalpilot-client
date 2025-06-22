@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { UserContext, UserProvider } from "./UserContext";
 import { ThemeContext, ThemeProvider } from "./ThemeContext";
 import { NotificationContext, NotificationProvider } from "./NotificationContext";
+import { GoalContext, GoalProvider } from "./GoalContext";
 
 const useNotification = () => {
   const context = useContext(NotificationContext);
@@ -27,5 +28,13 @@ const useTheme = () => {
   return context;
 };
 
+const useGoalData = () => {
+  const context = useContext(GoalContext);
+  if (!context) {
+    throw new Error("useNotification must be used within a NotificationProvider");
+  }
+  return context;
+};
+
 // eslint-disable-next-line react-refresh/only-export-components
-export { useUserData, UserProvider, useTheme, ThemeProvider, useNotification, NotificationProvider };
+export { useUserData, UserProvider, useTheme, ThemeProvider, useNotification, NotificationProvider, useGoalData, GoalProvider };

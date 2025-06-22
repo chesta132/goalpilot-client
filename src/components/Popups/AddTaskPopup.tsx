@@ -40,7 +40,6 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
 
     try {
       const response = await callApi("/task", { method: "POST", body: { ...value, goalId }, token: true });
-      console.log(response);
       setAppear(false);
       if (refetch) refetch();
       openNotification({ message: response.data.notification, type: "success", button: "default" });
@@ -85,14 +84,16 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
             placeholder="Enter description of your task"
             onChange={(e) => setValue((prev) => ({ ...prev, description: e.target.value }))}
           />
-          <div className="flex flex-1/2 items-center gap-6">
+          <div className="flex flex-1/2 items-center gap-6 justify-between">
             <div className="w-full">
               <DatePicker
+                styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
+                classNames={{ popup: { root: "datepicker" } }}
                 needConfirm
                 status={error.targetDate && "error"}
                 size="small"
                 color="var(--theme)"
-                className="w-full h-12 text-theme-reverse"
+                className="w-full h-12 text-theme-reverse datepicker"
                 placeholder="Choose target date of goal"
                 onChange={(e) => (e ? setValue((prev) => ({ ...prev, targetDate: e.format() })) : setValue((prev) => ({ ...prev, targetDate: "" })))}
               />
@@ -100,6 +101,7 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
             </div>
             <div className="w-fit">
               <Select
+                className="select"
                 placeholder={"Difficulty"}
                 options={[
                   { value: "easy", label: "Easy" },

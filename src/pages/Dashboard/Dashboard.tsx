@@ -41,7 +41,7 @@ const Dashboard = () => {
           title={error && error.error.title}
           message={error && error.error.message}
           showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK"}
-          showBackToLoginPage={errorAuth}
+          showBackToLoginPage={!errorAuth}
         />
       )}
 
@@ -53,7 +53,7 @@ const Dashboard = () => {
             timelineStatus && "lg:!pt-8"
           )}
         >
-          <ColorPicker onChangeComplete={(e) => updateSettings({ accent: e.toCssString() })} />
+          <ColorPicker className="colorpicker" onChangeComplete={(e) => updateSettings({ accent: e.toCssString() })} />
           <div className="flex">
             <div className="size-50 bg-accent-soft" />
             <div className="size-50 bg-accent" />

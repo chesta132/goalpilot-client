@@ -69,8 +69,13 @@ const validateForms = (value: Partial<Values>, setError: React.Dispatch<React.Se
     setError((prev) => ({ ...prev, difficulty: "Please select a valid difficulty" }));
     err = true;
   }
-  // Email Regex
+  // Status
+  if (config.status && (value.status === undefined || value.status?.trim() === "")) {
+    setError((prev) => ({ ...prev, status: "Please select a valid status" }));
+    err = true;
+  }
   if (config.regexEmail && value.email !== undefined && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value.email)) {
+    // Email Regex
     setError((prev) => ({ ...prev, email: "Please input a valid email" }));
     err = true;
   }

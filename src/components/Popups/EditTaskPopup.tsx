@@ -3,7 +3,7 @@ import type { ErrorWithValues, TaskData } from "@/utils/types";
 import clsx from "clsx";
 import { Edit, Trash2Icon, X } from "lucide-react";
 import ButtonV from "../Inputs/ButtonV";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Input from "../Inputs/Input";
 import validateForms from "@/utils/validateForms";
 import { DatePicker, Select, Switch } from "antd";
@@ -29,7 +29,7 @@ type DeletePopupProps = {
 
 export const DeleteTaskPopup = ({ setClose, deletes }: DeletePopupProps) => {
   return (
-    <div className="fixed z-[99999] px-10 max-w-[580px] text-[13px] top-1/2 left-1/2 -translate-1/2 w-full h-full backdrop-blur-[2px] flex items-center justify-center">
+    <div className="fixed z-[99999] px-10 max-w-[780px] text-[13px] top-1/2 left-1/2 -translate-1/2 w-full h-full backdrop-blur-[2px] flex items-center justify-center">
       <div className="px-6 py-10 bg-theme-dark text-theme-reverse w-full rounded-2xl shadow-lg gap-7 flex flex-col">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -93,9 +93,10 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
   useEffect(() => {
     document.body.classList.add("overflow-hidden");
     return () => document.body.classList.remove("overflow-hidden");
-  });
+  }, []);
 
-  const editTask = async () => {
+  const editTask = async (e: FormEvent) => {
+    e.preventDefault();
     const validate = validateForms(valueEdit, setErrorEdit, {
       task: true,
       description: true,
@@ -193,7 +194,7 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
             </div>
           </div>
         ) : (
-          <div className="px-3 flex flex-col gap-4">
+          <form onSubmit={editTask} className="px-3 flex flex-col gap-4">
             <div className="flex justify-center flex-col gap-4">
               <div className="flex items-center gap-5">
                 <Input
@@ -232,12 +233,14 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
               />
               <div className="w-full">
                 <DatePicker
+                  styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
+                  classNames={{ popup: { root: "datepicker" } }}
                   defaultValue={dayjs(data.targetDate || data.createdAt)}
                   needConfirm
                   status={errorEdit.targetDate && "error"}
                   size="small"
                   color="var(--theme)"
-                  className="w-full h-12 text-theme-reverse"
+                  className="w-full h-12 text-theme-reverse datepicker"
                   placeholder="Choose target date of goal"
                   onChange={(e) =>
                     e ? setValueEdit((prev) => ({ ...prev, targetDate: e.format() })) : setValueEdit((prev) => ({ ...prev, targetDate: "" }))
@@ -258,14 +261,9 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-3">
+              <ButtonV disabled={loadingEdit} text="Save" className="shadow-none !py-2 !px-5 !text-theme-reverse" icon={<Edit size={14} />} />
               <ButtonV
-                disabled={loadingEdit}
-                onClick={editTask}
-                text="Save"
-                className="shadow-none !py-2 !px-5 !text-theme-reverse"
-                icon={<Edit size={14} />}
-              />
-              <ButtonV
+                type="button"
                 onClick={() => {
                   setEditMode(false);
                   setErrorEdit({ error: null });
@@ -274,7 +272,7 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
                 className="bg-theme-dark hover:bg-theme-darker shadow-none !py-2 !px-5 !text-theme-reverse"
               />
             </div>
-          </div>
+          </form>
         )}
       </div>
     </div>
