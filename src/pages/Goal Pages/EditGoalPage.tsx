@@ -1,16 +1,18 @@
 import ButtonV from "@/components/Inputs/ButtonV";
 import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
+import { DeletePopup } from "@/components/Popups/DeletePopup";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultGoalData } from "@/utils/defaultData";
-import { errorAuthBool, handleFormError } from "@/utils/errorHandler";
+import { errorAuthBool, handleError, handleFormError } from "@/utils/errorHandler";
 import toCapitalize from "@/utils/toCapitalize";
 import type { ErrorWithValues, GoalData } from "@/utils/types";
 import validateForms from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
+import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -22,12 +24,13 @@ export const EditGoalPage = () => {
   const data: TValueEdit = JSON.parse(sessionStorage.getItem("goal-data") || JSON.stringify(defaultGoalData));
   const navigate = useNavigate();
   const { goalId } = useParams();
-  const { setData, getData } = useGoalData();
+  const { setData, getData, deleteGoal } = useGoalData();
   const { openNotification } = useNotification();
 
   const [valueEdit, setValueEdit] = useState<TValueEdit>(data);
   const [error, setError] = useState<ErrorWithValues>({ error: null });
   const [isSubmitting, setSubmitting] = useState(false);
+  const [deletePopup, setDeletePopup] = useState(false);
 
   const errorAuth = errorAuthBool(error);
 
@@ -69,8 +72,20 @@ export const EditGoalPage = () => {
     navigate(-1);
   };
 
+  const handleDelete = async () => {
+    setSubmitting(true);
+    try {
+      await deleteGoal();
+      navigate("/");
+    } catch (err) {
+      handleError(err, setError);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <div className="pt-22 px-3 text-theme-reverse flex justify-center">
+    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center">
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}
@@ -79,22 +94,18 @@ export const EditGoalPage = () => {
           showBackToLoginPage={!errorAuth}
         />
       )}
-      <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg">
+      {deletePopup && <DeletePopup deletes={handleDelete} item="goal" setClose={() => setDeletePopup(false)} />}
+      <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
-          <h1 className="font-heading text-[18px] lg:text-[20px] font-semibold">Edit Goal</h1>
+          <h1 className="font-heading text-[18px] font-semibold">Edit Goal</h1>
           <div className="flex gap-3">
             <ButtonV
               disabled={isSubmitting}
               onClick={handleBack}
               text="Cancel"
-              className="text-[12px] !px-3 !py-2 lg:!px-4 lg:!py-2 lg:text-[14px] bg-theme-darker/20 border hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
+              className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />
-            <ButtonV
-              text="Save Changes"
-              disabled={isSubmitting}
-              onClick={handleSave}
-              className="text-[12px] !px-3 !py-2 lg:!px-4 lg:!py-2 lg:text-[14px]"
-            />
+            <ButtonV text="Save Changes" icon={<Edit size={14} />} disabled={isSubmitting} onClick={handleSave} className="text-[12px] !px-3 !py-2" />
           </div>
         </div>
         <div className="bg-gray h-[1px]" />
@@ -178,6 +189,15 @@ export const EditGoalPage = () => {
               />
             </div>
           </div>
+        </div>
+        <div className=" mt-3 flex justify-between items-end">
+          <h2 className="text-gray text-[13px]">Created on {new Date(data.createdAt).toLocaleDateString()}</h2>
+          <ButtonV
+            icon={<Trash2 size={13} />}
+            text="Delete Goal"
+            onClick={() => setDeletePopup(true)}
+            className="text-[12px] !px-3 !py-2 text-white! bg-red-600 border hover:bg-red-700 border-none"
+          />
         </div>
       </div>
     </div>

@@ -30,6 +30,11 @@ const Dashboard = () => {
     else document.body.classList.remove("overflow-hidden");
   }, [goalPopup]);
 
+  useEffect(() => {
+    sessionStorage.removeItem("task-data");
+    sessionStorage.removeItem("goal-data");
+  }, []);
+
   const existingGoals = data?.goals?.filter((goal) => !goal.isRecycled) || [];
 
   return (
@@ -115,8 +120,8 @@ const Dashboard = () => {
             </div>
           )}
           <div className="flex flex-col gap-6">
-            {data && data?.goals.length > 0 ? (
-              data?.goals.map((goal) => (
+            {existingGoals && existingGoals.length > 0 ? (
+              existingGoals.map((goal) => (
                 <Link to={`/goal/${goal._id}`} key={goal._id} onClickCapture={() => window.scrollTo(0, 0)}>
                   <GoalCard goal={goal} />
                 </Link>

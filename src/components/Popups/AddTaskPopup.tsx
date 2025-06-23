@@ -10,12 +10,15 @@ import { defaultNewTaskData, defaultNewTaskError } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
 import { useNotification } from "@/contexts/UseContexts";
+import toCapitalize from "@/utils/toCapitalize";
 
 type AddTaskPopupProps = {
   setAppear: React.Dispatch<React.SetStateAction<boolean>>;
   goalId: string;
   refetch?: () => void;
 };
+
+const selectOptions = ["easy", "medium", "hard", "very hard"];
 
 const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
   const [error, setError] = useState<Partial<ErrorWithValues>>(defaultNewTaskError);
@@ -103,12 +106,7 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
               <Select
                 className="select"
                 placeholder={"Difficulty"}
-                options={[
-                  { value: "easy", label: "Easy" },
-                  { value: "medium", label: "Medium" },
-                  { value: "hard", label: "Hard" },
-                  { value: "very hard", label: "Very hard" },
-                ]}
+                options={selectOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                 allowClear
                 onChange={(e) => setValue((prev) => ({ ...prev, difficulty: e }))}
               />

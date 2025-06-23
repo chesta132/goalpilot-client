@@ -1,44 +1,61 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, notification, Space } from "antd";
 import React, { createContext } from "react";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
-type TopenNotification = {
+export type NotificationFunction<T extends any[]> = {
+  f: (...args: T) => void | Promise<void>;
+  label: string;
+  params?: T;
+};
+
+type TopenNotification<T extends any[] = any[]> = {
   message: string;
   description?: string;
   type?: NotificationType;
   placement?: "topLeft" | "topRight" | "bottom" | "bottomLeft" | "bottomRight";
   pauseOnHover?: boolean;
   button?: "default" | React.ReactNode;
-  undo?: { f: (taskId: string) => void; id: string };
+  buttonFunc?: NotificationFunction<T>;
 };
 
 type TNotificationContext = {
-  openNotification: (params: TopenNotification) => void;
+  openNotification: <T extends any[]>(params: TopenNotification<T>) => void;
 };
 
 const NotificationContext = createContext<TNotificationContext | undefined>(undefined);
 
 const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, contextHolder] = notification.useNotification({ stack: { threshold: 2 } });
-  const openNotification = ({ message, type, description, placement = "bottomRight", pauseOnHover = false, button, undo }: TopenNotification) => {
+  const openNotification = ({
+    message,
+    type,
+    description,
+    placement = "bottomRight",
+    pauseOnHover = false,
+    button,
+    buttonFunc,
+  }: TopenNotification) => {
     const key = `open${Date.now()}`;
     const defaultButton = (
       <Button type="primary" size="small" onClick={() => api.destroy(key)}>
         Confirm
       </Button>
     );
-    const undoButton = (
+    const buttonFuncComp = (
       <Space>
         <Button
           type="primary"
           size="small"
           onClick={() => {
             api.destroy(key);
-            if (undo) undo.f(undo.id);
+            if (buttonFunc)
+              if (buttonFunc.params) buttonFunc.f(...buttonFunc.params);
+              else buttonFunc.f();
           }}
         >
-          Undo
+          {buttonFunc?.label}
         </Button>
         {defaultButton}
       </Space>
@@ -50,7 +67,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       placement,
       pauseOnHover,
       key,
-      btn: button ? (button === "default" ? defaultButton : button) : undo && undoButton,
+      btn: button ? (button === "default" ? defaultButton : button) : buttonFunc && buttonFuncComp,
     };
 
     if (type) api[type](apiItems);

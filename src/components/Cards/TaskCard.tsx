@@ -4,10 +4,11 @@ import ButtonV from "../Inputs/ButtonV";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useState } from "react";
-import { DeleteTaskPopup, EditTaskPopup } from "../Popups/EditTaskPopup";
-import { Info } from "lucide-react";
+import { DeletePopup } from "../Popups/DeletePopup";
+import { EditTaskPopup } from "../Popups/EditTaskPopup";
+import { Edit } from "lucide-react";
 
 type TaskProps = {
   task: TaskData;
@@ -27,6 +28,7 @@ const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
   const createdAt = new Date(task.createdAt);
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
+  const navigate = useNavigate();
   const [isCompleted, setIsCompleted] = useState(task.isCompleted);
   const [taskInfoPopup, setTaskInfoPopup] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
@@ -71,6 +73,11 @@ const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
     deletes(task._id);
   };
 
+  const handleToInfoTask = () => {
+    sessionStorage.setItem("task-data", JSON.stringify(task));
+    navigate(`/task/${task._id}/edit`);
+  };
+
   return (
     <div className="border rounded-xl p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
       {taskInfoPopup && (
@@ -83,7 +90,7 @@ const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
           refetch={refetch}
         />
       )}
-      {deletePopup && <DeleteTaskPopup deletes={deleteTask} setClose={() => setDeletePopup(false)} />}
+      {deletePopup && <DeletePopup item="task" deletes={deleteTask} setClose={() => setDeletePopup(false)} />}
       <div className="flex justify-between">
         <div className="relative flex flex-col gap-3">
           <h1 className="font-heading font-semibold text-[18px]">{toCapitalize(task.task)}</h1>
@@ -108,7 +115,8 @@ const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
           </div>
           <p className="text-[15px] text-theme-reverse-darker">{task.description}</p>
         </div>
-        <Info className="cursor-pointer size-4.5" onClick={() => setTaskInfoPopup(true)} />
+        {/* <Info className="cursor-pointer size-4.5" onClick={() => setTaskInfoPopup(true)} /> */}
+        <Edit className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
       </div>
       <div className="flex justify-end gap-4">
         <ButtonV

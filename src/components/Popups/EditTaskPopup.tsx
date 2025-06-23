@@ -12,6 +12,7 @@ import { handleFormError } from "@/utils/errorHandler";
 import dayjs from "dayjs";
 import callApi from "@/utils/callApi";
 import { useParams } from "react-router";
+import { DeletePopup } from "./DeletePopup";
 
 type EditTaskPopupProps = {
   data: TaskData;
@@ -22,39 +23,7 @@ type EditTaskPopupProps = {
   setIsCompleted: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-type DeletePopupProps = {
-  deletes: () => void;
-  setClose: () => void;
-};
-
-export const DeleteTaskPopup = ({ setClose, deletes }: DeletePopupProps) => {
-  return (
-    <div className="fixed z-[99999] px-10 max-w-[780px] text-[13px] top-1/2 left-1/2 -translate-1/2 w-full h-full backdrop-blur-[2px] flex items-center justify-center">
-      <div className="px-6 py-10 bg-theme-dark text-theme-reverse w-full rounded-2xl shadow-lg gap-7 flex flex-col">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="bg-red-200 p-2 rounded-full size-10">
-              <Trash2Icon className="stroke-red-400" />
-            </div>
-            <h1 className="font-heading font-semibold text-[16px]">Delete Task</h1>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-[14px] text-theme-reverse-darker">Are you sure you want to delete this task?</h2>
-        </div>
-        <div className="flex justify-end gap-3">
-          <ButtonV onClick={setClose} text="Cancel" className="shadow-none !py-2 !px-5 !text-theme-reverse" />
-          <ButtonV
-            onClick={deletes}
-            text="Delete Task"
-            className="bg-transparent shadow-none border border-red-700 hover:bg-red-700 !py-2 !px-5 !text-theme-reverse"
-            icon={<Trash2Icon size={14} />}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
+const selectOptions = ["easy", "medium", "hard", "very hard"];
 
 export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setIsCompleted }: EditTaskPopupProps) => {
   const [deletePopup, setDeletePopup] = useState(false);
@@ -122,7 +91,7 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
 
   return (
     <div className="flex backdrop-blur-[2px] backdrop-brightness-90 h-[100dvh] fixed top-1/2 left-1/2 -translate-1/2 w-full px-4 md:px-8 justify-center items-center z-[99] transition-all">
-      {deletePopup && <DeleteTaskPopup setClose={() => setDeletePopup(false)} deletes={deletes} />}
+      {deletePopup && <DeletePopup item="task" setClose={() => setDeletePopup(false)} deletes={deletes} />}
       <div className="px-6 py-10 relative bg-theme max-w-[780px] text-[13px] text-theme-reverse w-full rounded-2xl shadow-lg gap-7 flex flex-col">
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-3">
@@ -208,14 +177,10 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
                 />
                 <div className="w-fit">
                   <Select
+                    className="select"
                     value={valueEdit.difficulty}
                     placeholder={"Difficulty"}
-                    options={[
-                      { value: "easy", label: "Easy" },
-                      { value: "medium", label: "Medium" },
-                      { value: "hard", label: "Hard" },
-                      { value: "very hard", label: "Very hard" },
-                    ]}
+                    options={selectOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                     allowClear
                     onChange={(e) => setValueEdit((prev) => ({ ...prev, difficulty: e }))}
                   />

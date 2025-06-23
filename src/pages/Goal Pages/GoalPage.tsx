@@ -133,7 +133,10 @@ const GoalPage = () => {
   const { openNotification } = useNotification();
 
   useEffect(() => {
-    if (goalId) getData(goalId);
+    const gettingData = async () => {
+      if (goalId) await getData(goalId);
+    };
+    gettingData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalId]);
 
@@ -186,7 +189,7 @@ const GoalPage = () => {
   const deleteTask = async (taskId: string) => {
     try {
       const response = await callApi("/task", { method: "DELETE", body: { goalId, taskId }, token: true });
-      openNotification({ message: response.data.notification, type: "success", undo: { f: undoDeleteTask, id: taskId } });
+      openNotification({ message: response.data.notification, type: "success", buttonFunc: { f: undoDeleteTask, params: [taskId], label: "Undo" } });
       const deletedTaskId = response.data._id;
       setData((prev) => ({ ...prev, tasks: tasks.filter((task) => task._id !== deletedTaskId) }));
     } catch (err) {
