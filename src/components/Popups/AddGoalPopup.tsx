@@ -10,7 +10,7 @@ import { defaultNewGoalData } from "@/utils/defaultData";
 import { useNotification, useUserData } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { handleFormError } from "@/utils/errorHandler";
-import type { TnewGoalValue } from "@/utils/types";
+import type { TNewGoalValue } from "@/utils/types";
 
 type AddGoalPopupProps = {
   setAppear?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -27,7 +27,7 @@ type Error = {
 
 const AddGoalPopup = ({ setAppear, submitting, setSubmitting }: AddGoalPopupProps) => {
   const [error, setError] = useState<Error>({ title: "", description: "", targetDate: "", color: "" });
-  const [value, setValue] = useState<TnewGoalValue>(defaultNewGoalData);
+  const [value, setValue] = useState<TNewGoalValue>(defaultNewGoalData);
   const { clearError, refetchData } = useUserData();
   const { openNotification } = useNotification();
 

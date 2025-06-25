@@ -1,3 +1,14 @@
+export type TSignIn = {
+  email: string;
+  password: string
+}
+
+export type TSignUp = TSignIn & {
+  username: string;
+  firstName: string;
+  lastName: string;
+};
+
 export type TaskData = {
   _id: string;
   goalId: string;
@@ -6,7 +17,7 @@ export type TaskData = {
   isCompleted: boolean;
   completedAt: Date | null;
   deletedAt: Date | null;
-  difficulty: "easy" | "medium" | "hard" | "very hard";
+  difficulty: "easy" | "medium" | "hard" | "very hard" | "";
   isRecycled: boolean;
   rewardPoints: number;
   targetDate: string | Date;
@@ -23,7 +34,7 @@ export type GoalData = {
   createdAt: Date;
   progress: number;
   isPublic: boolean;
-  status: "active" | "completed" | "paused" | "canceled" | "pending";
+  status: "active" | "completed" | "paused" | "canceled" | "pending" | "";
   targetDate: Date | null;
   tasks: TaskData[];
   color: string;
@@ -49,7 +60,7 @@ export type UserData = {
   __v?: number;
 };
 
-export type TnewGoalValue = {
+export type TNewGoalValue = {
   title: string;
   description: string;
   targetDate: string;
@@ -57,7 +68,7 @@ export type TnewGoalValue = {
   isPublic: boolean;
 };
 
-export type TnewTaskValue = {
+export type TNewTaskValue = {
   goalId?: string;
   task: string;
   description: string;
@@ -65,7 +76,7 @@ export type TnewTaskValue = {
   difficulty: "easy" | "medium" | "hard" | "very hard" | "";
 };
 
-export type TeditTaskValue = TnewTaskValue & { isCompleted?: boolean };
+export type TEditTaskValue = TNewTaskValue & { isCompleted?: boolean };
 
 export type TNotification = {
   message: string;

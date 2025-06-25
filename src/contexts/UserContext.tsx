@@ -1,21 +1,22 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import callApi from "@/utils/callApi";
 import { handleError } from "@/utils/errorHandler";
-import type { UserData, ErrorWithValues } from "@/utils/types";
+import type { UserData, TError } from "@/utils/types";
+import { defaultUserData } from "@/utils/defaultData";
 
 interface IUserContent {
   data: UserData | null;
   loading: boolean;
-  error: ErrorWithValues;
+  error: UserData & TError;
   refetchData: (withLoad?: boolean, direct?: boolean) => Promise<void>;
   clearError: () => void;
-  setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>;
+  setError: React.Dispatch<React.SetStateAction<UserData & TError>>;
 }
 
 const UserContext = createContext<IUserContent>({
   data: null,
   loading: true,
-  error: { error: null },
+  error: { ...defaultUserData, error: null },
   refetchData: async () => {},
   clearError: () => {},
   setError: () => {},
@@ -24,11 +25,11 @@ const UserContext = createContext<IUserContent>({
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<ErrorWithValues>({ error: null });
+  const [error, setError] = useState<UserData & TError>({ ...defaultUserData, error: null });
 
   const fetchData = async (withLoad?: boolean, direct?: boolean) => {
     if (withLoad) setLoading(true);
-    setError({ error: null });
+    setError({ ...defaultUserData, error: null });
     try {
       const response = await callApi("/user", { method: "PATCH", token: true, directToken: direct });
       setData(response.data);
@@ -49,7 +50,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const clearError = () => setError({ error: null });
+  const clearError = () => setError({ ...defaultUserData, error: null });
 
   const contextValue = {
     data,

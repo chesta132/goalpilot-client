@@ -10,15 +10,15 @@ import callApi from "@/utils/callApi";
 import { handleFormError } from "@/utils/errorHandler";
 import validateForms from "@/utils/validateForms";
 import ButtonV from "@/components/Inputs/ButtonV";
-import type { ErrorWithValues, Values } from "@/utils/types";
+import type { TError, TSignIn } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
 
 const SignIn = () => {
-  const [value, setValue] = useState<Partial<Values>>({
+  const [value, setValue] = useState<TSignIn>({
     email: "",
     password: "",
   });
-  const [error, setError] = useState<ErrorWithValues>({ email: "", password: "", error: null });
+  const [error, setError] = useState<TSignIn & TError>({ email: "", password: "", error: null });
   const [submiting, setSubmiting] = useState(false);
 
   const { clearError, refetchData } = useUserData();

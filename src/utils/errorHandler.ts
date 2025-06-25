@@ -14,7 +14,10 @@ export function handleError<T extends TError>(err: unknown, setError: React.Disp
     else if (err.code === "ERR_NETWORK")
       setError((prev) => ({ ...prev, error: { title: err.message, message: "Network Error, please check your connection", code: err.code } } as T));
     else if (err.response?.data.code === "INVALID_AUTH")
-      setError((prev) => ({ ...prev, error: { title: err.response?.data.message, message: "Authentication needed please login first", code: err.code } } as T));
+      setError(
+        (prev) =>
+          ({ ...prev, error: { title: err.response?.data.message, message: "Authentication needed please login first", code: err.code } } as T)
+      );
     else {
       setError((prev) => ({ ...prev, error: { title: undefined, message: undefined } } as T));
     }

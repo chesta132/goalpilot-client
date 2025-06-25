@@ -1,5 +1,5 @@
 import { defaultTaskData } from "@/utils/defaultData";
-import type { ErrorWithValues, TaskData } from "@/utils/types";
+import type { TaskData, TError } from "@/utils/types";
 import { createContext, useState, type ReactNode } from "react";
 import { useGoalData, useUserData, useNotification } from "./UseContexts";
 import { handleError } from "@/utils/errorHandler";
@@ -9,9 +9,9 @@ type TTaskContent = {
   data: TaskData;
   getData: () => void;
   setData: React.Dispatch<React.SetStateAction<TaskData>>;
-  error: ErrorWithValues;
+  error: TaskData & TError;
   clearError: () => void;
-  setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>;
+  setError: React.Dispatch<React.SetStateAction<TaskData & TError>>;
   deleteTask: () => Promise<void>;
 };
 
@@ -19,7 +19,7 @@ const TaskContext = createContext<TTaskContent>({
   data: defaultTaskData,
   getData: () => {},
   setData: () => {},
-  error: { error: null },
+  error: {...defaultTaskData, error: null },
   clearError: () => {},
   setError: () => {},
   deleteTask: async () => {},
@@ -27,7 +27,7 @@ const TaskContext = createContext<TTaskContent>({
 
 const TaskProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<TaskData>(defaultTaskData);
-  const [error, setError] = useState<ErrorWithValues>({ error: null });
+  const [error, setError] = useState<TaskData & TError>({...defaultTaskData, error: null });
   const { openNotification } = useNotification();
   const { refetchData } = useUserData();
   const { getData: getGoalData } = useGoalData();
@@ -37,7 +37,7 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     setData(taskData);
   };
 
-  const clearError = () => setError({ error: null });
+  const clearError = () => setError({...defaultTaskData, error: null });
 
   const handleUndo = async (taskId: string, goalId: string) => {
     try {

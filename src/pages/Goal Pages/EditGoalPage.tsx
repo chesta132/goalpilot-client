@@ -7,8 +7,9 @@ import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultGoalData } from "@/utils/defaultData";
 import { errorAuthBool, handleError, handleFormError } from "@/utils/errorHandler";
+import { statusOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
-import type { ErrorWithValues, GoalData } from "@/utils/types";
+import type { GoalData, TError } from "@/utils/types";
 import validateForms from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
@@ -16,31 +17,28 @@ import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-const selectOptions = ["active", "completed", "paused", "pending", "canceled"];
-
 type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
 
 export const EditGoalPage = () => {
-  const data: TValueEdit = JSON.parse(sessionStorage.getItem("goal-data") || JSON.stringify(defaultGoalData));
   const navigate = useNavigate();
   const { goalId } = useParams();
   const { setData, getData, deleteGoal } = useGoalData();
   const { openNotification } = useNotification();
 
-  const [valueEdit, setValueEdit] = useState<TValueEdit>(data);
-  const [error, setError] = useState<ErrorWithValues>({ error: null });
+  const [valueEdit, setValueEdit] = useState<TValueEdit>(JSON.parse(sessionStorage.getItem("goal-data") || JSON.stringify(defaultGoalData)));
+  const [error, setError] = useState<TValueEdit & TError>({ ...defaultGoalData, error: null, targetDate: "", status: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
 
   const errorAuth = errorAuthBool(error);
 
   useEffect(() => {
-    if (data._id !== goalId || !data._id) navigate(-1);
-  }, [goalId, data._id, navigate]);
+    if (valueEdit._id !== goalId || !valueEdit._id) navigate(-1);
+  }, [goalId, valueEdit._id, navigate]);
 
   const handleSave = async () => {
     setSubmitting(true);
-    setError({ error: null });
+    setError({ ...defaultGoalData, error: null, targetDate: "", status: "" });
     const validate = validateForms(valueEdit, setError, {
       title: true,
       description: true,
@@ -156,7 +154,7 @@ export const EditGoalPage = () => {
                   defaultValue={valueEdit.status}
                   placeholder={"Goal Status"}
                   className="select !size-full"
-                  options={selectOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                  options={statusOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                   allowClear
                   onChange={(e) => setValueEdit((prev) => ({ ...prev, status: e }))}
                 />
@@ -191,7 +189,7 @@ export const EditGoalPage = () => {
           </div>
         </div>
         <div className=" mt-3 flex justify-between items-end">
-          <h2 className="text-gray text-[13px]">Created on {new Date(data.createdAt).toLocaleDateString()}</h2>
+          <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
           <ButtonV
             icon={<Trash2 size={13} />}
             text="Delete Goal"

@@ -1,18 +1,18 @@
 import callApi from "@/utils/callApi";
 import { defaultGoalData } from "@/utils/defaultData";
 import { handleError } from "@/utils/errorHandler";
-import type { ErrorWithValues, GoalData } from "@/utils/types";
+import type { GoalData, TError } from "@/utils/types";
 import { createContext, useState, type ReactNode } from "react";
 import { useNotification, useUserData } from "./UseContexts";
 
 type TGoalContent = {
   data: GoalData;
-  getData: (goalId: string, load?: boolean) => Promise<void | string>;
+  getData: (goalId: string, load?: boolean) => Promise<void>;
   setData: React.Dispatch<React.SetStateAction<GoalData>>;
   loading: boolean;
-  error: ErrorWithValues;
+  error: GoalData & TError;
   clearError: () => void;
-  setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>;
+  setError: React.Dispatch<React.SetStateAction<GoalData & TError>>;
   deleteGoal: () => Promise<void>;
 };
 
@@ -21,7 +21,7 @@ const GoalContext = createContext<TGoalContent>({
   getData: async () => {},
   setData: () => {},
   loading: true,
-  error: { error: null },
+  error: { ...defaultGoalData, error: null, status: "" },
   clearError: () => {},
   setError: () => {},
   deleteGoal: async () => {},
@@ -30,13 +30,12 @@ const GoalContext = createContext<TGoalContent>({
 const GoalProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<GoalData>(defaultGoalData);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<ErrorWithValues>({ error: null });
+  const [error, setError] = useState<GoalData & TError>({ ...defaultGoalData, error: null, status: "" });
   const { openNotification } = useNotification();
   const { refetchData } = useUserData();
 
   const getData = async (goalId: string, load: boolean = true) => {
     setLoading(load);
-    if (goalId === undefined) return "reload";
     try {
       const response = await callApi(`/goal?goalId=${goalId}`, { method: "GET", token: true });
       setData(response.data);
@@ -71,7 +70,7 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const clearError = () => setError({ error: null });
+  const clearError = () => setError({ ...defaultGoalData, error: null, status: "" });
 
   const contextValue = {
     data,

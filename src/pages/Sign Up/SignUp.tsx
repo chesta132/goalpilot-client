@@ -10,18 +10,20 @@ import callApi from "@/utils/callApi.ts";
 import { handleFormError } from "@/utils/errorHandler.ts";
 import validateForms from "@/utils/validateForms.ts";
 import ButtonV from "@/components/Inputs/ButtonV";
-import type { Values, ErrorWithValues } from "@/utils/types";
+import type { TSignUp, TError } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
 
+const defaultError = { email: "", password: "", username: "", firstName: "", lastName: "", error: null };
+
 const SignUp = () => {
-  const [value, setValue] = useState<Partial<Values>>({
+  const [value, setValue] = useState<TSignUp>({
     username: "",
     email: "",
     password: "",
     firstName: "",
     lastName: "",
   });
-  const [error, setError] = useState<ErrorWithValues>({ email: "", password: "", username: "", firstName: "", error: null });
+  const [error, setError] = useState<TSignUp & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
   const { clearError, refetchData } = useUserData();
@@ -34,7 +36,7 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
-    setError({ email: "", password: "", username: "", firstName: "", error: null });
+    setError(defaultError);
 
     const validate = validateForms(value, setError, {
       usernameSpace: true,
@@ -64,7 +66,7 @@ const SignUp = () => {
         sessionStorage.setItem("jwt-token", response.data.token);
         localStorage.removeItem("jwt-token");
       }
-      refetchData(true, true)
+      refetchData(true, true);
       navigate("/");
     } catch (err) {
       handleFormError(err, setError);

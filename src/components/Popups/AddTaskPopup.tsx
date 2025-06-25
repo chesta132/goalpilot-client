@@ -5,12 +5,13 @@ import { DatePicker, Select } from "antd";
 import { useState, type FormEvent } from "react";
 import ButtonV from "../Inputs/ButtonV";
 import validateForms from "@/utils/validateForms";
-import type { ErrorWithValues, TnewTaskValue } from "@/utils/types";
+import type { TError, TNewTaskValue } from "@/utils/types";
 import { defaultNewTaskData, defaultNewTaskError } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
 import { useNotification } from "@/contexts/UseContexts";
 import toCapitalize from "@/utils/toCapitalize";
+import { difficultyOptions } from "@/utils/selectOptions";
 
 type AddTaskPopupProps = {
   setAppear: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,11 +19,9 @@ type AddTaskPopupProps = {
   refetch?: () => void;
 };
 
-const selectOptions = ["easy", "medium", "hard", "very hard"];
-
 const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
-  const [error, setError] = useState<Partial<ErrorWithValues>>(defaultNewTaskError);
-  const [value, setValue] = useState<TnewTaskValue>(defaultNewTaskData);
+  const [error, setError] = useState<TNewTaskValue & TError>(defaultNewTaskError);
+  const [value, setValue] = useState<TNewTaskValue>(defaultNewTaskData);
   const [submitting, setSubmitting] = useState(false);
   const { openNotification } = useNotification();
 
@@ -106,7 +105,7 @@ const AddTaskPopup = ({ setAppear, goalId, refetch }: AddTaskPopupProps) => {
               <Select
                 className="select"
                 placeholder={"Difficulty"}
-                options={selectOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                 allowClear
                 onChange={(e) => setValue((prev) => ({ ...prev, difficulty: e }))}
               />

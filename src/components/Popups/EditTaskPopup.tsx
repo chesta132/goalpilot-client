@@ -1,5 +1,5 @@
 import toCapitalize from "@/utils/toCapitalize";
-import type { ErrorWithValues, TaskData } from "@/utils/types";
+import type { TaskData, TError } from "@/utils/types";
 import clsx from "clsx";
 import { Edit, Trash2Icon, X } from "lucide-react";
 import ButtonV from "../Inputs/ButtonV";
@@ -13,6 +13,8 @@ import dayjs from "dayjs";
 import callApi from "@/utils/callApi";
 import { useParams } from "react-router";
 import { DeletePopup } from "./DeletePopup";
+import { defaultTaskData } from "@/utils/defaultData";
+import { difficultyOptions } from "@/utils/selectOptions";
 
 type EditTaskPopupProps = {
   data: TaskData;
@@ -23,13 +25,11 @@ type EditTaskPopupProps = {
   setIsCompleted: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const selectOptions = ["easy", "medium", "hard", "very hard"];
-
 export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setIsCompleted }: EditTaskPopupProps) => {
   const [deletePopup, setDeletePopup] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [valueEdit, setValueEdit] = useState(data);
-  const [errorEdit, setErrorEdit] = useState<ErrorWithValues>({ error: null });
+  const [errorEdit, setErrorEdit] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
   const [loadingEdit, setLoadingEdit] = useState(false);
 
   const { goalId } = useParams();
@@ -66,6 +66,7 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
 
   const editTask = async (e: FormEvent) => {
     e.preventDefault();
+    setErrorEdit({ ...defaultTaskData, error: null, difficulty: "" });
     const validate = validateForms(valueEdit, setErrorEdit, {
       task: true,
       description: true,
@@ -180,7 +181,7 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
                     className="select"
                     value={valueEdit.difficulty}
                     placeholder={"Difficulty"}
-                    options={selectOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                    options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                     allowClear
                     onChange={(e) => setValueEdit((prev) => ({ ...prev, difficulty: e }))}
                   />
@@ -231,7 +232,7 @@ export const EditTaskPopup = ({ data, setClose, timeLeft, deletes, refetch, setI
                 type="button"
                 onClick={() => {
                   setEditMode(false);
-                  setErrorEdit({ error: null });
+                  setErrorEdit({ ...defaultTaskData, error: null, difficulty: "" });
                 }}
                 text="Cancel"
                 className="bg-theme-dark hover:bg-theme-darker shadow-none !py-2 !px-5 !text-theme-reverse"

@@ -7,16 +7,15 @@ import { useGoalData, useNotification, useUserData } from "@/contexts/UseContext
 import callApi from "@/utils/callApi";
 import { defaultTaskData } from "@/utils/defaultData";
 import { errorAuthBool, handleError, handleFormError } from "@/utils/errorHandler";
+import { difficultyOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
-import type { ErrorWithValues, TaskData } from "@/utils/types";
+import type { TaskData, TError } from "@/utils/types";
 import validateForms from "@/utils/validateForms";
 import { DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
 import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-
-const selectOptions = ["easy", "medium", "hard", "very hard"];
 
 export const EditTaskPage = () => {
   const { taskId } = useParams();
@@ -25,7 +24,7 @@ export const EditTaskPage = () => {
   const { getData: getGoalData } = useGoalData();
 
   const [valueEdit, setValueEdit] = useState<TaskData>(JSON.parse(sessionStorage.getItem("task-data") || JSON.stringify(defaultTaskData)));
-  const [error, setError] = useState<ErrorWithValues>({ error: null });
+  const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
 
@@ -38,7 +37,7 @@ export const EditTaskPage = () => {
 
   const handleSave = async () => {
     setSubmitting(true);
-    setError({ error: null });
+    setError({ ...defaultTaskData, error: null, difficulty: "" });
     const validate = validateForms(valueEdit, setError, {
       task: true,
       description: true,
@@ -170,9 +169,9 @@ export const EditTaskPage = () => {
                 <Select
                   status={error.difficulty && "error"}
                   defaultValue={valueEdit.difficulty}
-                  placeholder={"Goal Status"}
+                  placeholder={"Difficulty"}
                   className="select !size-full"
-                  options={selectOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                  options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                   allowClear
                   onChange={(e) => setValueEdit((prev) => ({ ...prev, difficulty: e }))}
                 />

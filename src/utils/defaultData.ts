@@ -1,4 +1,4 @@
-import type { GoalData, TaskData, TeditTaskValue, TnewGoalValue, TnewTaskValue, UserData } from "./types";
+import type { GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "./types";
 
 export const defaultTaskData: TaskData = {
   _id: "",
@@ -11,7 +11,7 @@ export const defaultTaskData: TaskData = {
   difficulty: "easy",
   isRecycled: false,
   rewardPoints: 0,
-  targetDate: '',
+  targetDate: "",
   notification: undefined,
   createdAt: new Date(),
   __v: 0,
@@ -51,19 +51,19 @@ export const defaultUserData: UserData = {
   __v: 0,
 };
 
-export const defaultNewTaskError: TnewTaskValue = {
+export const defaultNewTaskError: TNewTaskValue = {
   task: "",
   description: "",
   targetDate: "",
   difficulty: "",
 };
 
-export const defaultNewTaskData: TnewTaskValue = {
+export const defaultNewTaskData: TNewTaskValue = {
   ...defaultNewTaskError,
   goalId: "",
 };
 
-export const defaultNewGoalData: TnewGoalValue = {
+export const defaultNewGoalData: TNewGoalValue = {
   title: "",
   description: "",
   color: "#66b2ff",
@@ -71,7 +71,7 @@ export const defaultNewGoalData: TnewGoalValue = {
   isPublic: true,
 };
 
-export const defaultEditTaskData: TeditTaskValue = {
+export const defaultEditTaskData: TEditTaskValue = {
   ...defaultNewTaskData,
   isCompleted: false,
 };

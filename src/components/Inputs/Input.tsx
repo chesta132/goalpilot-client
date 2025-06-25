@@ -62,6 +62,7 @@ const Input = ({
         onInput={(e) => setInternalValue((e.target as HTMLInputElement).value)}
         onFocus={() => setIsFocus(true)}
         onBlur={() => (internalValue !== "" ? setIsFocus(true) : setIsFocus(false))}
+        autoComplete="off"
       />
       <label
         className={clsx(

@@ -1,4 +1,4 @@
-import type { Values, ErrorWithValues } from "./types";
+import type { TError, Values } from "./types";
 
 type DynamicConfig<T> = {
   [K in keyof T]?: boolean;
@@ -13,7 +13,7 @@ type Config = DynamicConfig<Values> & {
   descMaxChar?: number;
 };
 
-const validateForms = (value: Partial<Values>, setError: React.Dispatch<React.SetStateAction<ErrorWithValues>>, config: Config): boolean => {
+const validateForms = <T extends Partial<Values>>(value: T, setError: React.Dispatch<React.SetStateAction<T & TError>>, config: Config): boolean => {
   let err = false;
 
   // Title
