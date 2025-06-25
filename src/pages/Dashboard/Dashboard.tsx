@@ -30,11 +30,6 @@ const Dashboard = () => {
     else document.body.classList.remove("overflow-hidden");
   }, [goalPopup]);
 
-  useEffect(() => {
-    sessionStorage.removeItem("task-data");
-    sessionStorage.removeItem("goal-data");
-  }, []);
-
   const existingGoals = data?.goals?.filter((goal) => !goal.isRecycled) || [];
 
   return (

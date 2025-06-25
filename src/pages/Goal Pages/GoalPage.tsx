@@ -3,7 +3,7 @@ import callApi from "@/utils/callApi";
 import { handleError, errorAuthBool } from "@/utils/errorHandler";
 import type { GoalData } from "@/utils/types";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useNavigate, useParams } from "react-router";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import StatsCard from "@/components/Cards/StatsCard";
@@ -12,10 +12,10 @@ import { Goal, Verified, Plus, Calendar, X, Edit } from "lucide-react";
 import toCapitalize from "@/utils/toCapitalize";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
-import AddTaskPopup from "@/components/Popups/AddTaskPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import TextArea from "@/components/Inputs/TextArea";
 import { useViewportWidth } from "@/hooks/useViewport";
+import { generateAccentColors } from "@/utils/colorUtils";
 
 type AiInput = {
   value: string;
@@ -26,7 +26,6 @@ type AiInput = {
 type AddTaskComponentProps = {
   data: GoalData;
   loading: boolean;
-  setTaskPopupAppear: React.Dispatch<React.SetStateAction<boolean>>;
   addTaskAIInput: boolean;
   setAiInput: React.Dispatch<React.SetStateAction<AiInput>>;
   aiInput: AiInput;
@@ -51,24 +50,21 @@ function ReadMore({ text, title, onClose }: { text: string; title: string; onClo
   );
 }
 
-function AddTaskComponent({
-  data,
-  loading,
-  setTaskPopupAppear,
-  addTaskAIInput,
-  setAiInput,
-  aiInput,
-  setAddTaskAIInput,
-  generateWithAI,
-}: AddTaskComponentProps) {
+export function AddTaskComponent({ data, loading, addTaskAIInput, setAiInput, aiInput, setAddTaskAIInput, generateWithAI }: AddTaskComponentProps) {
+  const navigate = useNavigate();
   return (
     <div className="mt-10 lg:mt-0 w-full flex flex-col gap-3">
       <ButtonV
         style={{ background: data.color }}
         text="Create New Task"
         icon={<Plus className="bg-transparent" />}
-        className="shadow-sm whitespace-nowrap w-full"
-        onClick={() => !loading && setTaskPopupAppear(true)}
+        className="shadow-sm whitespace-nowrap w-full bg-(--goal-accent)! hover:bg-(--goal-accent-strong)!"
+        onClick={() => {
+          if (!loading) {
+            sessionStorage.setItem("goal-id", data._id);
+            navigate("/task/create");
+          }
+        }}
       />
       {addTaskAIInput && (
         <div className="flex justify-between items-center gap-5">
@@ -120,7 +116,6 @@ function AddTaskComponent({
 
 const GoalPage = () => {
   const { data, error, setError, getData, loading, clearError, setData } = useGoalData();
-  const [taskPopupAppear, setTaskPopupAppear] = useState(false);
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
   const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
   const [readMore, setReadMore] = useState({ title: false, desc: false, taskTitle: false });
@@ -165,12 +160,13 @@ const GoalPage = () => {
   };
 
   useEffect(() => {
-    if (taskPopupAppear || readMore.desc) document.body.classList.add("overflow-hidden");
+    if (readMore.desc) document.body.classList.add("overflow-hidden");
     else document.body.classList.remove("overflow-hidden");
     return () => document.body.classList.remove("overflow-hidden");
-  }, [taskPopupAppear, readMore.desc]);
+  }, [readMore.desc]);
 
   const { color, description, progress, tasks, title, status } = data;
+  const accentColors = generateAccentColors(color);
   const createdAt = new Date(data.createdAt);
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
 
@@ -203,7 +199,15 @@ const GoalPage = () => {
   };
 
   return (
-    <div>
+    <div
+      style={
+        {
+          "--goal-accent": accentColors.accent,
+          "--goal-accent-soft": accentColors.accentSoft,
+          "--goal-accent-strong": accentColors.accentStrong,
+        } as CSSProperties
+      }
+    >
       {/* Header/absolute */}
       {error.error && (
         <ErrorPopup
@@ -213,7 +217,6 @@ const GoalPage = () => {
           showBackToLoginPage={!errorAuth}
         />
       )}
-      {taskPopupAppear && <AddTaskPopup setAppear={setTaskPopupAppear} goalId={data._id} refetch={() => goalId && getData(goalId, false)} />}
       {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
 
       {/* Goal Page */}
@@ -299,7 +302,7 @@ const GoalPage = () => {
               stats={progress.toString() + "%"}
             >
               <div className={clsx("rounded-full bg-theme-dark h-3 w-full", loading && "bg-transparent")}>
-                <div className={clsx("rounded-full h-full", loading && "hidden")} style={{ width: `${progress}%`, background: color }} />
+                <div className={clsx("rounded-full h-full bg-(--goal-accent)", loading && "hidden")} style={{ width: `${progress}%` }} />
               </div>
             </StatsCard>
             <StatsCard
@@ -322,7 +325,6 @@ const GoalPage = () => {
                 loading={loading}
                 setAddTaskAIInput={setAddTaskAIInput}
                 setAiInput={setAiInput}
-                setTaskPopupAppear={setTaskPopupAppear}
               />
             )}
           </div>
@@ -355,13 +357,12 @@ const GoalPage = () => {
                 loading={loading}
                 setAddTaskAIInput={setAddTaskAIInput}
                 setAiInput={setAiInput}
-                setTaskPopupAppear={setTaskPopupAppear}
               />
             </div>
           )}
           {existingTasks.length > 0 ? (
             existingTasks.map((task) => (
-              <TaskCard refetch={() => goalId && getData(goalId)} deletes={deleteTask} task={task} setError={setError} key={task._id} goal={data} />
+              <TaskCard refetch={() => goalId && getData(goalId)} deletes={deleteTask} task={task} setError={setError} key={task._id} />
             ))
           ) : (
             <Empty className="flex flex-col justify-center">
@@ -370,7 +371,12 @@ const GoalPage = () => {
                 <ButtonV
                   text="Create New Task"
                   className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm"
-                  onClick={() => !loading && setTaskPopupAppear(true)}
+                  onClick={() => {
+                    if (!loading) {
+                      sessionStorage.setItem("goal-id", data._id);
+                      navigate("/task/create");
+                    }
+                  }}
                 />
               </div>
             </Empty>

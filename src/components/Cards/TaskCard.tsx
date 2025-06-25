@@ -12,19 +12,12 @@ import { Edit } from "lucide-react";
 
 type TaskProps = {
   task: TaskData;
-  goal: GoalData;
-  setError: React.Dispatch<React.SetStateAction<Error>>;
+  setError: React.Dispatch<React.SetStateAction<GoalData & TError>>;
   deletes: (taskId: string) => void;
   refetch: () => void;
 };
 
-type Error = TError & {
-  task?: string;
-  description?: string;
-  targetDate?: string | Date;
-};
-
-const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
+const TaskCard = ({ task, setError, deletes, refetch }: TaskProps) => {
   const createdAt = new Date(task.createdAt);
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
@@ -128,10 +121,10 @@ const TaskCard = ({ task, setError, goal, deletes, refetch }: TaskProps) => {
           onClick={markCompleteToggle}
           text={isCompleted ? "Mark Incomplete" : "Mark Complete"}
           className={clsx(
-            "h-10 w-fit !px-6 text-[13px] !text-theme-reverse border border-transparent",
-            isCompleted && "bg-transparent hover:bg-theme-dark"
+            "h-10 w-fit !px-6 text-[13px] !text-theme-reverse border border-transparent bg-(--goal-accent)! hover:bg-(--goal-accent-strong)!",
+            isCompleted && "bg-transparent! hover:bg-theme-dark!",
+            isCompleted ? "border-(--goal-accent)!" : "border-transparent!"
           )}
-          style={{ borderColor: isCompleted ? goal.color : "transparent" }}
         />
       </div>
     </div>

@@ -1,11 +1,11 @@
-import Color from "color"; 
+import Color from "color";
 
 export const generateAccentColors = (baseColor: string) => {
   try {
-    const color = Color(baseColor); 
+    const color = Color(baseColor);
 
-    const softColor = color.lighten(0.2).saturate(0.1).hex(); 
-    const strongColor = color.darken(0.2).saturate(0.2).hex(); 
+    const softColor = color.lighten(0.2).saturate(0.1).hex();
+    const strongColor = color.darken(0.2).saturate(0.2).hex();
 
     return {
       accent: baseColor,

@@ -8,6 +8,7 @@ import GoalPage from "./pages/Goal Pages/GoalPage.tsx";
 import Layout from "./Layout.tsx";
 import { EditGoalPage } from "./pages/Goal Pages/EditGoalPage.tsx";
 import { EditTaskPage } from "./pages/Task Pages/EditTaskPage.tsx";
+import { CreateTaskPage } from "./pages/Task Pages/CreateTaskPage.tsx";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
                     <Route path="/goal/:goalId" element={<GoalPage />} />
                     <Route path="/goal/:goalId/edit" element={<EditGoalPage />} />
 
+                    <Route path="/task/create" element={<CreateTaskPage />} />
                     <Route path="/task/:taskId/edit" element={<EditTaskPage />} />
                   </Route>
                 </Routes>

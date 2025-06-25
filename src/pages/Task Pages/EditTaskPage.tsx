@@ -18,12 +18,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EditTaskPage = () => {
+  const defaultValue = JSON.parse(sessionStorage.getItem("task-data") || JSON.stringify(defaultTaskData));
   const { taskId } = useParams();
   const { openNotification } = useNotification();
   const { refetchData } = useUserData();
-  const { getData: getGoalData } = useGoalData();
+  const { getData: getGoalData, setData: setGoalData } = useGoalData();
 
-  const [valueEdit, setValueEdit] = useState<TaskData>(JSON.parse(sessionStorage.getItem("task-data") || JSON.stringify(defaultTaskData)));
+  const [valueEdit, setValueEdit] = useState<TaskData>(defaultValue);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
@@ -32,7 +33,10 @@ export const EditTaskPage = () => {
   const errorAuth = errorAuthBool(error);
 
   useEffect(() => {
-    if (valueEdit._id !== taskId || !valueEdit._id) navigate(-1);
+    if (valueEdit._id !== taskId || !valueEdit._id) {
+      sessionStorage.removeItem("task-data");
+      navigate(-1);
+    }
   }, [navigate, taskId, valueEdit._id]);
 
   const handleSave = async () => {
@@ -50,6 +54,15 @@ export const EditTaskPage = () => {
       setSubmitting(false);
       return;
     }
+
+    if (JSON.stringify(valueEdit) === JSON.stringify(defaultValue)) {
+      openNotification({ message: "Items must have changes", type: "warning", button: "default" });
+      setTimeout(() => {
+        setSubmitting(false);
+      }, 500);
+      return;
+    }
+
     try {
       const response = await callApi("/task", { method: "PUT", token: true, body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
@@ -57,6 +70,7 @@ export const EditTaskPage = () => {
       if (response.data._id === taskId) {
         setValueEdit(response.data);
       }
+      handleBack(`/goal/${valueEdit.goalId}`);
     } catch (err) {
       handleFormError(err, setError);
     } finally {
@@ -64,9 +78,10 @@ export const EditTaskPage = () => {
     }
   };
 
-  const handleBack = () => {
+  const handleBack = (to: string | number = -1) => {
     sessionStorage.removeItem("task-data");
-    navigate(-1);
+    if (typeof to === "string") navigate(to);
+    else if (typeof to === "number") navigate(to);
   };
 
   const handleUndo = async (goalId: string) => {
@@ -90,8 +105,8 @@ export const EditTaskPage = () => {
         message: response.data.notification,
       });
       refetchData();
-      getGoalData(valueEdit.goalId, false);
-      navigate("/");
+      setGoalData((prev) => ({ ...prev, tasks: prev.tasks.filter((task) => task._id !== valueEdit.goalId) }));
+      handleBack(`/goal/${valueEdit.goalId}`);
     } catch (err) {
       handleError(err, setError);
     } finally {

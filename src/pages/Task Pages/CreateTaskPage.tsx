@@ -1,0 +1,151 @@
+import ButtonV from "@/components/Inputs/ButtonV";
+import Input from "@/components/Inputs/Input";
+import TextArea from "@/components/Inputs/TextArea";
+import ErrorPopup from "@/components/Popups/ErrorPopup";
+import { useNotification } from "@/contexts/UseContexts";
+import callApi from "@/utils/callApi";
+import { defaultNewTaskData } from "@/utils/defaultData";
+import { errorAuthBool, handleFormError } from "@/utils/errorHandler";
+import { difficultyOptions } from "@/utils/selectOptions";
+import toCapitalize from "@/utils/toCapitalize";
+import type { TError, TNewTaskValue } from "@/utils/types";
+import validateForms from "@/utils/validateForms";
+import { DatePicker, Select } from "antd";
+import { Edit } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+
+export const CreateTaskPage = () => {
+  const { taskId } = useParams();
+  const { openNotification } = useNotification();
+
+  const [valueCreate, setValueCreate] = useState<TNewTaskValue>(defaultNewTaskData);
+  const [error, setError] = useState<TNewTaskValue & TError>({ ...defaultNewTaskData, error: null });
+  const [isSubmitting, setSubmitting] = useState(false);
+
+  const navigate = useNavigate();
+  const errorAuth = errorAuthBool(error);
+
+  useEffect(() => {
+    const goalId = sessionStorage.getItem("goal-id");
+    if (goalId) setValueCreate((prev) => ({ ...prev, goalId }));
+    else handleBack();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleCreate = async () => {
+    setSubmitting(true);
+    setError({ ...defaultNewTaskData, error: null });
+    const validate = validateForms(valueCreate, setError, {
+      task: true,
+      description: true,
+      targetDate: true,
+      difficulty: true,
+      taskMaxChar: 50,
+      descMaxChar: 1000,
+    });
+    if (validate) {
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await callApi("/task", { method: "POST", token: true, body: { ...valueCreate, goalId: valueCreate.goalId } });
+      openNotification({ message: response.data.notification, button: "default", type: "success" });
+      if (response.data._id === taskId) {
+        setValueCreate(response.data);
+      }
+      handleBack(`/goal/${valueCreate.goalId}`);
+    } catch (err) {
+      handleFormError(err, setError);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBack = (to: string | number = -1) => {
+    sessionStorage.removeItem("goal-id");
+    if (typeof to === "string") navigate(to);
+    else if (typeof to === "number") navigate(to);
+  };
+  return (
+    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center">
+      {error.error && (
+        <ErrorPopup
+          title={error && error.error.title}
+          message={error && error.error.message}
+          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
+          showBackToLoginPage={!errorAuth}
+        />
+      )}
+      <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
+        <div className="flex justify-between items-center">
+          <h1 className="font-heading text-[18px] font-semibold">Create Task</h1>
+        </div>
+        <div className="bg-gray h-[1px]" />
+        <div className="mt-4 flex flex-col gap-7">
+          <div className="flex flex-col gap-5">
+            <Input
+              error={error.task}
+              onChange={(e) => setValueCreate((prev) => ({ ...prev, task: e.target.value }))}
+              value={valueCreate.task}
+              label="Task Title"
+              placeholder="Your task title"
+              TWBackgroundLabel="bg-theme-dark"
+            />
+            <TextArea
+              error={error.description}
+              onChange={(e) => setValueCreate((prev) => ({ ...prev, description: e.target.value }))}
+              value={valueCreate.description}
+              placeholder="Your task description"
+              label="Task Description"
+              TWBackgroundLabel="bg-theme-dark"
+            />
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center gap-4 h-12">
+              <div className="w-1/2 h-full">
+                <DatePicker
+                  placement="bottomRight"
+                  styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
+                  classNames={{ popup: { root: "datepicker" } }}
+                  needConfirm
+                  status={error.targetDate && "error"}
+                  size="small"
+                  color="var(--theme)"
+                  className="w-full h-12 text-theme-reverse datepicker"
+                  placeholder="Choose target date of goal"
+                  onChange={(e) =>
+                    e ? setValueCreate((prev) => ({ ...prev, targetDate: e.format() })) : setValueCreate((prev) => ({ ...prev, targetDate: "" }))
+                  }
+                />
+                {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
+              </div>
+              <div className="w-1/2 h-full">
+                <Select
+                  placement="bottomLeft"
+                  status={error.difficulty && "error"}
+                  placeholder={"Difficulty"}
+                  className="select !size-full"
+                  options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                  allowClear
+                  onChange={(e) => setValueCreate((prev) => ({ ...prev, difficulty: e }))}
+                />
+                {error.difficulty && <p className="text-red-500 text-[12px] text-start">{error.difficulty.toString()}</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 justify-end mt-10">
+          <ButtonV
+            disabled={isSubmitting}
+            onClick={handleBack}
+            text="Cancel"
+            className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
+          />
+          <ButtonV text="Save Changes" icon={<Edit size={14} />} disabled={isSubmitting} onClick={handleCreate} className="text-[12px] !px-3 !py-2" />
+        </div>
+      </div>
+    </div>
+  );
+};
