@@ -103,7 +103,7 @@ export const SidebarGoal = ({
 
       <div className="flex justify-between">
         <div className={clsx("flex gap-2 flex-col", loading && "animate-shimmer rounded-md")}>
-          <h1 className={clsx("text-[20px] font-[600] font-heading", loading && "!text-transparent !bg-transparent")}>
+          <h1 className={clsx("text-[20px] font-[600] font-heading break-all", loading && "!text-transparent !bg-transparent")}>
             {title.length > 30 ? (
               <>
                 {readMore.taskTitle ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
@@ -148,13 +148,13 @@ export const SidebarGoal = ({
         stats={
           description.length > 100 ? (
             <>
-              {`${description.substring(0, 100)}...`}
+              {readMore.desc ? toCapitalize(description) : `${toCapitalize(description).substring(0, 30)}...`}
               <br />
               <button
-                className={clsx("text-gray cursor-pointer w-fit text-[13px] font-normal", loading && "text-transparent")}
-                onClick={() => setReadMore((prev) => ({ ...prev, desc: true }))}
+                className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
+                onClick={() => setReadMore((prev) => ({ ...prev, desc: !prev.desc }))}
               >
-                Read more
+                {readMore.desc ? "Read less" : "Read more"}
               </button>
             </>
           ) : (

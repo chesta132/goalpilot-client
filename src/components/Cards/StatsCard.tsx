@@ -22,7 +22,7 @@ const StatsCard = ({ icon, header, stats, className, children, classStats, loadi
       <div className="flex justify-between items-center w-full">
         <div className="w-[80%]">
           <p className={clsx("text-gray text-[14px]", loading && "text-transparent cursor-default")}>{header}</p>
-          <h2 className={clsx("font-heading text-2xl font-bold leading-6", loading && "text-transparent cursor-default", classStats && classStats)}>{stats}</h2>
+          <h2 className={clsx("font-heading text-2xl font-bold leading-6 break-all", loading && "text-transparent cursor-default", classStats && classStats)}>{stats}</h2>
         </div>
         {icon}
       </div>
