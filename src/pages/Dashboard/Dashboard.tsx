@@ -30,7 +30,7 @@ const Dashboard = () => {
     else document.body.classList.remove("overflow-hidden");
   }, [goalPopup]);
 
-  const existingGoals = data?.goals?.filter((goal) => !goal.isRecycled) || [];
+  console.log(data)
 
   return (
     <div>
@@ -65,13 +65,13 @@ const Dashboard = () => {
             header="Total Goals"
             className="!bg-theme"
             icon={<Goal className={clsx("h-8 bg-accent w-8 p-1 object-contain rounded-md", loading && "hidden")} />}
-            stats={existingGoals && existingGoals.length.toString()}
+            stats={data?.goals && data?.goals.length.toString()}
           />
           <StatsCard
             loading={loading}
             header="Avg Progress"
             icon={<ChartLineIcon className={clsx("h-8 bg-[#10B981] w-8 object-contain rounded-md p-1.5", loading && "hidden")} />}
-            stats={`${existingGoals && avgCalc(existingGoals.map((goal) => goal.progress)).toFixed(2)}%`}
+            stats={`${data?.goals && avgCalc(data?.goals.map((goal) => goal.progress)).toFixed(2)}%`}
           />
           <StatsCard
             loading={loading}
@@ -81,7 +81,7 @@ const Dashboard = () => {
                 className={clsx("h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]", loading && "hidden")}
               />
             }
-            stats={existingGoals && existingGoals.filter((goal) => goal.progress === 100).length.toString()}
+            stats={data?.goals && data?.goals.filter((goal) => goal.progress === 100).length.toString()}
           />
           {width < 1024 && (
             <div className="mt-10 w-full">
@@ -115,8 +115,8 @@ const Dashboard = () => {
             </div>
           )}
           <div className="flex flex-col gap-6">
-            {existingGoals && existingGoals.length > 0 ? (
-              existingGoals.map((goal) => (
+            {data?.goals && data?.goals.length > 0 ? (
+              data?.goals.map((goal) => (
                 <Link to={`/goal/${goal._id}`} key={goal._id} onClickCapture={() => window.scrollTo(0, 0)}>
                   <GoalCard goal={goal} />
                 </Link>

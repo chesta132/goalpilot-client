@@ -1,6 +1,7 @@
 import Color from "color";
 
 export const generateAccentColors = (baseColor: string) => {
+  if (!baseColor) baseColor = "#66b2ff";
   try {
     const color = Color(baseColor);
 

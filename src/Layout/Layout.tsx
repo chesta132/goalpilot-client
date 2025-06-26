@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useParams } from "react-router";
-import Nav from "./components/Nav/Nav";
-import { useUserData } from "./contexts/UseContexts";
-import useScrollNavigation from "./hooks/useScrollNavigation";
+import Nav from "../components/Nav/Nav";
+import { useUserData } from "../contexts/UseContexts";
+import useScrollNavigation from "../hooks/useScrollNavigation";
 import { useEffect } from "react";
 
 const Layout = () => {
@@ -20,8 +20,6 @@ const Layout = () => {
       clear();
     } else if (location.pathname.startsWith("/goal")) {
       sessionStorage.removeItem("task-data");
-    } else if (location.pathname.startsWith("/task")) {
-      sessionStorage.removeItem("goal-data");
     }
   }, [location.pathname]);
 

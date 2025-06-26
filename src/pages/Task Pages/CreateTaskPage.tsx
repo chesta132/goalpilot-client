@@ -63,13 +63,17 @@ export const CreateTaskPage = () => {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleBack = (to: string | number = -1) => {
     sessionStorage.removeItem("goal-id");
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
   };
   return (
-    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center">
+    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center pb-10">
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}

@@ -7,7 +7,7 @@ type GoalProps = {
 
 const GoalCard = ({ goal }: GoalProps) => {
   return (
-    <div className="border rounded-xl p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
+    <div className="border rounded-lg p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
       <div className="relative flex flex-col gap-3">
         <h1 className="font-heading font-semibold text-[18px]">{toCapitalize(goal.title)}</h1>
         <div className="flex gap-3 items-center">

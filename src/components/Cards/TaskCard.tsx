@@ -72,7 +72,7 @@ const TaskCard = ({ task, setError, deletes, refetch }: TaskProps) => {
   };
 
   return (
-    <div className="border rounded-xl p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
+    <div className="border rounded-lg p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
       {taskInfoPopup && (
         <EditTaskPopup
           setIsCompleted={setIsCompleted}

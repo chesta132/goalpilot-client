@@ -98,7 +98,7 @@ export const EditGoalPage = () => {
   };
 
   return (
-    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center">
+    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}
@@ -114,7 +114,7 @@ export const EditGoalPage = () => {
           <div className="flex gap-3">
             <ButtonV
               disabled={isSubmitting}
-              onClick={handleBack}
+              onClick={() => handleBack(`/goal/${valueEdit._id}`)}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />

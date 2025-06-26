@@ -1,11 +1,15 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { generateAccentColors } from "@/utils/colorUtils";
+import { useGoalData } from "./UseContexts";
 
 type ThemeSettings = {
   themeMode: "light" | "dark";
   accent: string;
   accentSoft: string;
   accentStrong: string;
+  goalAccent: string;
+  goalAccentSoft: string;
+  goalAccentStrong: string;
 };
 
 const defaultSettings: ThemeSettings = {
@@ -13,6 +17,9 @@ const defaultSettings: ThemeSettings = {
   accent: "#66b2ff",
   accentSoft: "#9fcfff",
   accentStrong: "#2a94ff",
+  goalAccent: "#66b2ff",
+  goalAccentSoft: "#9fcfff",
+  goalAccentStrong: "#2a94ff",
 };
 
 interface ThemeContextType {
@@ -37,6 +44,9 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
       accent: parsedSettings.accent ?? defaultSettings.accent,
       accentSoft: parsedSettings.accentSoft ?? defaultSettings.accentSoft,
       accentStrong: parsedSettings.accentStrong ?? defaultSettings.accentStrong,
+      goalAccent: parsedSettings.goalAccent ?? defaultSettings.goalAccent,
+      goalAccentSoft: parsedSettings.goalAccentSoft ?? defaultSettings.goalAccentSoft,
+      goalAccentStrong: parsedSettings.goalAccentStrong ?? defaultSettings.goalAccentStrong,
     };
   } catch (error) {
     console.error("Failed to parse settings from localStorage:", error);
@@ -47,6 +57,7 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
 const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<ThemeSettings>(getSettingsFromLocalStorage());
   const [dark, setDark] = useState(false);
+  const { data: goalData } = useGoalData();
 
   useEffect(() => {
     const dynamicCssVar = {
@@ -59,6 +70,9 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
       "--accent": settings.accent,
       "--accent-soft": settings.accentSoft,
       "--accent-strong": settings.accentStrong,
+      "--goal-accent": settings.goalAccent,
+      "--goal-accent-soft": settings.goalAccentSoft,
+      "--goal-accent-strong": settings.goalAccentStrong,
     };
 
     for (const [key, value] of Object.entries(dynamicCssVar)) {
@@ -93,6 +107,21 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setSettings(updated);
     localStorage.setItem("settings", JSON.stringify(updated));
   };
+
+  useEffect(() => {
+    if (goalData.color && goalData.color !== settings.goalAccent) {
+      const generatedColors = generateAccentColors(goalData.color);
+      setSettings((prev) => ({
+        ...prev,
+        goalAccent: generatedColors.accent,
+        goalAccentSoft: generatedColors.accentSoft,
+        goalAccentStrong: generatedColors.accentStrong,
+      }));
+
+      localStorage.setItem("settings", JSON.stringify(settings));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goalData.color]);
 
   useEffect(() => {
     if (settings.themeMode === "light") setDark(false);

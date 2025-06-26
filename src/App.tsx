@@ -5,17 +5,18 @@ import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import Callback from "./pages/Google Callback/Callback.tsx";
 import { UserProvider, ThemeProvider, NotificationProvider, GoalProvider, TaskProvider } from "./contexts/UseContexts.tsx";
 import GoalPage from "./pages/Goal Pages/GoalPage.tsx";
-import Layout from "./Layout.tsx";
+import Layout from "./Layout/Layout.tsx";
 import { EditGoalPage } from "./pages/Goal Pages/EditGoalPage.tsx";
 import { EditTaskPage } from "./pages/Task Pages/EditTaskPage.tsx";
 import { CreateTaskPage } from "./pages/Task Pages/CreateTaskPage.tsx";
+import SidebarGoalLayout from "./Layout/SidebarGoalLayout.tsx";
 
 const App = () => {
   return (
     <UserProvider>
       <NotificationProvider>
-        <ThemeProvider>
-          <GoalProvider>
+        <GoalProvider>
+          <ThemeProvider>
             <TaskProvider>
               <BrowserRouter>
                 <Routes>
@@ -26,17 +27,19 @@ const App = () => {
                     <Route index element={<Dashboard />} />
                     <Route path="/google/callback" element={<Callback />} />
 
-                    <Route path="/goal/:goalId" element={<GoalPage />} />
-                    <Route path="/goal/:goalId/edit" element={<EditGoalPage />} />
+                    <Route path="/" element={<SidebarGoalLayout />}>
+                      <Route path="/goal/:goalId" element={<GoalPage />} />
+                      <Route path="/goal/:goalId/edit" element={<EditGoalPage />} />
+                      <Route path="/task/create" element={<CreateTaskPage />} />
+                    </Route>
 
-                    <Route path="/task/create" element={<CreateTaskPage />} />
                     <Route path="/task/:taskId/edit" element={<EditTaskPage />} />
                   </Route>
                 </Routes>
               </BrowserRouter>
             </TaskProvider>
-          </GoalProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </GoalProvider>
       </NotificationProvider>
     </UserProvider>
   );
