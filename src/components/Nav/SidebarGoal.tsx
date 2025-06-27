@@ -23,15 +23,6 @@ type TReadMore = {
   taskTitle: boolean;
 };
 
-// type SidebarGoalState = {
-//   readMore: TReadMore;
-//   setReadMore: React.Dispatch<React.SetStateAction<TReadMore>>;
-//   addTaskAIInput: boolean;
-//   setAddTaskAIInput: React.Dispatch<React.SetStateAction<boolean>>;
-//   aiInput: TAiInput;
-//   setAiInput: React.Dispatch<React.SetStateAction<TAiInput>>;
-// };
-
 type SidebarGoalProps = {
   data: GoalData;
   readMore: TReadMore;
@@ -102,8 +93,8 @@ export const SidebarGoal = ({
       )}
 
       <div className="flex justify-between">
-        <div className={clsx("flex gap-2 flex-col", loading && "animate-shimmer rounded-md")}>
-          <h1 className={clsx("text-[20px] font-[600] font-heading break-all", loading && "!text-transparent !bg-transparent")}>
+        <div className={clsx("flex gap-2 flex-col w-full", loading && "animate-shimmer rounded-md")}>
+          <h1 className={clsx("text-[20px] font-[600] font-heading overflow-auto max-w-[85%]", loading && "!text-transparent !bg-transparent")}>
             {title.length > 30 ? (
               <>
                 {readMore.taskTitle ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
@@ -135,14 +126,14 @@ export const SidebarGoal = ({
             {toCapitalize(status)}
           </h1>
         </div>
-        <div className="mx-2 !cursor-pointer" onClick={handleToEdit}>
+        <div className="mx-2 !cursor-pointer absolute right-0 mr-5" onClick={handleToEdit}>
           <Edit />
         </div>
       </div>
       <StatsCard
         loading={loading}
         header="Description"
-        className="!bg-theme"
+        className="!bg-theme max-h-100 overflow-auto"
         classStats="text-[15px] font-medium mt-2"
         icon={<Goal className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
         stats={

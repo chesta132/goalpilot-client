@@ -98,7 +98,7 @@ export const EditGoalPage = () => {
   };
 
   return (
-    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
+    <div className="px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}

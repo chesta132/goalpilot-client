@@ -12,7 +12,7 @@ const GoalCard = ({ goal }: GoalProps) => {
         <h1 className="font-heading font-semibold text-[18px]">{toCapitalize(goal.title)}</h1>
         <div className="flex gap-3 items-center">
           <p style={{ color: goal.color }} className="bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline">
-            {goal.status}
+            {toCapitalize(goal.status)}
           </p>
           <p className="text-[14px] text-gray">•</p>
           <p className="text-[14px] text-gray">{goal.progress}% Complete</p>

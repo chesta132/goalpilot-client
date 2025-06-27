@@ -6,6 +6,7 @@ import { defaultUserData } from "@/utils/defaultData";
 
 interface IUserContent {
   data: UserData | null;
+  setData: React.Dispatch<React.SetStateAction<UserData | null>>;
   loading: boolean;
   error: UserData & TError;
   refetchData: (withLoad?: boolean, direct?: boolean) => Promise<void>;
@@ -15,6 +16,7 @@ interface IUserContent {
 
 const UserContext = createContext<IUserContent>({
   data: null,
+  setData: () => {},
   loading: true,
   error: { ...defaultUserData, error: null },
   refetchData: async () => {},
@@ -54,6 +56,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const contextValue = {
     data,
+    setData,
     loading,
     error,
     refetchData: fetchData,

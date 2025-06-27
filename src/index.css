@@ -11,6 +11,10 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-soft: var(--accent-soft);
 
+  --color-goal-accent: var(--goal-accent);
+  --color-goal-accent-strong: var(--goal-accent-strong);
+  --color-goal-accent-soft: var(--goal-accent-soft);
+
   --color-theme: var(--theme);
   --color-theme-dark: var(--theme-dark);
   --color-theme-darker: var(--theme-darker);
@@ -97,6 +101,10 @@
   --accent: #66b2ff;
   --accent-strong: #2a94ff;
   --accent-soft: #9fcfff;
+
+  --goal-accent: #66b2ff;
+  --goal-accent-strong: #2a94ff;
+  --goal-accent-soft: #9fcfff;
 
   --theme: #fafbfc;
   --theme-dark: #f3f3f3;

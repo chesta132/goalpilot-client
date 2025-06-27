@@ -12,6 +12,7 @@ const Layout = () => {
 
   useEffect(() => {
     const clear = () => {
+      sessionStorage.removeItem("user-id");
       sessionStorage.removeItem("goal-data");
       sessionStorage.removeItem("goal-id");
       sessionStorage.removeItem("task-data");
@@ -20,6 +21,9 @@ const Layout = () => {
       clear();
     } else if (location.pathname.startsWith("/goal")) {
       sessionStorage.removeItem("task-data");
+      sessionStorage.removeItem("user-id");
+    } else if (location.pathname.startsWith("/task")) {
+      sessionStorage.removeItem("user-id");
     }
   }, [location.pathname]);
 

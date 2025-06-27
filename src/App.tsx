@@ -10,6 +10,8 @@ import { EditGoalPage } from "./pages/Goal Pages/EditGoalPage.tsx";
 import { EditTaskPage } from "./pages/Task Pages/EditTaskPage.tsx";
 import { CreateTaskPage } from "./pages/Task Pages/CreateTaskPage.tsx";
 import SidebarGoalLayout from "./Layout/SidebarGoalLayout.tsx";
+import SidebarUserLayout from "./Layout/SidebarUserLayout.tsx";
+import { CreateGoalPage } from "./pages/Goal Pages/CreateGoalPage.tsx";
 
 const App = () => {
   return (
@@ -24,7 +26,11 @@ const App = () => {
                   <Route path="/signup" element={<SignUp />} />
 
                   <Route path="/" element={<Layout />}>
-                    <Route index element={<Dashboard />} />
+                    <Route path="/" element={<SidebarUserLayout />}>
+                      <Route index element={<Dashboard />} />
+                      <Route path="/goal/create" element={<CreateGoalPage />} />
+                    </Route>
+
                     <Route path="/google/callback" element={<Callback />} />
 
                     <Route path="/" element={<SidebarGoalLayout />}>

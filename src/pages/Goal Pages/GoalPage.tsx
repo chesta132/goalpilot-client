@@ -99,7 +99,7 @@ const GoalPage = () => {
       {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
 
       {/* Goal Page */}
-      <div className="lg:pt-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
+      <div className=" md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
         <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 mx-2 rounded-xl shadow-lg">
           <h1 className="text-[20px] font-[600] font-heading ml-3">
             Tasks of{" "}
@@ -140,7 +140,7 @@ const GoalPage = () => {
               <div className="relative h-12">
                 <ButtonV
                   text="Create New Task"
-                  className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm"
+                  className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm bg-goal-accent hover:bg-goal-accent-strong"
                   onClick={() => {
                     if (!loading) {
                       sessionStorage.setItem("goal-id", data._id);
