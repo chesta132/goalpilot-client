@@ -3,6 +3,7 @@ import Nav from "../components/Nav/Nav";
 import { useUserData } from "../contexts/UseContexts";
 import useScrollNavigation from "../hooks/useScrollNavigation";
 import { useEffect } from "react";
+import Footer from "@/components/Footer/Footer";
 
 const Layout = () => {
   const { data } = useUserData();
@@ -33,6 +34,7 @@ const Layout = () => {
       <main>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 };
