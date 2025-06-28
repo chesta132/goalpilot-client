@@ -1,19 +1,19 @@
 import toCapitalize from "@/utils/toCapitalize";
 import type { GoalData, TaskData, TError } from "@/utils/types";
-import ButtonV from "../Inputs/ButtonV";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
 import { useNavigate, useParams } from "react-router";
 import { useState } from "react";
 import { Edit } from "lucide-react";
+import Checkbox from "../Inputs/Checkbox";
 
 type TaskProps = {
   task: TaskData;
   setError: React.Dispatch<React.SetStateAction<GoalData & TError>>;
 };
 
-const TaskCard = ({ task, setError }: TaskProps) => {
+const TaskCardCompact = ({ task, setError }: TaskProps) => {
   const createdAt = new Date(task.createdAt);
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
@@ -60,15 +60,21 @@ const TaskCard = ({ task, setError }: TaskProps) => {
   };
 
   return (
-    <div className="border rounded-lg p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
+    <div className="border relative rounded-lg py-5 px-4 shadow-md bg-theme border-theme-darker gap-1 flex">
+      <Checkbox label="" size={15} checked={isCompleted} onChange={markCompleteToggle} />
       <div className="flex justify-between">
-        <div className="relative flex flex-col gap-3">
-          <h1 className="font-heading font-semibold text-[18px]">{toCapitalize(task.task)}</h1>
-          <p className={clsx("bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline w-fit", isCompleted ? "text-green-400" : "text-red-600")}>
-            {isCompleted ? "Completed" : "Incomplete"}
-          </p>
-          <div className="flex gap-3 text-[14px] text-gray">
-            <p>{toCapitalize(task.difficulty)}</p>•
+        <div className="relative flex flex-col gap-2">
+          <h1 className="font-heading font-semibold text-[16px]">{toCapitalize(task.task)}</h1>
+          <div className="flex gap-3 text-[12px] text-gray items-center">
+            <p
+              className={clsx(
+                "bg-theme-darker/60 rounded-full text-[11.5px] px-2 py-1 inline size-fit",
+                isCompleted ? "text-green-400" : "text-red-600"
+              )}
+            >
+              {isCompleted ? "Completed" : "Incomplete"}
+            </p>
+            •<p>{toCapitalize(task.difficulty)}</p>•
             <p>
               {isCompleted
                 ? task.completedAt
@@ -83,23 +89,11 @@ const TaskCard = ({ task, setError }: TaskProps) => {
               </p>
             )}
           </div>
-          <p className="text-[15px] text-theme-reverse-darker">{task.description}</p>
         </div>
-        <Edit className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
-      </div>
-      <div className="flex justify-end gap-4">
-        <ButtonV
-          onClick={markCompleteToggle}
-          text={isCompleted ? "Mark Incomplete" : "Mark Complete"}
-          className={clsx(
-            "h-10 w-fit !px-6 text-[13px] !text-theme-reverse border border-transparent bg-(--goal-accent)! hover:bg-(--goal-accent-strong)!",
-            isCompleted && "bg-transparent! hover:bg-theme-dark!",
-            isCompleted ? "border-(--goal-accent)!" : "border-transparent!"
-          )}
-        />
+        <Edit className="cursor-pointer size-4.5 absolute right-0 mr-4" onClick={handleToInfoTask} />
       </div>
     </div>
   );
 };
 
-export default TaskCard;
+export default TaskCardCompact;

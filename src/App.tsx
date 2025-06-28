@@ -24,14 +24,13 @@ const App = () => {
                 <Routes>
                   <Route path="/signin" index element={<SignIn />} />
                   <Route path="/signup" element={<SignUp />} />
+                  <Route path="/google/callback" element={<Callback />} />
 
                   <Route path="/" element={<Layout />}>
                     <Route path="/" element={<SidebarUserLayout />}>
                       <Route index element={<Dashboard />} />
                       <Route path="/goal/create" element={<CreateGoalPage />} />
                     </Route>
-
-                    <Route path="/google/callback" element={<Callback />} />
 
                     <Route path="/" element={<SidebarGoalLayout />}>
                       <Route path="/goal/:goalId" element={<GoalPage />} />

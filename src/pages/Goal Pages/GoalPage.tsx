@@ -1,6 +1,5 @@
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import callApi from "@/utils/callApi";
-import { handleError, errorAuthBool } from "@/utils/errorHandler";
+import { errorAuthBool } from "@/utils/errorHandler";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -9,9 +8,10 @@ import { X } from "lucide-react";
 import toCapitalize from "@/utils/toCapitalize";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
-import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import { useGoalData, useTheme } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { AddTask } from "@/components/Forms/AddTask";
+import TaskCardCompact from "@/components/Cards/TaskCardCompact";
 
 type AiInput = {
   value: string;
@@ -37,7 +37,9 @@ export function ReadMore({ text, title, onClose }: { text: string; title: string
 }
 
 const GoalPage = () => {
-  const { data, error, setError, getData, loading, setData } = useGoalData();
+  const { data, error, setError, getData, loading } = useGoalData();
+  const { settings } = useTheme();
+
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
   const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
   const [readMore, setReadMore] = useState({ title: false, desc: false, taskTitle: false });
@@ -46,7 +48,6 @@ const GoalPage = () => {
   const errorAuth = errorAuthBool(error);
   const width = useViewportWidth();
   const navigate = useNavigate();
-  const { openNotification } = useNotification();
 
   useEffect(() => {
     const gettingData = async () => {
@@ -63,27 +64,6 @@ const GoalPage = () => {
   }, [readMore.desc]);
 
   const { description, tasks, title } = data;
-
-  const undoDeleteTask = async (taskId: string) => {
-    try {
-      const response = await callApi("/task/restore", { method: "PUT", body: { taskId }, token: true });
-      openNotification({ message: response.data.notification, type: "success", button: "default" });
-      if (goalId) getData(goalId, false);
-    } catch (err) {
-      handleError(err, setError);
-    }
-  };
-
-  const deleteTask = async (taskId: string) => {
-    try {
-      const response = await callApi("/task", { method: "DELETE", body: { goalId, taskId }, token: true });
-      openNotification({ message: response.data.notification, type: "success", buttonFunc: { f: undoDeleteTask, params: [taskId], label: "Undo" } });
-      const deletedTaskId = response.data._id;
-      setData((prev) => ({ ...prev, tasks: tasks.filter((task) => task._id !== deletedTaskId) }));
-    } catch (err) {
-      handleError(err, setError);
-    }
-  };
 
   return (
     <div>
@@ -130,27 +110,36 @@ const GoalPage = () => {
               />
             </div>
           )}
-          {tasks.length > 0 ? (
-            tasks.map((task) => (
-              <TaskCard refetch={() => goalId && getData(goalId)} deletes={deleteTask} task={task} setError={setError} key={task._id} />
-            ))
-          ) : (
-            <Empty className="flex flex-col justify-center">
-              <p className="text-gray">No Task Found</p>
-              <div className="relative h-12">
-                <ButtonV
-                  text="Create New Task"
-                  className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm bg-goal-accent hover:bg-goal-accent-strong"
-                  onClick={() => {
-                    if (!loading) {
-                      sessionStorage.setItem("goal-id", data._id);
-                      navigate("/task/create");
-                    }
-                  }}
-                />
-              </div>
-            </Empty>
-          )}
+          <div
+            className={clsx(
+              "flex flex-col gap-6 lg:gap-8 px-3",
+              settings.taskCard === "compact" && "gap-4!"
+            )}
+          >
+            {tasks.length > 0 ? (
+              settings.taskCard === "regular" ? (
+                tasks.map((task) => <TaskCard task={task} setError={setError} key={task._id} />)
+              ) : (
+                tasks.map((task) => <TaskCardCompact task={task} setError={setError} key={task._id} />)
+              )
+            ) : (
+              <Empty className="flex flex-col justify-center">
+                <p className="text-gray">No Task Found</p>
+                <div className="relative h-12">
+                  <ButtonV
+                    text="Create New Task"
+                    className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm bg-goal-accent hover:bg-goal-accent-strong"
+                    onClick={() => {
+                      if (!loading) {
+                        sessionStorage.setItem("goal-id", data._id);
+                        navigate("/task/create");
+                      }
+                    }}
+                  />
+                </div>
+              </Empty>
+            )}
+          </div>
         </div>
       </div>
     </div>

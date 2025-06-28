@@ -7,7 +7,7 @@ import { useNotification, useUserData } from "./UseContexts";
 
 type TGoalContent = {
   data: GoalData;
-  getData: (goalId: string, load?: boolean) => Promise<void>;
+  getData: (goalId?: string, load?: boolean) => Promise<void>;
   setData: React.Dispatch<React.SetStateAction<GoalData>>;
   loading: boolean;
   error: GoalData & TError;
@@ -34,10 +34,10 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
   const { openNotification } = useNotification();
   const { refetchData } = useUserData();
 
-  const getData = async (goalId: string, load: boolean = true) => {
+  const getData = async (goalId?: string, load: boolean = true) => {
     setLoading(load);
     try {
-      const response = await callApi(`/goal?goalId=${goalId}`, { method: "GET", token: true });
+      const response = await callApi(`/goal?goalId=${goalId || data._id}`, { method: "GET", token: true });
       setData(response.data);
     } catch (err) {
       handleError(err, setError);

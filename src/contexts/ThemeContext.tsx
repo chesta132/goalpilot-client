@@ -10,6 +10,7 @@ type ThemeSettings = {
   goalAccent: string;
   goalAccentSoft: string;
   goalAccentStrong: string;
+  taskCard: "regular" | "compact";
 };
 
 const defaultSettings: ThemeSettings = {
@@ -20,6 +21,7 @@ const defaultSettings: ThemeSettings = {
   goalAccent: "#66b2ff",
   goalAccentSoft: "#9fcfff",
   goalAccentStrong: "#2a94ff",
+  taskCard: "regular",
 };
 
 interface ThemeContextType {
@@ -47,6 +49,7 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
       goalAccent: parsedSettings.goalAccent ?? defaultSettings.goalAccent,
       goalAccentSoft: parsedSettings.goalAccentSoft ?? defaultSettings.goalAccentSoft,
       goalAccentStrong: parsedSettings.goalAccentStrong ?? defaultSettings.goalAccentStrong,
+      taskCard: parsedSettings.taskCard ?? defaultSettings.taskCard,
     };
   } catch (error) {
     console.error("Failed to parse settings from localStorage:", error);

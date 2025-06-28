@@ -7,7 +7,7 @@ import useScrollNavigation from "../../hooks/useScrollNavigation";
 import type { UserData } from "../../utils/types";
 import clsx from "clsx";
 import { Switch } from "antd";
-import { useTheme } from "@/contexts/UseContexts";
+import { useGoalData, useTheme } from "@/contexts/UseContexts";
 
 type scrollNav = {
   navRef: React.RefObject<null>;
@@ -27,6 +27,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
   const { settings, updateSettings } = useTheme();
+  const { getData: getGoalData } = useGoalData();
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -65,6 +66,12 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
     updateSettings({ themeMode: settings.themeMode === "light" ? "dark" : "light" });
   };
 
+  const handleChangeTaskCard = async () => {
+    await getGoalData(undefined, false);
+    if (settings.taskCard === "regular") updateSettings({ taskCard: "compact" });
+    if (settings.taskCard === "compact") updateSettings({ taskCard: "regular" });
+  };
+
   return (
     <nav>
       <div
@@ -75,17 +82,25 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
           <div className={clsx("lg:hidden", !showNavbar && "opacity-0 w-0 -z-10")}>
             <Hamburger toggled={isOpen} toggle={setIsOpen} size={24} />
           </div>
-          <Link to={'/'} className="text-[18px] font-heading font-bold leading-7 text-center ml-4">
+          <Link to={"/"} className="text-[18px] font-heading font-bold leading-7 text-center ml-4">
             <span className="text-primary">Goal</span>Pilot
           </Link>
         </div>
         <div className="flex items-center">
           {/* DEBUG ONLY */}
-          <Switch
-            value={settings.themeMode === "light"}
-            style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-dark)" }}
-            onChange={handleChangeTheme}
-          />
+          <div className="flex gap-5 items-center">
+            <Switch
+              value={settings.taskCard === "regular"}
+              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-dark)" }}
+              onChange={handleChangeTaskCard}
+            />
+            <Switch
+              value={settings.themeMode === "light"}
+              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-dark)" }}
+              onChange={handleChangeTheme}
+            />
+          </div>
+          {/* DEBUG ONLY */}
           <Link to="/profile" className="hover:text-accent ml-4">
             <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}

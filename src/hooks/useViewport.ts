@@ -12,7 +12,7 @@ function useViewportWidth(delay = 500) {
       }
 
       // Set new timeout
-      timerRef.current = setTimeout(() => {
+      timerRef.current = window.setTimeout(() => {
         setWidth(window.innerWidth);
       }, delay);
     };

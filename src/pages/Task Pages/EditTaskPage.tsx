@@ -114,8 +114,12 @@ export const EditTaskPage = () => {
     }
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center">
+    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center mb-25">
       {error.error && (
         <ErrorPopup
           title={error && error.error.title}
