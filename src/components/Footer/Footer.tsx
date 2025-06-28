@@ -1,9 +1,15 @@
 import GoalPilot from "@/assets/images/goalpilot-icon.png";
+import clsx from "clsx";
+import { useLocation } from "react-router";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+
+  const path = location.pathname;
+  const halfFooter = path === "/" || path === "/task/create" || path.startsWith("/goal");
 
   return (
-    <footer className="bg-slate-800 text-slate-300 border-t border-slate-700">
+    <footer className={clsx("bg-slate-800 text-slate-300 border-t border-slate-700", halfFooter && "lg:ml-[22%]")}>
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
