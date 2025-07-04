@@ -60,7 +60,7 @@ const TaskCard = ({ task, setError }: TaskProps) => {
   };
 
   return (
-    <div className="border rounded-lg p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
+    <div className="border rounded-lg p-6.5 shadow-md relative bg-theme border-theme-darker gap-5 flex flex-col">
       <div className="flex justify-between">
         <div className="relative flex flex-col gap-3">
           <h1 className="font-heading font-semibold text-[18px]">{toCapitalize(task.task)}</h1>
@@ -85,7 +85,7 @@ const TaskCard = ({ task, setError }: TaskProps) => {
           </div>
           <p className="text-[15px] text-theme-reverse-darker">{task.description}</p>
         </div>
-        <Edit className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
+        <Edit className="cursor-pointer size-4.5 absolute right-0 mr-5" onClick={handleToInfoTask} />
       </div>
       <div className="flex justify-end gap-4">
         <ButtonV

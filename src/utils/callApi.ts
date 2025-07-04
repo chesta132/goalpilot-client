@@ -1,4 +1,5 @@
 import axios from "axios";
+import { codeAuthError } from "./defaultData";
 
 type Options =
   | {
@@ -17,15 +18,16 @@ export default async function callApi(
   const apiURL = import.meta.env.VITE_API_URL;
   const sessionToken = sessionStorage.getItem("jwt-token");
   const localToken = localStorage.getItem("jwt-token");
-  if (options.directToken) {
-    if (!localToken && !sessionToken && window.location.pathname !== "/signin" && window.location.pathname !== "/signup") {
-      window.location.href = "/signin";
-      return { data: { message: "Error Authentication" } };
-    }
-  }
-  if (options.token) {
-    if (!localToken && !sessionToken) throw { data: { message: "Authentication Needed", code: "INVALID_AUTH" } };
-  }
+  // refactor kalo nanti backend migrate udh clear
+  // if (options.directToken) {
+  //   if (!localToken && !sessionToken && window.location.pathname !== "/signin" && window.location.pathname !== "/signup") {
+  //     window.location.href = "/signin";
+  //     return { data: { message: "Error Authentication" } };
+  //   }
+  // }
+  // if (options.token) {
+  //   if (!localToken && !sessionToken) throw { data: { message: "Authentication Needed", code: "INVALID_AUTH" } };
+  // }
   try {
     const response = await axios({
       method: options.method,
@@ -36,10 +38,17 @@ export default async function callApi(
         ...(options.token && { Authorization: `Bearer ${sessionToken || localToken}` }),
         ...options.headers,
       },
+      withCredentials: true,
     });
+    if (import.meta.env.VITE_ENV !== "production") console.log(`Endpoint:\n${response.config.url}\n`, response, '\n\n');
     return response;
   } catch (error) {
     console.error("Error in API call:", error);
+    if (options.directToken) {
+      if (axios.isAxiosError(error) && codeAuthError.includes(error.response?.data.code)) {
+        return (window.location.href = "/signin");
+      }
+    }
     throw error;
   }
 }

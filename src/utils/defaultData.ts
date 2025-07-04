@@ -1,4 +1,4 @@
-import type { GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "./types";
+import type { CodeAuthError, GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "./types";
 
 export const defaultTaskData: TaskData = {
   _id: "",
@@ -75,3 +75,12 @@ export const defaultEditTaskData: TEditTaskValue = {
   ...defaultNewTaskData,
   isCompleted: false,
 };
+
+export const codeAuthError: CodeAuthError[] = [
+  "INVALID_AUTH",
+  "INVALID_JWT",
+  "REFRESH_TOKEN_INVALID",
+  "ACCESS_TOKEN_INVALID",
+  "TOKEN_BLACKLISTED",
+  "INVALID_ROLE",
+];
