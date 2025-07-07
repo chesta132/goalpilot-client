@@ -16,7 +16,7 @@ import { useUserData } from "@/contexts/UseContexts";
 const defaultError = {
   email: "",
   password: "",
-  rememberMe: true,
+  rememberMe: false,
   error: null,
 };
 
@@ -24,7 +24,7 @@ const SignIn = () => {
   const [value, setValue] = useState<TSignIn>({
     email: "",
     password: "",
-    rememberMe: true,
+    rememberMe: false,
   });
   const [error, setError] = useState<TSignIn & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);

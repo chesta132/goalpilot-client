@@ -22,7 +22,7 @@ const SignUp = () => {
     password: "",
     firstName: "",
     lastName: "",
-    rememberMe: true,
+    rememberMe: false,
   });
   const [error, setError] = useState<TSignUp & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);

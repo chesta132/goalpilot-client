@@ -17,6 +17,7 @@ const Checkbox = ({ id, className, label, size, checked, onChange }: CheckboxPro
       <input
         onChange={onChange}
         checked={checked}
+        defaultChecked={checked}
         type="checkbox"
         id={id}
         style={{ height: size || 4, width: size || 4 }}
