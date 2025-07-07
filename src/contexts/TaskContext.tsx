@@ -19,7 +19,7 @@ const TaskContext = createContext<TTaskContent>({
   data: defaultTaskData,
   getData: () => {},
   setData: () => {},
-  error: {...defaultTaskData, error: null },
+  error: { ...defaultTaskData, error: null },
   clearError: () => {},
   setError: () => {},
   deleteTask: async () => {},
@@ -27,7 +27,7 @@ const TaskContext = createContext<TTaskContent>({
 
 const TaskProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<TaskData>(defaultTaskData);
-  const [error, setError] = useState<TaskData & TError>({...defaultTaskData, error: null });
+  const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null });
   const { openNotification } = useNotification();
   const { refetchData } = useUserData();
   const { getData: getGoalData } = useGoalData();
@@ -37,11 +37,11 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     setData(taskData);
   };
 
-  const clearError = () => setError({...defaultTaskData, error: null });
+  const clearError = () => setError({ ...defaultTaskData, error: null });
 
   const handleUndo = async (taskId: string, goalId: string) => {
     try {
-      const response = await callApi("/task/restore", { method: "PUT", token: true, body: { taskId } });
+      const response = await callApi("/task/restore", { method: "PUT", body: { taskId } });
       refetchData(false);
       getGoalData(goalId, false);
       openNotification({ message: response.data.notification, button: "default" });
@@ -52,13 +52,13 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteTask = async () => {
     try {
-      const response = await callApi("/task", { method: "DELETE", token: true, body: { taskId: data._id } });
+      const response = await callApi("/task", { method: "DELETE", body: { taskId: data._id } });
       openNotification({ message: response.data.notification, buttonFunc: { f: handleUndo, params: [data._id, data.goalId], label: "Undo" } });
       refetchData(false);
       setData(defaultTaskData);
     } catch (err) {
       handleError(err, setError);
-    } 
+    }
   };
 
   const contextValue = {

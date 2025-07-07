@@ -49,7 +49,7 @@ export const CreateTaskPage = () => {
     }
 
     try {
-      const response = await callApi("/task", { method: "POST", token: true, body: { ...valueCreate, goalId: valueCreate.goalId } });
+      const response = await callApi("/task", { method: "POST", body: { ...valueCreate, goalId: valueCreate.goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
       if (response.data._id === taskId) {
         setValueCreate(response.data);

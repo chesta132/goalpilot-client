@@ -52,7 +52,7 @@ export const CreateGoalPage = () => {
     }
 
     try {
-      const response = await callApi("/goal", { method: "POST", token: true, body: valueCreate });
+      const response = await callApi("/goal", { method: "POST", body: valueCreate });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
       setValueCreate(response.data);
       if (data) setData((prev) => ({ ...prev!, goals: [response.data, ...prev!.goals] }));

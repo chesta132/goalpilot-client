@@ -37,7 +37,7 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
   const getData = async (goalId?: string, load: boolean = true) => {
     setLoading(load);
     try {
-      const response = await callApi(`/goal?goalId=${goalId || data._id}`, { method: "GET", token: true });
+      const response = await callApi(`/goal?goalId=${goalId || data._id}`, { method: "GET" });
       setData(response.data);
     } catch (err) {
       handleError(err, setError);
@@ -48,7 +48,7 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
 
   const handleUndo = async (goalId: string) => {
     try {
-      const response = await callApi("/goal/restore", { method: "PUT", token: true, body: { goalId } });
+      const response = await callApi("/goal/restore", { method: "PUT", body: { goalId } });
       refetchData(false);
       openNotification({ message: response.data.notification, button: "default" });
     } catch (err) {
@@ -59,7 +59,7 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
   const deleteGoal = async () => {
     setLoading(true);
     try {
-      const response = await callApi("/goal", { method: "DELETE", token: true, body: { goalId: data._id } });
+      const response = await callApi("/goal", { method: "DELETE", body: { goalId: data._id } });
       openNotification({ message: response.data.notification, buttonFunc: { f: handleUndo, params: [data._id], label: "Undo" } });
       refetchData(false);
       setData(defaultGoalData);

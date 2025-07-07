@@ -63,7 +63,7 @@ export const EditTaskPage = () => {
     }
 
     try {
-      const response = await callApi("/task", { method: "PUT", token: true, body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
+      const response = await callApi("/task", { method: "PUT", body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
       sessionStorage.setItem("task-data", JSON.stringify(response.data));
       if (response.data._id === taskId) {
@@ -85,7 +85,7 @@ export const EditTaskPage = () => {
 
   const handleUndo = async (goalId: string) => {
     try {
-      const response = await callApi("/task/restore", { method: "PUT", body: { taskId }, token: true });
+      const response = await callApi("/task/restore", { method: "PUT", body: { taskId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
       refetchData();
       getGoalData(goalId, false);
@@ -97,7 +97,7 @@ export const EditTaskPage = () => {
   const handleDelete = async () => {
     setSubmitting(true);
     try {
-      const response = await callApi("/task", { method: "DELETE", token: true, body: { taskId, goalId: valueEdit.goalId } });
+      const response = await callApi("/task", { method: "DELETE", body: { taskId, goalId: valueEdit.goalId } });
       openNotification({
         type: "success",
         buttonFunc: { f: handleUndo, label: "Undo", params: [valueEdit.goalId] },

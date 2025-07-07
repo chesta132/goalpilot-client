@@ -43,7 +43,7 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
 
     try {
       setAiInput((prev) => ({ ...prev, loading: true, error: null }));
-      const response = await callApi("/ai", { method: "POST", body: { query: aiInput.value, goalId }, token: true });
+      const response = await callApi("/ai", { method: "POST", body: { query: aiInput.value, goalId } });
       openNotification({ message: response.data.notification, type: "success", button: "default" });
       if (goalId) getData(goalId);
       setAddTaskAIInput(false);

@@ -64,7 +64,7 @@ export const EditGoalPage = () => {
     }
 
     try {
-      const response = await callApi("/goal", { method: "PUT", token: true, body: { ...valueEdit, goalId } });
+      const response = await callApi("/goal", { method: "PUT", body: { ...valueEdit, goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
       sessionStorage.setItem("goal-data", JSON.stringify(response.data));
       if (response.data._id === goalId) setData(response.data);

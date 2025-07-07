@@ -33,7 +33,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     if (withLoad) setLoading(true);
     setError({ ...defaultUserData, error: null });
     try {
-      const response = await callApi("/user", { method: "PATCH", token: true, directToken: direct });
+      const response = await callApi("/user", { method: "PATCH", directToken: direct });
       setData(response.data);
     } catch (err) {
       handleError(err, setError);
@@ -46,7 +46,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchData(true, true);
     const interval = setInterval(() => {
-      callApi("/user/heartbeat", { method: "PATCH", token: true });
+      callApi("/user/heartbeat", { method: "PATCH" });
     }, 50000); // 50 seconds
 
     return () => clearInterval(interval);

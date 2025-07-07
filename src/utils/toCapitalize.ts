@@ -1,4 +1,5 @@
 function toCapitalize(inputString: string, scissors?: string) {
+  // @ts-expect-error lib error
   const lowerCaseString = inputString.toLowerCase().replaceAll(scissors || " ", " ");
 
   const words = lowerCaseString.split(" ");

@@ -47,7 +47,7 @@ const TaskCard = ({ task, setError }: TaskProps) => {
 
   const markCompleteToggle = async () => {
     try {
-      await callApi("/task", { method: "PUT", token: true, body: { goalId, taskId: task._id, isCompleted: !isCompleted } });
+      await callApi("/task", { method: "PUT", body: { goalId, taskId: task._id, isCompleted: !isCompleted } });
       setIsCompleted((prev) => !prev);
     } catch (err) {
       handleError(err, setError);
