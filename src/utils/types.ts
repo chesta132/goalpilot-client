@@ -1,12 +1,14 @@
 export type TSignIn = {
   email: string;
   password: string;
+  rememberMe: boolean;
 };
 
 export type TSignUp = TSignIn & {
   username: string;
   firstName: string;
   lastName: string;
+  rememberMe: boolean;
 };
 
 export type TaskData = {
@@ -111,21 +113,20 @@ export type Values = {
 export type ErrorWithValues = TError & Partial<Values>;
 
 export type ApiErrorResponseData = {
-  code?: string;
+  code?: CodeError;
   message: string;
-  name?: string;
+  title?: string;
 };
 
-export type CodeAuthError = "INVALID_AUTH" | "INVALID_JWT" | "REFRESH_TOKEN_INVALID" | "ACCESS_TOKEN_INVALID" | "TOKEN_BLACKLISTED" | "INVALID_ROLE";
-export type CodeFieldError = "MISSING_FIELDS" | "INCORRECT_PASSWORD";
-export type CodeDatabaseError =
-  | "USER_NOT_FOUND"
-  | "GOAL_NOT_FOUND"
-  | "TASK_NOT_FOUND"
-  | "EMAIL_NOT_FOUND"
-  | "EMAIL_UNAVAILABLE"
-  | "USERNAME_UNAVAILABLE"
-  | "VALIDATION_ERROR"
-  | "VERSION_CONFLICT";
+export type CodeAuthError =
+  | "INVALID_AUTH"
+  | "INVALID_JWT"
+  | "REFRESH_TOKEN_INVALID"
+  | "ACCESS_TOKEN_INVALID"
+  | "TOKEN_BLACKLISTED"
+  | "INVALID_ROLE"
+  | "INVALID_AUTH_METHODS";
+export type CodeFieldError = "MISSING_FIELDS" | "INVALID_PASSWORD_FIELD" | "INVALID_EMAIL_FIELD" | "INVALID_USERNAME_FIELD";
+export type CodeDatabaseError = "USER_NOT_FOUND" | "GOAL_NOT_FOUND" | "TASK_NOT_FOUND" | "VALIDATION_ERROR" | "VERSION_CONFLICT";
 
 export type CodeError = CodeAuthError | CodeFieldError | CodeDatabaseError | "SERVER_ERROR" | "ERR_NETWORK" | "ERR_BAD_REQUEST";

@@ -30,10 +30,11 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<UserData & TError>({ ...defaultUserData, error: null });
 
   const fetchData = async (withLoad?: boolean, direct?: boolean) => {
+    const path = window.location.pathname;
     if (withLoad) setLoading(true);
     setError({ ...defaultUserData, error: null });
     try {
-      const response = await callApi("/user", { method: "PATCH", directToken: direct });
+      const response = await callApi("/user", { method: "PATCH", directToken: path !== "/signin" && path !== "/signup" && direct });
       setData(response.data);
     } catch (err) {
       handleError(err, setError);

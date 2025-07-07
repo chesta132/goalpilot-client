@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { Check } from "lucide-react";
+import type { ChangeEvent } from "react";
 
 type CheckboxProps = {
   id?: string;
@@ -7,7 +8,7 @@ type CheckboxProps = {
   label: string;
   size?: number;
   checked?: boolean;
-  onChange?: () => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const Checkbox = ({ id, className, label, size, checked, onChange }: CheckboxProps) => {
@@ -15,7 +16,7 @@ const Checkbox = ({ id, className, label, size, checked, onChange }: CheckboxPro
     <label htmlFor={id} className={clsx("flex gap-2 text-theme-reverse-darker items-center cursor-pointer", className)}>
       <input
         onChange={onChange}
-        defaultChecked={checked}
+        checked={checked}
         type="checkbox"
         id={id}
         style={{ height: size || 4, width: size || 4 }}

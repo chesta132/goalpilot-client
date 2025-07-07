@@ -13,7 +13,7 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import type { TSignUp, TError } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
 
-const defaultError = { email: "", password: "", username: "", firstName: "", lastName: "", error: null };
+const defaultError = { email: "", password: "", username: "", firstName: "", lastName: "", rememberMe: false, error: null };
 
 const SignUp = () => {
   const [value, setValue] = useState<TSignUp>({
@@ -22,11 +22,12 @@ const SignUp = () => {
     password: "",
     firstName: "",
     lastName: "",
+    rememberMe: true,
   });
   const [error, setError] = useState<TSignUp & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
-  const { clearError, refetchData } = useUserData();
+  const { clearError, setData } = useUserData();
 
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -57,16 +58,7 @@ const SignUp = () => {
         method: "POST",
         body: { ...value, fullName: `${value.firstName} ${value.lastName}` },
       });
-      const form = e.target as HTMLFormElement;
-      const rememberMe = form.querySelector<HTMLInputElement>("#remember-me");
-      if (rememberMe && rememberMe.checked) {
-        localStorage.setItem("jwt-token", response.data.token);
-        sessionStorage.removeItem("jwt-token");
-      } else {
-        sessionStorage.setItem("jwt-token", response.data.token);
-        localStorage.removeItem("jwt-token");
-      }
-      refetchData(true, true);
+      setData(response.data);
       navigate("/");
     } catch (err) {
       handleFormError(err, setError);
@@ -142,7 +134,14 @@ const SignUp = () => {
               password
               onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
             />
-            <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
+            <Checkbox
+              id={"remember-me"}
+              label={"Remember Me"}
+              size={13}
+              onChange={(e) => {
+                setValue((prev) => ({ ...prev, rememberMe: e.target.checked }));
+              }}
+            />
             <ButtonV text="Create Account" className="!p-3 z-10" disabled={submiting} />
           </form>
           <p className="text-theme-reverse text-[13px]">

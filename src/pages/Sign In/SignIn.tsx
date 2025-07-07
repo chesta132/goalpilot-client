@@ -13,15 +13,23 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import type { TError, TSignIn } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
 
+const defaultError = {
+  email: "",
+  password: "",
+  rememberMe: true,
+  error: null,
+};
+
 const SignIn = () => {
   const [value, setValue] = useState<TSignIn>({
     email: "",
     password: "",
+    rememberMe: true,
   });
-  const [error, setError] = useState<TSignIn & TError>({ email: "", password: "", error: null });
+  const [error, setError] = useState<TSignIn & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
-  const { clearError, refetchData } = useUserData();
+  const { clearError, setData } = useUserData();
 
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -31,7 +39,7 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
-    setError({ email: "", password: "", error: null });
+    setError(defaultError);
 
     const validate = validateForms(value, setError, { regexEmail: true, email: true, password: true });
     if (validate) {
@@ -41,16 +49,7 @@ const SignIn = () => {
 
     try {
       const response = await callApi("/auth/signin", { method: "POST", body: value });
-      const form = e.target as HTMLFormElement;
-      const rememberMe = form.querySelector<HTMLInputElement>("#remember-me");
-      if (rememberMe?.checked) {
-        localStorage.setItem("jwt-token", response.data.token);
-        sessionStorage.removeItem("jwt-token");
-      } else {
-        sessionStorage.setItem("jwt-token", response.data.token);
-        localStorage.removeItem("jwt-token");
-      }
-      refetchData(true, true);
+      setData(response.data);
       navigate("/");
     } catch (err) {
       handleFormError(err, setError);
@@ -100,7 +99,14 @@ const SignIn = () => {
               onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
             />
             <div className="flex justify-between">
-              <Checkbox id={"remember-me"} label={"Remember Me"} size={13} />
+              <Checkbox
+                id={"remember-me"}
+                label={"Remember Me"}
+                size={13}
+                onChange={(e) => {
+                  setValue((prev) => ({ ...prev, rememberMe: e.target.checked }));
+                }}
+              />{" "}
               <a href="/forgot-password" className="text-accent hover:underline text-[13px]">
                 Forgot Password?
               </a>
