@@ -14,104 +14,104 @@ type Config = DynamicConfig<Values> & {
 };
 
 type ValidationRule<T> = {
-  condition: (value: T, config: Config) => boolean | undefined | 0 | "";
+  condition: (value: T, config: Config) => boolean;
   message: string | ((config: Config) => string);
 };
 
 type FieldValidations<T> = {
-  [K in keyof T]?: ValidationRule<T[K]>[];
+  [K in keyof Omit<T, "isCompleted">]?: ValidationRule<T[K]>[];
 };
 
 // Validation rules configuration
 const ValidationRules: FieldValidations<Values> = {
   title: [
     {
-      condition: (value, config) => config.title && (!value || value.trim() === ""),
+      condition: (value, config) => !!config.title && (!value || value.trim() === ""),
       message: "Title is required",
     },
     {
-      condition: (value, config) => config.titleMaxChar && value && value.length > config.titleMaxChar,
+      condition: (value, config) => !!config.titleMaxChar && !!value && value.length > config.titleMaxChar,
       message: (config) => `Maximum title character is ${config.titleMaxChar}`,
     },
   ],
   description: [
     {
-      condition: (value, config) => config.description && (!value || value.trim() === ""),
+      condition: (value, config) => !!config.description && (!value || value.trim() === ""),
       message: "Description is required",
     },
     {
-      condition: (value, config) => config.descMaxChar && value && value.length > config.descMaxChar,
+      condition: (value, config) => !!config.descMaxChar && !!value && value.length > config.descMaxChar,
       message: (config) => `Maximum description character is ${config.descMaxChar}`,
     },
   ],
   targetDate: [
     {
-      condition: (value, config) => config.targetDate && (!value || value === ""),
+      condition: (value, config) => !!config.targetDate && (!value || value === ""),
       message: "Target Date is required",
     },
   ],
   email: [
     {
-      condition: (value, config) => config.email && (!value || value.trim() === ""),
+      condition: (value, config) => !!config.email && (!value || value.trim() === ""),
       message: "Email is required",
     },
     {
-      condition: (value, config) => config.regexEmail && value && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value),
+      condition: (value, config) => !!config.regexEmail && !!value && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value),
       message: "Please input a valid email",
     },
   ],
   password: [
     {
-      condition: (value, config) => config.password && (!value || value.trim() === ""),
+      condition: (value, config) => !!config.password && (!value || value.trim() === ""),
       message: "Password is required",
     },
   ],
   username: [
     {
-      condition: (value, config) => config.username && (!value || value.trim() === ""),
+      condition: (value, config) => !!config.username && (!value || value.trim() === ""),
       message: "Username is required",
     },
     {
-      condition: (value, config) => config.usernameSpace && value && value.includes(" "),
+      condition: (value, config) => !!config.usernameSpace && !!value && value.includes(" "),
       message: "Username can't have spaces",
     },
     {
-      condition: (value, config) => config.usernameLowerCased && value && value !== value.toLowerCase(),
+      condition: (value, config) => !!config.usernameLowerCased && !!value && value !== value.toLowerCase(),
       message: "Username must be lowercased",
     },
   ],
   firstName: [
     {
-      condition: (value, config) => config.firstName && (!value || value.trim() === ""),
+      condition: (value, config) => !!config.firstName && (!value || value.trim() === ""),
       message: "First name is required",
     },
   ],
   color: [
     {
-      condition: (value, config) => config.color && (!value || value?.trim() === ""),
+      condition: (value, config) => !!config.color && (!value || value?.trim() === ""),
       message: "Color is required",
     },
   ],
   task: [
     {
-      condition: (value, config) => config.task && (!value || value?.trim() === ""),
+      condition: (value, config) => !!config.task && (!value || value?.trim() === ""),
       message: "Task is required",
     },
     {
-      condition: (value, config) => config.taskMaxChar && value && value.length > config.taskMaxChar,
+      condition: (value, config) => !!config.taskMaxChar && !!value && value.length > config.taskMaxChar,
       message: (config) => `Maximum task character is ${config.taskMaxChar}`,
     },
   ],
   difficulty: [
     {
       condition: (value, config) =>
-        config.difficulty && (!value || value?.trim() === "" || !["easy", "medium", "hard", "very hard"].includes(value.trim())),
+        !!config.difficulty && (!value || value?.trim() === "" || !["easy", "medium", "hard", "very hard"].includes(value.trim())),
       message: "Please select a valid difficulty",
     },
   ],
   status: [
     {
-      condition: (value, config) => config.status && (!value || value?.trim() === ""),
+      condition: (value, config) => !!config.status && (!value || value?.trim() === ""),
       message: "Please select a valid status",
     },
   ],
@@ -119,19 +119,17 @@ const ValidationRules: FieldValidations<Values> = {
 
 const validateForms = <T extends Partial<Values>>(value: T, setError: React.Dispatch<React.SetStateAction<T & TError>>, config: Config): boolean => {
   let hasError = false;
-  const errors: Partial<T & TError> = {};
+  const errors: Partial<Values & TError> = {};
 
   for (const [fieldName, fieldValue] of Object.entries(value)) {
-    const fieldRules = ValidationRules[fieldName as keyof Values];
+    const fieldRules = ValidationRules[fieldName as keyof Omit<Values, "isCompleted">];
 
     if (!fieldRules) continue;
 
     for (const rule of fieldRules) {
-      // @ts-expect-error value is not never
-      if (rule.condition(fieldValue, config)) {
+      if (rule.condition(fieldValue.toString(), config)) {
         const message = typeof rule.message === "function" ? rule.message(config) : rule.message;
-        // @ts-expect-error fieldName is T & TError
-        errors[fieldName] = message;
+        errors[fieldName as keyof Omit<Values, "isCompleted">] = message;
         hasError = true;
         break;
       }
