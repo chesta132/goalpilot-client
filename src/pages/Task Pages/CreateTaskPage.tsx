@@ -5,7 +5,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useNotification } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultNewTaskData } from "@/utils/defaultData";
-import { errorAuthBool, handleFormError } from "@/utils/errorHandler";
+import { handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
 import type { TError, TNewTaskValue } from "@/utils/types";
@@ -24,7 +24,6 @@ export const CreateTaskPage = () => {
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const errorAuth = errorAuthBool(error);
 
   useEffect(() => {
     const goalId = sessionStorage.getItem("goal-id");
@@ -74,14 +73,7 @@ export const CreateTaskPage = () => {
   };
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
-      {error.error && (
-        <ErrorPopup
-          title={error && error.error.title}
-          message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
-          showBackToLoginPage={!errorAuth}
-        />
-      )}
+      {error.error && <ErrorPopup error={error} />}
       <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="font-heading text-[18px] font-semibold">Create Task</h1>

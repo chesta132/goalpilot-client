@@ -6,7 +6,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification, useUserData } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultTaskData } from "@/utils/defaultData";
-import { errorAuthBool, handleError, handleFormError } from "@/utils/errorHandler";
+import { handleError, handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
 import type { TaskData, TError } from "@/utils/types";
@@ -30,7 +30,6 @@ export const EditTaskPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
 
   const navigate = useNavigate();
-  const errorAuth = errorAuthBool(error);
 
   useEffect(() => {
     if (valueEdit._id !== taskId || !valueEdit._id) {
@@ -120,14 +119,7 @@ export const EditTaskPage = () => {
 
   return (
     <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center mb-25">
-      {error.error && (
-        <ErrorPopup
-          title={error && error.error.title}
-          message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
-          showBackToLoginPage={!errorAuth}
-        />
-      )}
+      {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="task" setClose={() => setDeletePopup(false)} />}
       <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
@@ -214,7 +206,7 @@ export const EditTaskPage = () => {
           <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
           <ButtonV
             icon={<Trash2 size={13} />}
-            text="Delete Goal"
+            text="Delete Task"
             onClick={() => setDeletePopup(true)}
             className="text-[12px] !px-3 !py-2 text-white! bg-red-600 border hover:bg-red-700 border-none"
           />

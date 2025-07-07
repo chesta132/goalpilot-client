@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { errorAuthBool } from "@/utils/errorHandler";
 import { Plus } from "lucide-react";
 import ButtonV from "@/components/Inputs/ButtonV";
 import clsx from "clsx";
@@ -13,7 +12,6 @@ const Dashboard = () => {
   const { data, loading, error } = useUserData();
 
   const width = useViewportWidth();
-  const errorAuth = errorAuthBool(error);
   const navigate = useNavigate();
 
   const handleCreateGoal = () => {
@@ -24,14 +22,7 @@ const Dashboard = () => {
   return (
     <div>
       {/* Header/absolute */}
-      {error.error && (
-        <ErrorPopup
-          title={error && error.error.title}
-          message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK"}
-          showBackToLoginPage={!errorAuth}
-        />
-      )}
+      {error.error && <ErrorPopup error={error} />}
 
       {/* Dashboard */}
       <div className={clsx("px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10")}>

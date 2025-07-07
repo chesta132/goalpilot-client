@@ -1,7 +1,7 @@
 export type TSignIn = {
   email: string;
-  password: string
-}
+  password: string;
+};
 
 export type TSignUp = TSignIn & {
   username: string;
@@ -88,7 +88,7 @@ export type TError = {
   error?: {
     title: string;
     message: string;
-    code?: string;
+    code?: CodeAuthError;
   } | null;
 };
 
@@ -128,4 +128,4 @@ export type CodeDatabaseError =
   | "VALIDATION_ERROR"
   | "VERSION_CONFLICT";
 
-export type CodeError = CodeAuthError | CodeFieldError | CodeDatabaseError | "SERVER_ERROR";
+export type CodeError = CodeAuthError | CodeFieldError | CodeDatabaseError | "SERVER_ERROR" | "ERR_NETWORK" | "ERR_BAD_REQUEST";

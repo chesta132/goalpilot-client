@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import type { ApiErrorResponseData, ErrorWithValues, TError } from "./types"; // Import tipe yg udah kita buat
+import type { ApiErrorResponseData, CodeAuthError, ErrorWithValues, TError } from "./types"; // Import tipe yg udah kita buat
 
 function isAxiosErrorWithResponseData(error: unknown): error is AxiosError<ApiErrorResponseData> {
   if (!axios.isAxiosError(error)) return false;
@@ -49,6 +49,16 @@ export function handleFormError<T extends ErrorWithValues>(err: unknown, setErro
   }
 }
 
+export const codeAuthError: CodeAuthError[] = [
+  "INVALID_AUTH",
+  "INVALID_JWT",
+  "REFRESH_TOKEN_INVALID",
+  "ACCESS_TOKEN_INVALID",
+  "TOKEN_BLACKLISTED",
+  "INVALID_ROLE",
+];
+
 export function errorAuthBool(error: TError): boolean {
-  return ["TOKEN_EXPIRED", "USER_NOT_FOUND", "INVALID_AUTH"].includes(error?.error?.code ?? "");
+  if (!error?.error?.code) return false;
+  return codeAuthError.includes(error?.error?.code);
 }

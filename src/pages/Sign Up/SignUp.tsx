@@ -80,7 +80,7 @@ const SignUp = () => {
   return (
     <div className="flex flex-row-reverse justify-center lg:justify-between items-center h-full m-0 p-0 bg-theme text-theme-reverse">
       <div className="flex flex-col justify-center items-center gap-5 py-10" style={{ width: width > 1024 ? "50%" : "100%" }}>
-        {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
+        {error.error && <ErrorPopUp error={error} showBackToDashboard={false} showBackToLoginPage={false} />}
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8 font-heading">
             <span className="text-primary">Goal</span>Pilot

@@ -1,5 +1,4 @@
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { errorAuthBool } from "@/utils/errorHandler";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -45,7 +44,6 @@ const GoalPage = () => {
   const [readMore, setReadMore] = useState({ title: false, desc: false, taskTitle: false });
 
   const goalId = useParams().goalId;
-  const errorAuth = errorAuthBool(error);
   const width = useViewportWidth();
   const navigate = useNavigate();
 
@@ -68,14 +66,7 @@ const GoalPage = () => {
   return (
     <div>
       {/* Header/absolute */}
-      {error.error && (
-        <ErrorPopup
-          title={error && error.error.title}
-          message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
-          showBackToLoginPage={!errorAuth}
-        />
-      )}
+      {error.error && <ErrorPopup error={error} />}
       {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
 
       {/* Goal Page */}
@@ -110,12 +101,7 @@ const GoalPage = () => {
               />
             </div>
           )}
-          <div
-            className={clsx(
-              "flex flex-col gap-6 lg:gap-8 px-3",
-              settings.taskCard === "compact" && "gap-4!"
-            )}
-          >
+          <div className={clsx("flex flex-col gap-6 lg:gap-8 px-3", settings.taskCard === "compact" && "gap-4!")}>
             {tasks.length > 0 ? (
               settings.taskCard === "regular" ? (
                 tasks.map((task) => <TaskCard task={task} setError={setError} key={task._id} />)

@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { X, RefreshCw, Home, AlertTriangle, User2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import type { TError } from "@/utils/types";
+import { errorAuthBool } from "@/utils/errorHandler";
 
-type ErrorPopupProps = {
+type ErrorPopupProps<T> = {
+  error: T & TError;
   open?: boolean;
   title?: string;
   message?: string;
@@ -15,21 +18,28 @@ type ErrorPopupProps = {
   showBackToLoginPage?: boolean;
 };
 
-const ErrorPopup = ({
+function ErrorPopup<T>({
+  error,
   open = true,
-  title = "Oops! Something went wrong",
-  message = "We encountered an unexpected error. Please try again or contact support if the problem persists.",
+  title,
+  message,
   onClose,
   onRefresh,
   onBackToDashboard,
   onBackToLoginPage,
   showRefresh = true,
-  showBackToDashboard = true,
-  showBackToLoginPage = false,
-}: ErrorPopupProps) => {
+  showBackToDashboard,
+  showBackToLoginPage,
+}: ErrorPopupProps<T>) {
   const [isOpen, setIsOpen] = useState(open);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const navigate = useNavigate();
+  const errorAuth = errorAuthBool(error);
+
+  if (!title) title = error.error?.title;
+  if (!message) message = error.error?.message;
+  if (showBackToDashboard === undefined) showBackToDashboard = !errorAuth;
+  if (showBackToLoginPage === undefined) showBackToLoginPage = errorAuth;
 
   const handleCloseClick = () => {
     setShowCloseConfirm(true);
@@ -166,6 +176,6 @@ const ErrorPopup = ({
       </div>
     </div>
   );
-};
+}
 
 export default ErrorPopup;

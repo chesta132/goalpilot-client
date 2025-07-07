@@ -1,5 +1,5 @@
 import axios from "axios";
-import { codeAuthError } from "./defaultData";
+import { codeAuthError } from "./errorHandler";
 
 type Options =
   | {
@@ -40,15 +40,15 @@ export default async function callApi(
       },
       withCredentials: true,
     });
-    if (import.meta.env.VITE_ENV !== "production") console.log(`Endpoint:\n${response.config.url}\n`, response, '\n\n');
+    if (import.meta.env.VITE_ENV !== "production") console.log(`Endpoint:\n${response.config.url}\n`, response, "\n\n");
     return response;
   } catch (error) {
     console.error("Error in API call:", error);
     if (options.directToken) {
-      if (axios.isAxiosError(error) && codeAuthError.includes(error.response?.data.code)) {
-        return (window.location.href = "/signin");
+      if (axios.isAxiosError(error) && codeAuthError.slice(1).includes(error.response?.data.code)) {
+        window.location.href = "/signin";
       }
     }
-    throw error;
+    throw error as Error;
   }
 }

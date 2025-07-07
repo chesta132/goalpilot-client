@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import toCapitalize from "@/utils/toCapitalize";
 import { Button, notification, Space } from "antd";
 import React, { createContext } from "react";
 
@@ -61,7 +62,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       </Space>
     );
     const apiItems = {
-      message,
+      message: toCapitalize(message),
       description,
       showProgress: true,
       placement,

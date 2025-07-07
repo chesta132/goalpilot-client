@@ -63,7 +63,7 @@ const SignIn = () => {
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
     <div className="flex justify-center lg:justify-between items-center px-5 lg:px-0 bg-theme text-theme-reverse">
-      {error.error && <ErrorPopUp message={error.error.message} title={error.error.title} showBackToDashboard={false} />}
+      {error.error && <ErrorPopUp error={error} showBackToDashboard={false} showBackToLoginPage={false} />}
       {/* LEFT IN LG */}
       <div className="my-7 flex flex-col justify-center items-center gap-5" style={{ width: width > 1024 ? "50%" : "100%" }}>
         <div className="flex flex-col text-center gap-2">

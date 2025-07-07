@@ -6,7 +6,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultGoalData } from "@/utils/defaultData";
-import { errorAuthBool, handleError, handleFormError } from "@/utils/errorHandler";
+import { handleError, handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
 import type { GoalData, TError } from "@/utils/types";
@@ -30,8 +30,6 @@ export const EditGoalPage = () => {
   const [error, setError] = useState<TValueEdit & TError>({ ...defaultGoalData, error: null, targetDate: "", status: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
-
-  const errorAuth = errorAuthBool(error);
 
   useEffect(() => {
     if (valueEdit._id !== goalId || !valueEdit._id) {
@@ -99,14 +97,7 @@ export const EditGoalPage = () => {
 
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
-      {error.error && (
-        <ErrorPopup
-          title={error && error.error.title}
-          message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
-          showBackToLoginPage={!errorAuth}
-        />
-      )}
+      {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="goal" setClose={() => setDeletePopup(false)} />}
       <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
         <div className="flex justify-between items-center">

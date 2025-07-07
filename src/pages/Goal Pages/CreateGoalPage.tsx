@@ -5,7 +5,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useNotification, useUserData } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultNewGoalData } from "@/utils/defaultData";
-import { errorAuthBool, handleFormError } from "@/utils/errorHandler";
+import { handleFormError } from "@/utils/errorHandler";
 import type { TError, TNewGoalValue } from "@/utils/types";
 import validateForms from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Switch } from "antd";
@@ -22,7 +22,6 @@ export const CreateGoalPage = () => {
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const errorAuth = errorAuthBool(error);
   const userId = sessionStorage.getItem("user-id");
 
   useEffect(() => {
@@ -78,14 +77,7 @@ export const CreateGoalPage = () => {
 
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
-      {error.error && (
-        <ErrorPopup
-          title={error && error.error.title}
-          message={error && error.error.message}
-          showBackToDashboard={!errorAuth && error.error.code !== "ERR_NETWORK" && error.error.code !== "ERR_BAD_REQUEST"}
-          showBackToLoginPage={!errorAuth}
-        />
-      )}
+      {error.error && <ErrorPopup error={error} />}
       <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="font-heading text-[18px] font-semibold">Create Goal</h1>
