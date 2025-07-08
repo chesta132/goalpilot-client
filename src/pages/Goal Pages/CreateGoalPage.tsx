@@ -7,10 +7,10 @@ import callApi from "@/utils/callApi";
 import { defaultNewGoalData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import type { TError, TNewGoalValue } from "@/utils/types";
-import validateForms from "@/utils/validateForms";
+import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Switch } from "antd";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 
 export const CreateGoalPage = () => {
@@ -35,16 +35,15 @@ export const CreateGoalPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const handleCreate = async () => {
+  const handleCreate = async (e: FormEvent) => {
+    e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultNewGoalData, error: null, color: "" });
     const validate = validateForms(valueCreate, setError, {
-      title: true,
-      description: true,
+      title: { max: 100 },
+      description: { max: 1500 },
       targetDate: true,
       color: true,
-      titleMaxChar: 100,
-      descMaxChar: 1500,
     });
     if (validate) {
       setSubmitting(false);
@@ -75,10 +74,25 @@ export const CreateGoalPage = () => {
     else if (typeof to === "number") navigate(to);
   };
 
+  const handleChangeForm = useCallback(
+    (value: Partial<TNewGoalValue & { config: Config[keyof Config] }>) => {
+      const config: Config = { [Object.keys(value)[0]]: value.config };
+      handleChange(
+        Object.keys(value)[0] as keyof TNewGoalValue,
+        Object.values(value)[0] as TNewGoalValue[keyof TNewGoalValue],
+        error,
+        setValueCreate,
+        setError,
+        config
+      );
+    },
+    [error]
+  );
+
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
       {error.error && <ErrorPopup error={error} />}
-      <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
+      <form onSubmit={handleCreate} className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="font-heading text-[18px] font-semibold">Create Goal</h1>
         </div>
@@ -87,7 +101,7 @@ export const CreateGoalPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.title}
-              onChange={(e) => setValueCreate((prev) => ({ ...prev, title: e.target.value }))}
+              onChange={(e) => handleChangeForm({ title: e.target.value, config: { max: 100 } })}
               value={valueCreate.title}
               label="Goal Title"
               placeholder="Your goal title"
@@ -95,7 +109,7 @@ export const CreateGoalPage = () => {
             />
             <TextArea
               error={error.description}
-              onChange={(e) => setValueCreate((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) => handleChangeForm({ description: e.target.value, config: { max: 1500 } })}
               value={valueCreate.description}
               placeholder="Your goal description"
               label="Goal Description"
@@ -115,9 +129,7 @@ export const CreateGoalPage = () => {
                   color="var(--theme)"
                   className="text-theme-reverse datepicker size-full"
                   placeholder="Choose target date of goal"
-                  onChange={(e) =>
-                    e ? setValueCreate((prev) => ({ ...prev, targetDate: e.format() })) : setValueCreate((prev) => ({ ...prev, targetDate: "" }))
-                  }
+                  onChange={(e) => handleChangeForm(e ? { targetDate: e.format() } : { targetDate: "" })}
                 />
                 {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
               </div>
@@ -129,7 +141,7 @@ export const CreateGoalPage = () => {
                   showText
                   format="hex"
                   value={valueCreate.color}
-                  onChangeComplete={(e) => setValueCreate((prev) => ({ ...prev, color: e.toHexString() }))}
+                  onChangeComplete={(e) => handleChangeForm({ color: e.toHexString() })}
                 />
                 {error.color && <p className="text-red-500 text-[12px] text-start">{error.color}</p>}
               </div>
@@ -141,7 +153,7 @@ export const CreateGoalPage = () => {
               </div>
               <Switch
                 style={{ backgroundColor: valueCreate.isPublic ? "var(--accent)" : "var(--theme-darker)" }}
-                onChange={(e) => setValueCreate((prev) => ({ ...prev, isPublic: e.valueOf() }))}
+                onChange={(e) => handleChangeForm({ isPublic: e.valueOf() })}
                 value={valueCreate.isPublic}
               />
             </div>
@@ -149,20 +161,15 @@ export const CreateGoalPage = () => {
         </div>
         <div className="flex gap-3 justify-end mt-10">
           <ButtonV
+            type="button"
             disabled={isSubmitting}
             onClick={handleBack}
             text="Cancel"
             className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
           />
-          <ButtonV
-            text="Create Goal"
-            icon={<CirclePlus size={14} />}
-            disabled={isSubmitting}
-            onClick={handleCreate}
-            className="text-[12px] !px-3 !py-2"
-          />
+          <ButtonV text="Create Goal" icon={<CirclePlus size={14} />} disabled={isSubmitting} className="text-[12px] !px-3 !py-2" />
         </div>
-      </div>
+      </form>
     </div>
   );
 };

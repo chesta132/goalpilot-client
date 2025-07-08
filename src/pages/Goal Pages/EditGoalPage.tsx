@@ -10,11 +10,11 @@ import { handleError, handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
 import type { GoalData, TError } from "@/utils/types";
-import validateForms from "@/utils/validateForms";
+import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
 import { Edit, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
@@ -38,17 +38,16 @@ export const EditGoalPage = () => {
     }
   }, [goalId, valueEdit._id, navigate]);
 
-  const handleSave = async () => {
+  const handleSave = async (e: FormEvent) => {
+    e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultGoalData, error: null, targetDate: "", status: "" });
     const validate = validateForms(valueEdit, setError, {
-      title: true,
-      description: true,
+      title: { max: 100 },
+      description: { max: 1500 },
       targetDate: true,
       color: true,
       status: true,
-      titleMaxChar: 100,
-      descMaxChar: 1500,
     });
     if (validate) {
       setSubmitting(false);
@@ -95,21 +94,37 @@ export const EditGoalPage = () => {
     }
   };
 
+  const handleChangeForm = useCallback(
+    (value: Partial<TValueEdit & { config: Config[keyof Config] }>) => {
+      const config: Config = { [Object.keys(value)[0]]: value.config };
+      handleChange(
+        Object.keys(value)[0] as keyof TValueEdit,
+        Object.values(value)[0] as TValueEdit[keyof TValueEdit],
+        error,
+        setValueEdit,
+        setError,
+        config
+      );
+    },
+    [error]
+  );
+
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
       {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="goal" setClose={() => setDeletePopup(false)} />}
-      <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
+      <form onSubmit={handleSave} className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="font-heading text-[18px] font-semibold">Edit Goal</h1>
           <div className="flex gap-3">
             <ButtonV
+              type="button"
               disabled={isSubmitting}
               onClick={handleBack}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />
-            <ButtonV text="Save Changes" icon={<Edit size={14} />} disabled={isSubmitting} onClick={handleSave} className="text-[12px] !px-3 !py-2" />
+            <ButtonV text="Save Changes" icon={<Edit size={14} />} disabled={isSubmitting} className="text-[12px] !px-3 !py-2" />
           </div>
         </div>
         <div className="bg-gray h-[1px]" />
@@ -117,18 +132,18 @@ export const EditGoalPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.title}
-              onChange={(e) => setValueEdit((prev) => ({ ...prev, title: e.target.value }))}
+              onChange={(e) => handleChangeForm({ title: e.target.value, config: { max: 100 } })}
               value={valueEdit.title}
-              initialFocus
+              focus
               label="Goal Title"
               placeholder="Edit your goal title"
               TWBackgroundLabel="bg-theme-dark"
             />
             <TextArea
               error={error.description}
-              onChange={(e) => setValueEdit((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) => handleChangeForm({ description: e.target.value, config: { max: 1500 } })}
               value={valueEdit.description}
-              initialFocus
+              focus
               placeholder="Edit your goal description"
               label="Goal Description"
               TWBackgroundLabel="bg-theme-dark"
@@ -147,9 +162,7 @@ export const EditGoalPage = () => {
                 color="var(--theme)"
                 className="w-full h-12 text-theme-reverse datepicker"
                 placeholder="Choose target date of goal"
-                onChange={(e) =>
-                  e ? setValueEdit((prev) => ({ ...prev, targetDate: e.format() })) : setValueEdit((prev) => ({ ...prev, targetDate: "" }))
-                }
+                onChange={(e) => handleChangeForm(e ? { targetDate: e.format() } : { targetDate: "" })}
               />
               {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
             </div>
@@ -162,7 +175,7 @@ export const EditGoalPage = () => {
                   className="select !size-full"
                   options={statusOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                   allowClear
-                  onChange={(e) => setValueEdit((prev) => ({ ...prev, status: e }))}
+                  onChange={(e) => handleChangeForm(e ? { status: e } : { status: "" })}
                 />
                 {error.status && <p className="text-red-500 text-[12px] text-start">{error.status.toString()}</p>}
               </div>
@@ -175,7 +188,7 @@ export const EditGoalPage = () => {
                     showText
                     format="hex"
                     value={valueEdit.color}
-                    onChangeComplete={(e) => setValueEdit((prev) => ({ ...prev, color: e.toHexString() }))}
+                    onChangeComplete={(e) => handleChangeForm({ color: e.toHexString() })}
                   />
                   {error.color && <p className="text-red-500 text-[12px] text-start">{error.color}</p>}
                 </div>
@@ -188,7 +201,7 @@ export const EditGoalPage = () => {
               </div>
               <Switch
                 style={{ backgroundColor: valueEdit.isPublic ? "var(--accent)" : "var(--theme-darker)" }}
-                onChange={(e) => setValueEdit((prev) => ({ ...prev, isPublic: e.valueOf() }))}
+                onChange={(e) => handleChangeForm({ isPublic: e.valueOf() })}
                 value={valueEdit.isPublic}
               />
             </div>
@@ -197,13 +210,14 @@ export const EditGoalPage = () => {
         <div className=" mt-3 flex justify-between items-end">
           <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
           <ButtonV
+            type="button"
             icon={<Trash2 size={13} />}
             text="Delete Goal"
             onClick={() => setDeletePopup(true)}
             className="text-[12px] !px-3 !py-2 text-white! bg-red-600 border hover:bg-red-700 border-none"
           />
         </div>
-      </div>
+      </form>
     </div>
   );
 };

@@ -9,16 +9,16 @@ import { handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
 import toCapitalize from "@/utils/toCapitalize";
 import type { TError, TNewTaskValue } from "@/utils/types";
-import validateForms from "@/utils/validateForms";
+import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { DatePicker, Select } from "antd";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const CreateTaskPage = () => {
   const { taskId } = useParams();
   const { openNotification } = useNotification();
-  const {getData: getGoalData} = useGoalData()
+  const { getData: getGoalData } = useGoalData();
 
   const [valueCreate, setValueCreate] = useState<TNewTaskValue>(defaultNewTaskData);
   const [error, setError] = useState<TNewTaskValue & TError>({ ...defaultNewTaskData, error: null });
@@ -33,16 +33,15 @@ export const CreateTaskPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCreate = async () => {
+  const handleCreate = async (e: FormEvent) => {
+    e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultNewTaskData, error: null });
     const validate = validateForms(valueCreate, setError, {
-      task: true,
-      description: true,
+      task: { max: 50 },
+      description: { max: 1000 },
       targetDate: true,
       difficulty: true,
-      taskMaxChar: 50,
-      descMaxChar: 1000,
     });
     if (validate) {
       setSubmitting(false);
@@ -55,7 +54,7 @@ export const CreateTaskPage = () => {
       if (response.data._id === taskId) {
         setValueCreate(response.data);
       }
-      getGoalData(valueCreate.goalId, false)
+      getGoalData(valueCreate.goalId, false);
       handleBack(`/goal/${valueCreate.goalId}`);
     } catch (err) {
       handleFormError(err, setError);
@@ -73,10 +72,26 @@ export const CreateTaskPage = () => {
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
   };
+
+  const handleChangeForm = useCallback(
+    (value: Partial<TNewTaskValue & { config: Config[keyof Config] }>) => {
+      const config: Config = { [Object.keys(value)[0]]: value.config };
+      handleChange(
+        Object.keys(value)[0] as keyof TNewTaskValue,
+        Object.values(value)[0] as TNewTaskValue[keyof TNewTaskValue],
+        error,
+        setValueCreate,
+        setError,
+        config
+      );
+    },
+    [error]
+  );
+
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
       {error.error && <ErrorPopup error={error} />}
-      <div className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
+      <form onSubmit={handleCreate} className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="font-heading text-[18px] font-semibold">Create Task</h1>
         </div>
@@ -85,7 +100,7 @@ export const CreateTaskPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.task}
-              onChange={(e) => setValueCreate((prev) => ({ ...prev, task: e.target.value }))}
+              onChange={(e) => handleChangeForm({ task: e.target.value })}
               value={valueCreate.task}
               label="Task Title"
               placeholder="Your task title"
@@ -93,7 +108,7 @@ export const CreateTaskPage = () => {
             />
             <TextArea
               error={error.description}
-              onChange={(e) => setValueCreate((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) => handleChangeForm({ description: e.target.value })}
               value={valueCreate.description}
               placeholder="Your task description"
               label="Task Description"
@@ -113,9 +128,7 @@ export const CreateTaskPage = () => {
                   color="var(--theme)"
                   className="w-full h-12 text-theme-reverse datepicker"
                   placeholder="Choose target date of goal"
-                  onChange={(e) =>
-                    e ? setValueCreate((prev) => ({ ...prev, targetDate: e.format() })) : setValueCreate((prev) => ({ ...prev, targetDate: "" }))
-                  }
+                  onChange={(e) => handleChangeForm(e ? { targetDate: e.format() } : { targetDate: "" })}
                 />
                 {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
               </div>
@@ -127,7 +140,7 @@ export const CreateTaskPage = () => {
                   className="select !size-full"
                   options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
                   allowClear
-                  onChange={(e) => setValueCreate((prev) => ({ ...prev, difficulty: e }))}
+                  onChange={(e) => handleChangeForm(e ? { difficulty: e } : { difficulty: "" })}
                 />
                 {error.difficulty && <p className="text-red-500 text-[12px] text-start">{error.difficulty.toString()}</p>}
               </div>
@@ -136,20 +149,15 @@ export const CreateTaskPage = () => {
         </div>
         <div className="flex gap-3 justify-end mt-10">
           <ButtonV
+            type="button"
             disabled={isSubmitting}
             onClick={handleBack}
             text="Cancel"
             className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
           />
-          <ButtonV
-            text="Create Task"
-            icon={<CirclePlus size={14} />}
-            disabled={isSubmitting}
-            onClick={handleCreate}
-            className="text-[12px] !px-3 !py-2"
-          />
+          <ButtonV text="Create Task" icon={<CirclePlus size={14} />} disabled={isSubmitting} className="text-[12px] !px-3 !py-2" />
         </div>
-      </div>
+      </form>
     </div>
   );
 };

@@ -1,16 +1,13 @@
+import { difficultyOptions, statusOptions } from "./selectOptions";
 import type { TError, Values } from "./types";
 
-type DynamicConfig<T> = {
-  [K in keyof T]?: boolean;
+export type DynamicConfig<T> = {
+  [K in keyof T]?: boolean | { max?: number; min?: number };
 };
 
-type Config = DynamicConfig<Values> & {
-  regexEmail?: boolean;
-  usernameSpace?: boolean;
-  usernameLowerCased?: boolean;
-  titleMaxChar?: number;
-  taskMaxChar?: number;
-  descMaxChar?: number;
+export type Config = DynamicConfig<Values> & {
+  email?: boolean | ({ max?: number; min?: number } & { regex?: boolean });
+  username?: boolean | ({ max?: number; min?: number } & { noSpace?: boolean; isLower?: boolean });
 };
 
 type ValidationRule<T> = {
@@ -30,8 +27,12 @@ const ValidationRules: FieldValidations<Values> = {
       message: "Title is required",
     },
     {
-      condition: (value, config) => !!config.titleMaxChar && !!value && value.length > config.titleMaxChar,
-      message: (config) => `Maximum title character is ${config.titleMaxChar}`,
+      condition: (value, config) => typeof config.title !== "boolean" && !!config.title?.max && value.length > config.title.max,
+      message: (config) => `Maximum title character is ${typeof config.title !== "boolean" && config.title?.max}`,
+    },
+    {
+      condition: (value, config) => typeof config.title !== "boolean" && !!config.title?.min && value.length < config.title.min,
+      message: (config) => `Minimum title character is ${typeof config.title !== "boolean" && config.title?.min}`,
     },
   ],
   description: [
@@ -40,8 +41,12 @@ const ValidationRules: FieldValidations<Values> = {
       message: "Description is required",
     },
     {
-      condition: (value, config) => !!config.descMaxChar && !!value && value.length > config.descMaxChar,
-      message: (config) => `Maximum description character is ${config.descMaxChar}`,
+      condition: (value, config) => typeof config.description !== "boolean" && !!config.description?.max && value.length > config.description?.max,
+      message: (config) => `Maximum description character is ${typeof config.description !== "boolean" && config.description?.max}`,
+    },
+    {
+      condition: (value, config) => typeof config.description !== "boolean" && !!config.description?.min && value.length < config.description?.min,
+      message: (config) => `Minimum description character is ${typeof config.description !== "boolean" && config.description?.min}`,
     },
   ],
   targetDate: [
@@ -56,7 +61,8 @@ const ValidationRules: FieldValidations<Values> = {
       message: "Email is required",
     },
     {
-      condition: (value, config) => !!config.regexEmail && !!value && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value),
+      condition: (value, config) =>
+        typeof config.email !== "boolean" && !!config.email?.regex && !!value && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value),
       message: "Please input a valid email",
     },
   ],
@@ -65,6 +71,14 @@ const ValidationRules: FieldValidations<Values> = {
       condition: (value, config) => !!config.password && (!value || value.trim() === ""),
       message: "Password is required",
     },
+    {
+      condition: (value, config) => typeof config.password !== "boolean" && !!config.password?.max && value.length > config.password?.max,
+      message: (config) => `Maximum password character is ${typeof config.password !== "boolean" && config.password?.max}`,
+    },
+    {
+      condition: (value, config) => typeof config.password !== "boolean" && !!config.password?.min && value.length < config.password?.min,
+      message: (config) => `Minimum password character is ${typeof config.password !== "boolean" && config.password?.min}`,
+    },
   ],
   username: [
     {
@@ -72,11 +86,11 @@ const ValidationRules: FieldValidations<Values> = {
       message: "Username is required",
     },
     {
-      condition: (value, config) => !!config.usernameSpace && !!value && value.includes(" "),
+      condition: (value, config) => typeof config.username !== "boolean" && !!config.username?.noSpace && !!value && value.includes(" "),
       message: "Username can't have spaces",
     },
     {
-      condition: (value, config) => !!config.usernameLowerCased && !!value && value !== value.toLowerCase(),
+      condition: (value, config) => typeof config.username !== "boolean" && !!config.username?.isLower && !!value && value !== value.toLowerCase(),
       message: "Username must be lowercased",
     },
   ],
@@ -98,20 +112,23 @@ const ValidationRules: FieldValidations<Values> = {
       message: "Task is required",
     },
     {
-      condition: (value, config) => !!config.taskMaxChar && !!value && value.length > config.taskMaxChar,
-      message: (config) => `Maximum task character is ${config.taskMaxChar}`,
+      condition: (value, config) => typeof config.task !== "boolean" && !!config.task?.max && !!value && value.length > config.task?.max,
+      message: (config) => `Maximum task character is ${typeof config.task !== "boolean" && config.task?.max}`,
+    },
+    {
+      condition: (value, config) => typeof config.task !== "boolean" && !!config.task?.min && !!value && value.length < config.task?.min,
+      message: (config) => `Minimum task character is ${typeof config.task !== "boolean" && config.task?.min}`,
     },
   ],
   difficulty: [
     {
-      condition: (value, config) =>
-        !!config.difficulty && (!value || value?.trim() === "" || !["easy", "medium", "hard", "very hard"].includes(value.trim())),
+      condition: (value, config) => !!config.difficulty && (!value || value.trim() === "" || !difficultyOptions.includes(value.trim())),
       message: "Please select a valid difficulty",
     },
   ],
   status: [
     {
-      condition: (value, config) => !!config.status && (!value || value?.trim() === ""),
+      condition: (value, config) => !!config.status && (!value || value.trim() === "" || !statusOptions.includes(value.trim())),
       message: "Please select a valid status",
     },
   ],
@@ -135,12 +152,50 @@ const validateForms = <T extends Partial<Values>>(value: T, setError: React.Disp
       }
     }
   }
-
   if (hasError) {
     setError((prev) => ({ ...prev, ...errors }));
   }
 
   return hasError;
+};
+
+export const validateField = <T extends Partial<Values>>(value: T, config?: Config) => {
+  const errors: Partial<Record<keyof T, string>> = {};
+  if (!config) config = {};
+
+  for (const [fieldName, fieldValue] of Object.entries(value)) {
+    if (config[fieldName as keyof Config] === undefined) {
+      config[fieldName as keyof Config] = true;
+    }
+
+    const fieldRules = ValidationRules[fieldName as keyof Omit<Values, "isCompleted">];
+    if (!fieldRules) continue;
+
+    for (const rule of fieldRules) {
+      if (rule.condition(fieldValue.toString(), config)) {
+        const message = typeof rule.message === "function" ? rule.message(config) : rule.message;
+        errors[fieldName as keyof T] = message;
+        break;
+      }
+    }
+  }
+  return errors;
+};
+
+export const handleChange = <T, Z extends T & TError>(
+  field: keyof T,
+  value: T[keyof T],
+  error: Z,
+  setValue: React.Dispatch<React.SetStateAction<T>>,
+  setError: React.Dispatch<React.SetStateAction<Z>>,
+  config?: Config
+) => {
+  setValue((prev) => ({ ...prev, [field]: value }));
+  if (error[field]) setError((prev) => ({ ...prev, [field]: "" }));
+  const errorOnValidate = validateField({ [field]: value }, config);
+  if (errorOnValidate[field as keyof Values]) {
+    setError((prev) => ({ ...prev, [field]: errorOnValidate[field as keyof Values] }));
+  }
 };
 
 export default validateForms;

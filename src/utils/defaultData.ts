@@ -1,6 +1,7 @@
 import type { GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "./types";
 
 export const defaultTaskData: TaskData = {
+  id: "",
   _id: "",
   goalId: "",
   task: "",
@@ -18,6 +19,7 @@ export const defaultTaskData: TaskData = {
 };
 
 export const defaultGoalData: GoalData = {
+  id: "",
   _id: "",
   userId: "",
   title: "",
@@ -36,6 +38,7 @@ export const defaultGoalData: GoalData = {
 };
 
 export const defaultUserData: UserData = {
+  id: "",
   _id: "",
   username: "",
   fullName: "",

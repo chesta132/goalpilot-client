@@ -1,5 +1,5 @@
 import { Eye, EyeOff, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toCapitalize from "../../utils/toCapitalize";
 import clsx from "clsx";
 
@@ -14,7 +14,7 @@ type InputProps = {
   password?: boolean;
   optional?: boolean;
   labelClass?: string;
-  initialFocus?: boolean;
+  focus?: boolean;
   classWhenError?: string;
   labelFocus?: string;
   close?: () => void;
@@ -32,15 +32,24 @@ const Input = ({
   password,
   optional,
   labelClass,
-  initialFocus,
+  focus,
   classWhenError,
   labelFocus,
   close,
   TWBackgroundLabel,
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
-  const [isFocus, setIsFocus] = useState(initialFocus);
+  const [isFocus, setIsFocus] = useState(focus);
   const [whatType, setWhatType] = useState(type);
+
+  useEffect(() => {
+    setInternalValue(value);
+    if (internalValue !== "") setIsFocus(true);
+  }, [value, internalValue]);
+
+  useEffect(() => {
+    setIsFocus(focus);
+  }, [focus]);
 
   return (
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
@@ -53,7 +62,7 @@ const Input = ({
         `,
           close && "!pr-8",
           password && "pr-8",
-          error && "border-red-500"
+          error && "border-red-500!"
         )}
         type={whatType}
         id={label}

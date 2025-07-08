@@ -6,8 +6,8 @@ import StatsCard from "../Cards/StatsCard";
 import { useGoalData } from "@/contexts/UseContexts";
 import { ReadMore } from "@/pages/Goal Pages/GoalPage";
 import { useViewportWidth } from "@/hooks/useViewport";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { AddTask } from "../Forms/AddTask";
 
 type TAiInput = {
@@ -22,25 +22,7 @@ type TReadMore = {
   taskTitle: boolean;
 };
 
-type SidebarGoalProps = {
-  readMore: TReadMore;
-  setReadMore: React.Dispatch<React.SetStateAction<TReadMore>>;
-  addTaskAIInput: boolean;
-  setAddTaskAIInput: React.Dispatch<React.SetStateAction<boolean>>;
-  aiInput: TAiInput;
-  setAiInput: React.Dispatch<React.SetStateAction<TAiInput>>;
-  showCreate: boolean;
-};
-
-export const SidebarGoal = ({
-  readMore: propReadMore,
-  setReadMore: propSetReadMore,
-  addTaskAIInput: propAddTaskAIInput,
-  setAddTaskAIInput: propSetAddTaskAIInput,
-  aiInput: propAiInput,
-  setAiInput: propSetAiInput,
-  showCreate,
-}: Partial<SidebarGoalProps>) => {
+export const SidebarGoal = () => {
   const { loading, data } = useGoalData();
 
   const { timelineStatus } = useScrollNavigation();
@@ -50,21 +32,8 @@ export const SidebarGoal = ({
   const [aiInput, setAiInput] = useState<TAiInput>({ value: "", error: null, loading: false });
 
   const width = useViewportWidth();
+  const location = useLocation()
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (propReadMore) setReadMore(propReadMore);
-    if (propAddTaskAIInput) setAddTaskAIInput(propAddTaskAIInput);
-    if (propAiInput) setAiInput(propAiInput);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (propSetReadMore) propSetReadMore(readMore);
-    if (propSetAddTaskAIInput) propSetAddTaskAIInput(addTaskAIInput);
-    if (propSetAiInput) propSetAiInput(aiInput);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addTaskAIInput, aiInput, readMore]);
 
   const { color, description, progress, title, status } = data;
   const createdAt = new Date(data.createdAt);
@@ -82,9 +51,7 @@ export const SidebarGoal = ({
         timelineStatus && "lg:!pt-8"
       )}
     >
-      {!propReadMore && readMore.desc && (
-        <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />
-      )}
+      {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
 
       <div className="flex justify-between">
         <div className={clsx("flex gap-2 flex-col w-full", loading && "animate-shimmer rounded-md")}>
@@ -178,7 +145,7 @@ export const SidebarGoal = ({
             : new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate()).toDateString()
         }
       />
-      {showCreate && width < 1024 && (
+      {location.pathname === `/goal/${data._id}` && width < 1024 && (
         <AddTask
           data={data}
           addTaskAIInput={addTaskAIInput}

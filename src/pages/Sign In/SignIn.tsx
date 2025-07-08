@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Input from "@/components/Inputs/Input";
 import Checkbox from "@/components/Inputs/Checkbox";
 import GoogleAuth from "@/components/Inputs/GoogleAuth";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router";
 import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi";
 import { handleFormError } from "@/utils/errorHandler";
-import validateForms from "@/utils/validateForms";
+import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import ButtonV from "@/components/Inputs/ButtonV";
 import type { TError, TSignIn } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
@@ -41,7 +41,7 @@ const SignIn = () => {
     setSubmiting(true);
     setError(defaultError);
 
-    const validate = validateForms(value, setError, { regexEmail: true, email: true, password: true });
+    const validate = validateForms(value, setError, { email: { regex: true }, password: { min: 8 } });
     if (validate) {
       setSubmiting(false);
       return;
@@ -58,6 +58,14 @@ const SignIn = () => {
       clearError();
     }
   };
+
+  const handleChangeForm = useCallback(
+    (value: Partial<TSignIn & { config: Config[keyof Config] }>) => {
+      const config: Config = { [Object.keys(value)[0]]: value.config };
+      handleChange(Object.keys(value)[0] as keyof TSignIn, Object.values(value)[0] as TSignIn[keyof TSignIn], error, setValue, setError, config);
+    },
+    [error]
+  );
 
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
@@ -82,30 +90,31 @@ const SignIn = () => {
           </div>
           <form onSubmit={handleSubmit} className="gap-5 flex flex-col justify-center">
             <Input
+              value={value.email}
               labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your email"}
               error={error.email}
               label={"email"}
               type="text"
-              onChange={(e) => setValue((prev) => ({ ...prev, email: e.target.value }))}
+              onChange={(e) => handleChangeForm({ email: e.target.value, config: { regex: true } })}
             />
             <Input
+              value={value.password}
               labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
               placeholder={"Enter your password"}
               error={error.password}
               label={"password"}
               type="password"
               password
-              onChange={(e) => setValue((prev) => ({ ...prev, password: e.target.value }))}
+              onChange={(e) => handleChangeForm({ password: e.target.value, config: { min: 8 } })}
             />
             <div className="flex justify-between">
               <Checkbox
                 id={"remember-me"}
+                checked={value.rememberMe}
                 label={"Remember Me"}
                 size={13}
-                onChange={(e) => {
-                  setValue((prev) => ({ ...prev, rememberMe: e.target.checked }));
-                }}
+                onChange={(e) => handleChangeForm({ rememberMe: e.target.checked })}
               />{" "}
               <a href="/forgot-password" className="text-accent hover:underline text-[13px]">
                 Forgot Password?

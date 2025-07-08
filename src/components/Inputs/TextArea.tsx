@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toCapitalize from "../../utils/toCapitalize";
 import clsx from "clsx";
 import TextareaAutosize from "react-textarea-autosize";
@@ -13,11 +13,12 @@ type TextAreaProps = {
   className?: string;
   optional?: boolean;
   labelClass?: string;
-  initialFocus?: boolean;
+  focus?: boolean;
   classWhenError?: string;
   labelFocus?: string;
   TWBackgroundLabel?: string;
   close?: () => void;
+  labelAfterLabel?: string;
 };
 
 const TextArea = ({
@@ -29,14 +30,24 @@ const TextArea = ({
   className,
   optional,
   labelClass,
-  initialFocus,
+  focus,
   classWhenError,
   labelFocus,
   close,
   TWBackgroundLabel,
+  labelAfterLabel,
 }: TextAreaProps) => {
   const [internalValue, setInternalValue] = useState(value);
-  const [isFocus, setIsFocus] = useState(initialFocus);
+  const [isFocus, setIsFocus] = useState(focus);
+
+  useEffect(() => {
+    setInternalValue(value);
+    if (internalValue !== "") setIsFocus(true);
+  }, [value, internalValue]);
+
+  useEffect(() => {
+    setIsFocus(focus);
+  }, [focus]);
 
   return (
     <div className={clsx("relative", error && (classWhenError || "mb-3"), className)}>
@@ -46,7 +57,7 @@ const TextArea = ({
         className={clsx(
           "w-full px-3 py-3 overflow-auto border border-gray rounded-lg transition-all duration-200 ease-in-out h-full focus:outline-none focus:border-accent focus:border-2",
           close && "!pr-8",
-          error && "border-red-500"
+          error && "border-red-500!"
         )}
         id={label}
         value={internalValue}
@@ -63,7 +74,8 @@ const TextArea = ({
         )}
         htmlFor={label}
       >
-        {isFocus ? toCapitalize(label || "") : placeholder} {isFocus && optional && <span className="text-gray">(Optional)</span>}
+        {isFocus ? toCapitalize(label || "") : placeholder} {isFocus && labelAfterLabel && <span className="text-gray">{labelAfterLabel}</span>}{" "}
+        {isFocus && optional && <span className="text-gray">(Optional)</span>}
       </label>
       {error && <p className="absolute text-red-500 text-[12px] text-start">{error}</p>}
       {close && (
