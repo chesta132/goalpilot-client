@@ -22,7 +22,7 @@ export const EditTaskPage = () => {
   const { taskId } = useParams();
   const { openNotification } = useNotification();
   const { refetchData } = useUserData();
-  const { getData: getGoalData, setData: setGoalData } = useGoalData();
+  const { getData: getGoalData, setData: setGoalData, data: goalData } = useGoalData();
 
   const [valueEdit, setValueEdit] = useState<TaskData>(defaultValue);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
@@ -65,11 +65,9 @@ export const EditTaskPage = () => {
     try {
       const response = await callApi("/task", { method: "PUT", body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
-      sessionStorage.setItem("task-data", JSON.stringify(response.data));
-      if (response.data._id === taskId) {
-        setValueEdit(response.data);
-      }
-      handleBack(`/goal/${valueEdit.goalId}`);
+      const editedTask = goalData.tasks.map((task) => (JSON.stringify(task) === JSON.stringify(defaultValue) ? response.data : task));
+      if (response.data.goalId === goalData._id) setGoalData((prev) => ({ ...prev, tasks: editedTask }));
+      handleBack(`/goal/${response.data.goalId}`);
     } catch (err) {
       handleFormError(err, setError);
     } finally {

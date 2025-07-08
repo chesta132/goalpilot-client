@@ -4,21 +4,22 @@ import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
 import { useNavigate, useParams } from "react-router";
-import { useState } from "react";
 import { Edit } from "lucide-react";
 import Checkbox from "../Inputs/Checkbox";
+import { useGoalData } from "@/contexts/UseContexts";
 
 type TaskProps = {
   task: TaskData;
   setError: React.Dispatch<React.SetStateAction<GoalData & TError>>;
+  index: number;
 };
 
-const TaskCardCompact = ({ task, setError }: TaskProps) => {
+const TaskCardCompact = ({ task, setError, index }: TaskProps) => {
   const createdAt = new Date(task.createdAt);
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
   const navigate = useNavigate();
-  const [isCompleted, setIsCompleted] = useState(task.isCompleted);
+  const { setData: setGoalData } = useGoalData();
 
   const date = targetDate
     ? new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())
@@ -47,50 +48,53 @@ const TaskCardCompact = ({ task, setError }: TaskProps) => {
 
   const markCompleteToggle = async () => {
     try {
-      await callApi("/task", { method: "PUT", body: { goalId, taskId: task._id, isCompleted: !isCompleted } });
-      setIsCompleted((prev) => !prev);
+      setGoalData((prev) => {
+        const newTask = prev.tasks.map((task, taskIndex) => (index === taskIndex ? { ...task, isCompleted: !task.isCompleted } : task));
+        return { ...prev, tasks: newTask };
+      });
+      await callApi("/task", { method: "PUT", body: { goalId, taskId: task._id, isCompleted: !task.isCompleted } });
     } catch (err) {
       handleError(err, setError);
     }
   };
 
-  const handleToInfoTask = () => {
+  const handleToEditTask = () => {
     sessionStorage.setItem("task-data", JSON.stringify(task));
     navigate(`/task/${task._id}/edit`);
   };
 
   return (
-    <div className="border relative rounded-lg py-5 px-4 shadow-md bg-theme border-theme-darker gap-1 flex">
-      <Checkbox label="" size={15} checked={isCompleted} onChange={markCompleteToggle} />
-      <div className="flex justify-between">
-        <div className="relative flex flex-col gap-2">
-          <h1 className="font-heading font-semibold text-[16px]">{toCapitalize(task.task)}</h1>
-          <div className="flex gap-3 text-[12px] text-gray items-center">
+    <div className="border relative rounded-lg py-5 px-4 shadow-md bg-theme border-theme-darker gap-1 flex w-full">
+      <Checkbox label="" size={15} checked={task.isCompleted} onChange={markCompleteToggle} />
+      <div className="flex justify-between w-full">
+        <div className="relative flex flex-col gap-2 w-full">
+          <h1 className="font-heading font-semibold text-[14px] md:text-[15px] max-w-[90%]">{toCapitalize(task.task)}</h1>
+          <div className="flex gap-x-3 gap-y-1 text-[11px] md:text-[12px] text-gray items-center flex-wrap">
             <p
               className={clsx(
-                "bg-theme-darker/60 rounded-full text-[11.5px] px-2 py-1 inline size-fit",
-                isCompleted ? "text-green-400" : "text-red-600"
+                "bg-theme-darker/60 rounded-full text-[10px] md:text-[11px] px-2 py-1 inline size-fit",
+                task.isCompleted ? "text-green-400" : "text-red-600"
               )}
             >
-              {isCompleted ? "Completed" : "Incomplete"}
+              {task.isCompleted ? "Completed" : "Incomplete"}
             </p>
             •<p>{toCapitalize(task.difficulty)}</p>•
             <p>
-              {isCompleted
+              {task.isCompleted
                 ? task.completedAt
                   ? new Date(task.completedAt).toDateString()
                   : new Date().toDateString()
                 : new Date(date).toDateString()}
             </p>
-            {!isCompleted && "•"}
-            {!isCompleted && (
+            {!task.isCompleted && "•"}
+            {!task.isCompleted && (
               <p className={clsx(timeLeft > 3 && timeLeft <= 7 ? "text-yellow-500 font-medium" : timeLeft <= 3 && "text-red-600 font-medium")}>
                 {timeLeftToDisplay}
               </p>
             )}
           </div>
         </div>
-        <Edit className="cursor-pointer size-4.5 absolute right-0 mr-4" onClick={handleToInfoTask} />
+        <Edit className="cursor-pointer size-4.5 absolute right-0 mr-4" onClick={handleToEditTask} />
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ const GoalPage = () => {
   const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
   const [readMore, setReadMore] = useState({ title: false, desc: false, taskTitle: false });
 
-  const goalId = useParams().goalId;
+  const { goalId } = useParams();
   const width = useViewportWidth();
   const navigate = useNavigate();
 
@@ -51,7 +51,9 @@ const GoalPage = () => {
     const gettingData = async () => {
       if (goalId) await getData(goalId);
     };
-    gettingData();
+    if (goalId !== data.id) {
+      gettingData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalId]);
 
@@ -104,9 +106,9 @@ const GoalPage = () => {
           <div className={clsx("flex flex-col gap-6 lg:gap-8 px-3", settings.taskCard === "compact" && "gap-4!")}>
             {tasks.length > 0 ? (
               settings.taskCard === "regular" ? (
-                tasks.map((task) => <TaskCard task={task} setError={setError} key={task._id} />)
+                tasks.map((task, index) => <TaskCard index={index} task={task} setError={setError} key={task._id} />)
               ) : (
-                tasks.map((task) => <TaskCardCompact task={task} setError={setError} key={task._id} />)
+                tasks.map((task, index) => <TaskCardCompact index={index} task={task} setError={setError} key={task._id} />)
               )
             ) : (
               <Empty className="flex flex-col justify-center">

@@ -2,7 +2,7 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { useNotification } from "@/contexts/UseContexts";
+import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { defaultNewTaskData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router";
 export const CreateTaskPage = () => {
   const { taskId } = useParams();
   const { openNotification } = useNotification();
+  const {getData: getGoalData} = useGoalData()
 
   const [valueCreate, setValueCreate] = useState<TNewTaskValue>(defaultNewTaskData);
   const [error, setError] = useState<TNewTaskValue & TError>({ ...defaultNewTaskData, error: null });
@@ -54,6 +55,7 @@ export const CreateTaskPage = () => {
       if (response.data._id === taskId) {
         setValueCreate(response.data);
       }
+      getGoalData(valueCreate.goalId, false)
       handleBack(`/goal/${valueCreate.goalId}`);
     } catch (err) {
       handleFormError(err, setError);

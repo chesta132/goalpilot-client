@@ -19,9 +19,7 @@ export default function SidebarGoalLayout() {
   const width = useViewportWidth();
 
   return (
-    <div
-      className="pt-25 text-theme-reverse flex flex-col gap-10 mb-15"
-    >
+    <div className="pt-25 text-theme-reverse flex flex-col gap-10 mb-15">
       {(width > 1024 || location.pathname === `/goal/${data._id}`) && (
         <SidebarGoal
           showCreate={location.pathname === `/goal/${data._id}`}

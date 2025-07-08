@@ -69,7 +69,7 @@ export const EditGoalPage = () => {
       sessionStorage.setItem("goal-data", JSON.stringify(response.data));
       if (response.data._id === goalId) setData(response.data);
       else if (goalId) getData(goalId, false);
-      handleBack(`/goal/${valueEdit._id}`);
+      handleBack();
     } catch (err) {
       handleFormError(err, setError);
     } finally {
@@ -77,7 +77,7 @@ export const EditGoalPage = () => {
     }
   };
 
-  const handleBack = (to: string | number = -1) => {
+  const handleBack = (to: string | number = "./..") => {
     sessionStorage.removeItem("task-data");
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
@@ -105,7 +105,7 @@ export const EditGoalPage = () => {
           <div className="flex gap-3">
             <ButtonV
               disabled={isSubmitting}
-              onClick={() => handleBack(`/goal/${valueEdit._id}`)}
+              onClick={handleBack}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />

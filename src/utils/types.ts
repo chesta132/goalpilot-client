@@ -12,6 +12,7 @@ export type TSignUp = TSignIn & {
 };
 
 export type TaskData = {
+  id: string
   _id: string;
   goalId: string;
   task: string;
@@ -29,6 +30,7 @@ export type TaskData = {
 };
 
 export type GoalData = {
+  id: string;
   _id: string;
   userId: string;
   title: string;
@@ -47,6 +49,7 @@ export type GoalData = {
 };
 
 export type UserData = {
+  id: string;
   _id: string;
   username: string;
   fullName: string;

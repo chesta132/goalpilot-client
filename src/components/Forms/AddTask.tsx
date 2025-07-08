@@ -60,7 +60,7 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
         style={{ background: data.color }}
         text="Create New Task"
         icon={<Plus className="bg-transparent" />}
-        className="shadow-sm whitespace-nowrap w-full bg-(--goal-accent)! hover:bg-(--goal-accent-strong)!"
+        className="shadow-sm whitespace-nowrap w-full bg-(--goal-accent)! hover:bg-(--goal-accent-strong)! text-[13px]! md:text-[14px]!"
         onClick={() => {
           if (!loading) {
             sessionStorage.setItem("goal-id", data._id);
@@ -107,7 +107,7 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
           </svg>
         }
         className={clsx(
-          "shadow-sm whitespace-nowrap w-full !text-theme-reverse lg:text-[14px] bg-transparent border-accent border hover:bg-theme-dark hover:border-violet-500",
+          "shadow-sm whitespace-nowrap w-full !text-theme-reverse md:text-[14px] bg-transparent border-accent border hover:bg-theme-dark hover:border-violet-500 text-[13px]!",
           aiInput.loading && "animate-transparent-shimmer -bg-linear-45 from-transparent from-40% via-violet-500 via-50% to-transparent to-60%"
         )}
         onClick={addTaskAIInput ? generateWithAI : () => setAddTaskAIInput(true)}

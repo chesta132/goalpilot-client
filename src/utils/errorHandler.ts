@@ -3,15 +3,9 @@ import type { ApiErrorResponseData, CodeAuthError, ErrorWithValues, TError } fro
 
 export function handleError<T extends TError>(error: unknown, setError: React.Dispatch<React.SetStateAction<T>>) {
   const err = error as AxiosError<ApiErrorResponseData>;
-  const data = err.response?.data
-  if (err.status === 429)
-    setError((prev) => ({ ...prev, error: { title: err.response?.statusText, message: data, code: data?.code } } as T));
-  else if (err.code === "ERR_NETWORK")
+  const data = err.response?.data;
+  if (err.code === "ERR_NETWORK")
     setError((prev) => ({ ...prev, error: { title: err.message, message: "Network Error, please check your connection", code: data?.code } } as T));
-  else if (data?.code === "INVALID_AUTH")
-    setError(
-      (prev) => ({ ...prev, error: { title: data?.title, message: "Authentication needed please login first", code: data?.code } } as T)
-    );
   else if (data) {
     setError((prev) => ({ ...prev, error: { code: data.code, title: data.title, message: data.message } }));
   } else {

@@ -7,7 +7,6 @@ import { useGoalData } from "@/contexts/UseContexts";
 import { ReadMore } from "@/pages/Goal Pages/GoalPage";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { useEffect, useState } from "react";
-import type { GoalData } from "@/utils/types";
 import { useNavigate } from "react-router";
 import { AddTask } from "../Forms/AddTask";
 
@@ -24,7 +23,6 @@ type TReadMore = {
 };
 
 type SidebarGoalProps = {
-  data: GoalData;
   readMore: TReadMore;
   setReadMore: React.Dispatch<React.SetStateAction<TReadMore>>;
   addTaskAIInput: boolean;
@@ -35,7 +33,6 @@ type SidebarGoalProps = {
 };
 
 export const SidebarGoal = ({
-  data: propData,
   readMore: propReadMore,
   setReadMore: propSetReadMore,
   addTaskAIInput: propAddTaskAIInput,
@@ -44,10 +41,7 @@ export const SidebarGoal = ({
   setAiInput: propSetAiInput,
   showCreate,
 }: Partial<SidebarGoalProps>) => {
-  const goalData = useGoalData();
-  const loading = goalData.loading;
-  const data: GoalData =
-    propData || JSON.parse(sessionStorage.getItem("goal-data") || sessionStorage.getItem("goal-data") || JSON.stringify(null)) || goalData.data;
+  const { loading, data } = useGoalData();
 
   const { timelineStatus } = useScrollNavigation();
 
@@ -94,7 +88,13 @@ export const SidebarGoal = ({
 
       <div className="flex justify-between">
         <div className={clsx("flex gap-2 flex-col w-full", loading && "animate-shimmer rounded-md")}>
-          <h1 className={clsx("text-[20px] font-[600] font-heading overflow-auto max-w-[85%]", loading && "!text-transparent !bg-transparent")}>
+          <h1
+            className={clsx(
+              "text-[20px] font-[600] font-heading max-w-[85%]",
+              loading && "!text-transparent !bg-transparent",
+              readMore.title && "overflow-auto"
+            )}
+          >
             {title.length > 30 ? (
               <>
                 {readMore.taskTitle ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
@@ -133,7 +133,7 @@ export const SidebarGoal = ({
       <StatsCard
         loading={loading}
         header="Description"
-        className="!bg-theme max-h-100 overflow-auto"
+        className={clsx("!bg-theme max-h-100", readMore.desc && "overflow-auto")}
         classStats="text-[15px] font-medium mt-2"
         icon={<Goal className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
         stats={

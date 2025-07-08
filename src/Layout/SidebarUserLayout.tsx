@@ -9,7 +9,7 @@ export default function SidebarUserLayout() {
 
   return (
     <div className={clsx("pt-25 text-theme-reverse flex flex-col gap-10 mb-15")}>
-      {(width > 1024 || location.pathname === '/') && <SidebarUser />}
+      {(width > 1024 || location.pathname === "/") && <SidebarUser />}
       <div className="lg:pl-[25%]">
         <Outlet />
       </div>
