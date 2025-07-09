@@ -1,6 +1,6 @@
 import { Eye, EyeOff, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import toCapitalize from "../../utils/toCapitalize";
+import { capitalEachWords } from "../../utils/stringManip";
 import clsx from "clsx";
 
 type InputProps = {
@@ -81,7 +81,7 @@ const Input = ({
         )}
         htmlFor={label}
       >
-        {isFocus ? toCapitalize(label || "") : placeholder} {isFocus && optional && <span className="text-gray">(Optional)</span>}
+        {isFocus ? capitalEachWords(label || "") : placeholder} {isFocus && optional && <span className="text-gray">(Optional)</span>}
       </label>
       {password && (
         <div className="cursor-pointer absolute top-0 right-0 h-full flex items-center pr-2">

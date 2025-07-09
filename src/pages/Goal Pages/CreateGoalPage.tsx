@@ -3,26 +3,27 @@ import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useNotification, useUserData } from "@/contexts/UseContexts";
+import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { defaultNewGoalData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import type { TError, TNewGoalValue } from "@/utils/types";
-import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Switch } from "antd";
 import { CirclePlus } from "lucide-react";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 
 export const CreateGoalPage = () => {
-  const { openNotification } = useNotification();
-  const { data, refetchData, setData } = useUserData();
-
   const [valueCreate, setValueCreate] = useState<TNewGoalValue>(defaultNewGoalData);
   const [error, setError] = useState<TNewGoalValue & TError>({ ...defaultNewGoalData, error: null, color: "" });
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const userId = sessionStorage.getItem("user-id");
+
+  const { openNotification } = useNotification();
+  const { data, refetchData, setData } = useUserData();
+  const { handleChangeForm, validateForm } = useValidate(error, setValueCreate, setError);
 
   useEffect(() => {
     const initial = async () => {
@@ -39,7 +40,7 @@ export const CreateGoalPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultNewGoalData, error: null, color: "" });
-    const validate = validateForms(valueCreate, setError, {
+    const validate = validateForm(valueCreate, {
       title: { max: 100 },
       description: { max: 1500 },
       targetDate: true,
@@ -74,21 +75,6 @@ export const CreateGoalPage = () => {
     else if (typeof to === "number") navigate(to);
   };
 
-  const handleChangeForm = useCallback(
-    (value: Partial<TNewGoalValue & { config: Config[keyof Config] }>) => {
-      const config: Config = { [Object.keys(value)[0]]: value.config };
-      handleChange(
-        Object.keys(value)[0] as keyof TNewGoalValue,
-        Object.values(value)[0] as TNewGoalValue[keyof TNewGoalValue],
-        error,
-        setValueCreate,
-        setError,
-        config
-      );
-    },
-    [error]
-  );
-
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
       {error.error && <ErrorPopup error={error} />}
@@ -101,7 +87,7 @@ export const CreateGoalPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.title}
-              onChange={(e) => handleChangeForm({ title: e.target.value, config: { max: 100 } })}
+              onChange={(e) => handleChangeForm({ title: e.target.value }, { max: 100 })}
               value={valueCreate.title}
               label="Goal Title"
               placeholder="Your goal title"
@@ -109,7 +95,7 @@ export const CreateGoalPage = () => {
             />
             <TextArea
               error={error.description}
-              onChange={(e) => handleChangeForm({ description: e.target.value, config: { max: 1500 } })}
+              onChange={(e) => handleChangeForm({ description: e.target.value }, { max: 1500 })}
               value={valueCreate.description}
               placeholder="Your goal description"
               label="Goal Description"

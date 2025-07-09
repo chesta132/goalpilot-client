@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalWord } from "@/utils/stringManip";
 import { Button, notification, Space } from "antd";
 import React, { createContext } from "react";
 
@@ -62,7 +62,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       </Space>
     );
     const apiItems = {
-      message: toCapitalize(message),
+      message: capitalWord(message),
       description,
       showProgress: true,
       placement,

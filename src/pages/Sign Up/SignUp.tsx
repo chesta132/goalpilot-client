@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Input from "@/components/Inputs/Input";
 import Checkbox from "@/components/Inputs/Checkbox";
 import GoogleAuth from "@/components/Inputs/GoogleAuth";
@@ -8,10 +8,10 @@ import { useNavigate } from "react-router";
 import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi.ts";
 import { handleFormError } from "@/utils/errorHandler.ts";
-import validateForms, { handleChange, type Config } from "@/utils/validateForms.ts";
 import ButtonV from "@/components/Inputs/ButtonV";
 import type { TSignUp, TError } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
+import useValidate from "@/hooks/useValidate";
 
 const defaultError = { email: "", password: "", username: "", firstName: "", lastName: "", rememberMe: false, error: null };
 
@@ -27,6 +27,7 @@ const SignUp = () => {
   const [error, setError] = useState<TSignUp & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
+  const { handleChangeForm, validateForm } = useValidate(error, setValue, setError);
   const { clearError, setData } = useUserData();
 
   const width = useViewportWidth(300);
@@ -39,7 +40,7 @@ const SignUp = () => {
     setSubmiting(true);
     setError(defaultError);
 
-    const validate = validateForms(value, setError, {
+    const validate = validateForm(value, {
       email: { regex: true },
       password: { min: 8 },
       username: { noSpace: true, isLower: true },
@@ -64,14 +65,6 @@ const SignUp = () => {
       clearError();
     }
   };
-
-  const handleChangeForm = useCallback(
-    (value: Partial<TSignUp & { config: Config[keyof Config] }>) => {
-      const config: Config = { [Object.keys(value)[0]]: value.config };
-      handleChange(Object.keys(value)[0] as keyof TSignUp, Object.values(value)[0] as TSignUp[keyof TSignUp], error, setValue, setError, config);
-    },
-    [error]
-  );
 
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
@@ -101,7 +94,7 @@ const SignUp = () => {
               error={error.username}
               label={"Username"}
               type="text"
-              onChange={(e) => handleChangeForm({ username: e.target.value, config: { isLower: true, noSpace: true } })}
+              onChange={(e) => handleChangeForm({ username: e.target.value }, { isLower: true, noSpace: true })}
             />
             <div className="flex flex-1/2 gap-3">
               <Input
@@ -132,7 +125,7 @@ const SignUp = () => {
               error={error.email}
               label={"Email"}
               type="text"
-              onChange={(e) => handleChangeForm({ email: e.target.value, config: { regex: true } })}
+              onChange={(e) => handleChangeForm({ email: e.target.value }, { regex: true })}
             />
             <Input
               value={value.password}
@@ -142,7 +135,7 @@ const SignUp = () => {
               label={"Password"}
               type="password"
               password
-              onChange={(e) => handleChangeForm({ password: e.target.value, config: { min: 8 } })}
+              onChange={(e) => handleChangeForm({ password: e.target.value }, { min: 8 })}
             />
             <Checkbox
               id={"remember-me"}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import ButtonV from "@/components/Inputs/ButtonV";
 import { X } from "lucide-react";
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalWord } from "@/utils/stringManip";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
 import { useGoalData, useTheme } from "@/contexts/UseContexts";
@@ -65,6 +65,10 @@ const GoalPage = () => {
 
   const { description, tasks, title } = data;
 
+  useEffect(() => {
+    sessionStorage.removeItem("goal-data");
+  }, []);
+
   return (
     <div>
       {/* Header/absolute */}
@@ -78,7 +82,7 @@ const GoalPage = () => {
             Tasks of{" "}
             {title.length > 30 ? (
               <>
-                {readMore.title ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
+                {readMore.title ? capitalWord(title) : `${capitalWord(title).substring(0, 30)}...`}
                 <br />
                 <button
                   className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
@@ -88,7 +92,7 @@ const GoalPage = () => {
                 </button>
               </>
             ) : (
-              toCapitalize(title)
+              capitalWord(title)
             )}
           </h1>
           {width >= 1024 && (

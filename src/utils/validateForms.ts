@@ -1,18 +1,28 @@
 import { difficultyOptions, statusOptions } from "./selectOptions";
-import type { TError, Values } from "./types";
+import type { OneFieldOnly, TError, Values } from "./types";
 
-export type DynamicConfig<T> = {
-  [K in keyof T]?: boolean | { max?: number; min?: number };
+type MinMax = { max?: number; min?: number };
+
+export type DynamicConfigSetup<T> = {
+  [K in keyof T]?: boolean | MinMax;
 };
 
-export type Config = DynamicConfig<Values> & {
-  email?: boolean | ({ max?: number; min?: number } & { regex?: boolean });
-  username?: boolean | ({ max?: number; min?: number } & { noSpace?: boolean; isLower?: boolean });
-};
+export type MinMaxKey = "title" | "description" | "password" | "task";
+export type CustomRule = "email" | "username";
+
+export type Config<T extends Partial<Values> = Values> = Record<keyof Pick<T, MinMaxKey>, boolean | MinMax> &
+  Record<keyof Omit<T, MinMaxKey>, boolean>;
+
+export type DynamicConfig<T = Config> = Partial<
+  Omit<T, CustomRule> & {
+    email?: boolean | { regex?: boolean };
+    username?: boolean | { noSpace?: boolean; isLower?: boolean };
+  }
+>;
 
 type ValidationRule<T> = {
-  condition: (value: T, config: Config) => boolean;
-  message: string | ((config: Config) => string);
+  condition: (value: T, config: DynamicConfig) => boolean;
+  message: string | ((config: DynamicConfig) => string);
 };
 
 type FieldValidations<T> = {
@@ -20,7 +30,7 @@ type FieldValidations<T> = {
 };
 
 // Validation rules configuration
-const ValidationRules: FieldValidations<Values> = {
+export const ValidationRules: FieldValidations<Values> = {
   title: [
     {
       condition: (value, config) => !!config.title && (!value || value.trim() === ""),
@@ -134,7 +144,11 @@ const ValidationRules: FieldValidations<Values> = {
   ],
 };
 
-const validateForms = <T extends Partial<Values>>(value: T, setError: React.Dispatch<React.SetStateAction<T & TError>>, config: Config): boolean => {
+const validateForms = <T extends Partial<Values>>(
+  value: T,
+  setError: React.Dispatch<React.SetStateAction<T & TError>>,
+  config: DynamicConfig
+): boolean => {
   let hasError = false;
   const errors: Partial<Values & TError> = {};
 
@@ -159,13 +173,13 @@ const validateForms = <T extends Partial<Values>>(value: T, setError: React.Disp
   return hasError;
 };
 
-export const validateField = <T extends Partial<Values>>(value: T, config?: Config) => {
+export const validateField = <T extends Partial<Values>>(value: T, config?: DynamicConfig) => {
   const errors: Partial<Record<keyof T, string>> = {};
   if (!config) config = {};
 
   for (const [fieldName, fieldValue] of Object.entries(value)) {
-    if (config[fieldName as keyof Config] === undefined) {
-      config[fieldName as keyof Config] = true;
+    if (config[fieldName as keyof DynamicConfig] === undefined) {
+      config[fieldName as keyof DynamicConfig] = true;
     }
 
     const fieldRules = ValidationRules[fieldName as keyof Omit<Values, "isCompleted">];
@@ -182,14 +196,15 @@ export const validateField = <T extends Partial<Values>>(value: T, config?: Conf
   return errors;
 };
 
-export const handleChange = <T, Z extends T & TError>(
-  field: keyof T,
-  value: T[keyof T],
+export const handleChangeAndValidate = <T, Z extends Partial<T> & TError>(
+  valueProp: OneFieldOnly<Partial<T>>,
   error: Z,
   setValue: React.Dispatch<React.SetStateAction<T>>,
   setError: React.Dispatch<React.SetStateAction<Z>>,
-  config?: Config
+  config?: DynamicConfig
 ) => {
+  const value = Object.values(valueProp!)[0] as T[keyof T];
+  const field = Object.keys(valueProp!)[0] as keyof T;
   setValue((prev) => ({ ...prev, [field]: value }));
   if (error[field]) setError((prev) => ({ ...prev, [field]: "" }));
   const errorOnValidate = validateField({ [field]: value }, config);

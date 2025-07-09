@@ -1,6 +1,6 @@
 import { Trash2Icon } from "lucide-react";
 import ButtonV from "../Inputs/ButtonV";
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords } from "@/utils/stringManip";
 
 type DeletePopupProps = {
   deletes: () => void;
@@ -17,7 +17,7 @@ export const DeletePopup = ({ setClose, deletes, item }: DeletePopupProps) => {
             <div className="bg-red-200 p-2 rounded-full size-10">
               <Trash2Icon className="stroke-red-400" />
             </div>
-            <h1 className="font-heading font-semibold text-[16px]">Delete {toCapitalize(item)}</h1>
+            <h1 className="font-heading font-semibold text-[16px]">Delete {capitalEachWords(item)}</h1>
           </div>
         </div>
         <div>

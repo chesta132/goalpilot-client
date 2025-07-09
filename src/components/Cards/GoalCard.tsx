@@ -1,4 +1,4 @@
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords } from "@/utils/stringManip";
 import type { GoalData } from "@/utils/types";
 
 type GoalProps = {
@@ -9,10 +9,10 @@ const GoalCard = ({ goal }: GoalProps) => {
   return (
     <div className="border rounded-lg p-6.5 shadow-md bg-theme border-theme-darker gap-5 flex flex-col">
       <div className="relative flex flex-col gap-3">
-        <h1 className="font-heading font-semibold text-[18px]">{toCapitalize(goal.title)}</h1>
+        <h1 className="font-heading font-semibold text-[18px]">{capitalEachWords(goal.title)}</h1>
         <div className="flex gap-3 items-center">
           <p style={{ color: goal.color }} className="bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline">
-            {toCapitalize(goal.status)}
+            {capitalEachWords(goal.status)}
           </p>
           <p className="text-[14px] text-gray">•</p>
           <p className="text-[14px] text-gray">{goal.progress}% Complete</p>

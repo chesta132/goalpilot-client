@@ -4,24 +4,21 @@ import TextArea from "@/components/Inputs/TextArea";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { defaultTaskData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords } from "@/utils/stringManip";
 import type { TaskData, TError } from "@/utils/types";
-import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
 import { Edit, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EditTaskPage = () => {
   const defaultValue = JSON.parse(sessionStorage.getItem("task-data") || JSON.stringify(defaultTaskData));
-  const { taskId } = useParams();
-  const { openNotification } = useNotification();
-  const { getData: getGoalData, setData: setGoalData, data: goalData } = useGoalData();
 
   const [valueEdit, setValueEdit] = useState<TaskData>(defaultValue);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
@@ -29,6 +26,11 @@ export const EditTaskPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
 
   const navigate = useNavigate();
+
+  const { taskId } = useParams();
+  const { openNotification } = useNotification();
+  const { getData: getGoalData, setData: setGoalData, data: goalData } = useGoalData();
+  const { handleChangeForm, validateForm } = useValidate(error, setValueEdit, setError);
 
   useEffect(() => {
     if (valueEdit._id !== taskId || !valueEdit._id) {
@@ -41,7 +43,7 @@ export const EditTaskPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultTaskData, error: null, difficulty: "" });
-    const validate = validateForms(valueEdit, setError, {
+    const validate = validateForm(valueEdit, {
       task: { max: 50 },
       description: { max: 1000 },
       targetDate: true,
@@ -111,21 +113,6 @@ export const EditTaskPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleChangeForm = useCallback(
-    (value: Partial<TaskData & { config: Config[keyof Config] }>) => {
-      const config: Config = { [Object.keys(value)[0]]: value.config };
-      handleChange(
-        Object.keys(value)[0] as keyof TaskData,
-        Object.values(value)[0] as TaskData[keyof TaskData],
-        error,
-        setValueEdit,
-        setError,
-        config
-      );
-    },
-    [error]
-  );
-
   return (
     <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center mb-25">
       {error.error && <ErrorPopup error={error} />}
@@ -190,9 +177,9 @@ export const EditTaskPage = () => {
                   defaultValue={valueEdit.difficulty}
                   placeholder={"Difficulty"}
                   className="select !size-full"
-                  options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                  options={difficultyOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
                   allowClear
-                  onChange={(e) => handleChangeForm(e ? { difficulty: e } : { difficulty: "" })}
+                  onChange={(e) => handleChangeForm<TaskData>(e ? { difficulty: e } : { difficulty: "" })}
                 />
                 {error.difficulty && <p className="text-red-500 text-[12px] text-start">{error.difficulty.toString()}</p>}
               </div>

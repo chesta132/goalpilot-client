@@ -1,4 +1,4 @@
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords, capitalWord } from "@/utils/stringManip";
 import type { GoalData, TaskData, TError } from "@/utils/types";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
@@ -68,7 +68,7 @@ const TaskCardCompact = ({ task, setError, index }: TaskProps) => {
       <Checkbox label="" size={15} checked={task.isCompleted} onChange={markCompleteToggle} />
       <div className="flex justify-between w-full">
         <div className="relative flex flex-col gap-2 w-full">
-          <h1 className="font-heading font-semibold text-[14px] md:text-[15px] max-w-[90%]">{toCapitalize(task.task)}</h1>
+          <h1 className="font-heading font-semibold text-[14px] md:text-[15px] max-w-[90%]">{capitalWord(task.task)}</h1>
           <div className="flex gap-x-3 gap-y-1 text-[11px] md:text-[12px] text-gray items-center flex-wrap">
             <p
               className={clsx(
@@ -78,7 +78,7 @@ const TaskCardCompact = ({ task, setError, index }: TaskProps) => {
             >
               {task.isCompleted ? "Completed" : "Incomplete"}
             </p>
-            •<p>{toCapitalize(task.difficulty)}</p>•
+            •<p>{capitalEachWords(task.difficulty)}</p>•
             <p>
               {task.isCompleted
                 ? task.completedAt

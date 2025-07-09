@@ -1,5 +1,5 @@
 import useScrollNavigation from "@/hooks/useScrollNavigation";
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords } from "@/utils/stringManip";
 import clsx from "clsx";
 import { Calendar, Edit, Goal, Verified } from "lucide-react";
 import StatsCard from "../Cards/StatsCard";
@@ -32,7 +32,7 @@ export const SidebarGoal = () => {
   const [aiInput, setAiInput] = useState<TAiInput>({ value: "", error: null, loading: false });
 
   const width = useViewportWidth();
-  const location = useLocation()
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { color, description, progress, title, status } = data;
@@ -64,7 +64,7 @@ export const SidebarGoal = () => {
           >
             {title.length > 30 ? (
               <>
-                {readMore.taskTitle ? toCapitalize(title) : `${toCapitalize(title).substring(0, 30)}...`}
+                {readMore.taskTitle ? capitalEachWords(title) : `${capitalEachWords(title).substring(0, 30)}...`}
                 <br />
                 <button
                   className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
@@ -74,7 +74,7 @@ export const SidebarGoal = () => {
                 </button>
               </>
             ) : (
-              toCapitalize(title)
+              capitalEachWords(title)
             )}
           </h1>
           <h1
@@ -90,7 +90,7 @@ export const SidebarGoal = () => {
               loading && "!text-transparent !bg-transparent"
             )}
           >
-            {toCapitalize(status)}
+            {capitalEachWords(status)}
           </h1>
         </div>
         <div className="mx-2 !cursor-pointer absolute right-0 mr-5" onClick={handleToEdit}>
@@ -106,7 +106,7 @@ export const SidebarGoal = () => {
         stats={
           description.length > 100 ? (
             <>
-              {readMore.desc ? toCapitalize(description) : `${toCapitalize(description).substring(0, 30)}...`}
+              {readMore.desc ? capitalEachWords(description) : `${capitalEachWords(description).substring(0, 30)}...`}
               <br />
               <button
                 className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}

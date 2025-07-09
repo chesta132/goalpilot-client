@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import Input from "@/components/Inputs/Input";
 import Checkbox from "@/components/Inputs/Checkbox";
 import GoogleAuth from "@/components/Inputs/GoogleAuth";
@@ -8,10 +8,10 @@ import { useNavigate } from "react-router";
 import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi";
 import { handleFormError } from "@/utils/errorHandler";
-import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import ButtonV from "@/components/Inputs/ButtonV";
 import type { TError, TSignIn } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
+import useValidate from "@/hooks/useValidate";
 
 const defaultError = {
   email: "",
@@ -29,6 +29,7 @@ const SignIn = () => {
   const [error, setError] = useState<TSignIn & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
+  const { handleChangeForm, validateForm } = useValidate(error, setValue, setError);
   const { clearError, setData } = useUserData();
 
   const width = useViewportWidth(300);
@@ -41,7 +42,7 @@ const SignIn = () => {
     setSubmiting(true);
     setError(defaultError);
 
-    const validate = validateForms(value, setError, { email: { regex: true }, password: { min: 8 } });
+    const validate = validateForm(value, { email: { regex: true }, password: { min: 8 } });
     if (validate) {
       setSubmiting(false);
       return;
@@ -58,14 +59,6 @@ const SignIn = () => {
       clearError();
     }
   };
-
-  const handleChangeForm = useCallback(
-    (value: Partial<TSignIn & { config: Config[keyof Config] }>) => {
-      const config: Config = { [Object.keys(value)[0]]: value.config };
-      handleChange(Object.keys(value)[0] as keyof TSignIn, Object.values(value)[0] as TSignIn[keyof TSignIn], error, setValue, setError, config);
-    },
-    [error]
-  );
 
   const lists = ["Pick up where you left off", "Access your personalized dashboard", "Continue tracking your progress", "Get AI-powered insights"];
   return (
@@ -96,7 +89,7 @@ const SignIn = () => {
               error={error.email}
               label={"email"}
               type="text"
-              onChange={(e) => handleChangeForm({ email: e.target.value, config: { regex: true } })}
+              onChange={(e) => handleChangeForm({ email: e.target.value }, { regex: true })}
             />
             <Input
               value={value.password}
@@ -106,7 +99,7 @@ const SignIn = () => {
               label={"password"}
               type="password"
               password
-              onChange={(e) => handleChangeForm({ password: e.target.value, config: { min: 8 } })}
+              onChange={(e) => handleChangeForm({ password: e.target.value }, { min: 8 })}
             />
             <div className="flex justify-between">
               <Checkbox

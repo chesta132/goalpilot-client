@@ -12,7 +12,7 @@ export type TSignUp = TSignIn & {
 };
 
 export type TaskData = {
-  id: string
+  id: string;
   _id: string;
   goalId: string;
   task: string;
@@ -133,3 +133,11 @@ export type CodeFieldError = "MISSING_FIELDS" | "INVALID_PASSWORD_FIELD" | "INVA
 export type CodeDatabaseError = "USER_NOT_FOUND" | "GOAL_NOT_FOUND" | "TASK_NOT_FOUND" | "VALIDATION_ERROR" | "VERSION_CONFLICT";
 
 export type CodeError = CodeAuthError | CodeFieldError | CodeDatabaseError | "SERVER_ERROR" | "ERR_NETWORK" | "ERR_BAD_REQUEST";
+
+export type OneFieldOnly<T extends Record<string, unknown>> = {
+  [K in keyof T]: {
+    [P in K]: T[P];
+  } & {
+    [P in Exclude<keyof T, K>]?: never;
+  };
+}[keyof T];

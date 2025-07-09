@@ -1,4 +1,4 @@
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords, capitalWord } from "@/utils/stringManip";
 import type { GoalData, TaskData, TError } from "@/utils/types";
 import ButtonV from "../Inputs/ButtonV";
 import clsx from "clsx";
@@ -11,7 +11,7 @@ import { useGoalData } from "@/contexts/UseContexts";
 type TaskProps = {
   task: TaskData;
   setError: React.Dispatch<React.SetStateAction<GoalData & TError>>;
-  index: number
+  index: number;
 };
 
 const TaskCard = ({ task, setError, index }: TaskProps) => {
@@ -58,7 +58,7 @@ const TaskCard = ({ task, setError, index }: TaskProps) => {
     }
   };
 
-  const handleToEditTask = () => {
+  const handleToEditTask = async () => {
     sessionStorage.setItem("task-data", JSON.stringify(task));
     navigate(`/task/${task._id}/edit`);
   };
@@ -67,7 +67,7 @@ const TaskCard = ({ task, setError, index }: TaskProps) => {
     <div className="border rounded-lg p-6.5 shadow-md relative bg-theme border-theme-darker gap-5 flex flex-col w-full">
       <div className="flex justify-between w-full">
         <div className="relative flex flex-col gap-3 w-full">
-          <h1 className="font-heading font-semibold text-[18px] max-w-[90%]">{toCapitalize(task.task)}</h1>
+          <h1 className="font-heading font-semibold text-[18px] max-w-[90%]">{capitalWord(task.task)}</h1>
           <p
             className={clsx(
               "bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline w-fit",
@@ -77,7 +77,7 @@ const TaskCard = ({ task, setError, index }: TaskProps) => {
             {task.isCompleted ? "Completed" : "Incomplete"}
           </p>
           <div className="flex gap-3 text-[14px] text-gray flex-wrap">
-            <p>{toCapitalize(task.difficulty)}</p>•
+            <p>{capitalEachWords(task.difficulty)}</p>•
             <p>
               {task.isCompleted
                 ? task.completedAt

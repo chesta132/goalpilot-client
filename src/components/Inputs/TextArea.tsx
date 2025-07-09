@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import toCapitalize from "../../utils/toCapitalize";
+import { capitalEachWords } from "../../utils/stringManip";
 import clsx from "clsx";
 import TextareaAutosize from "react-textarea-autosize";
 import { X } from "lucide-react";
@@ -74,7 +74,7 @@ const TextArea = ({
         )}
         htmlFor={label}
       >
-        {isFocus ? toCapitalize(label || "") : placeholder} {isFocus && labelAfterLabel && <span className="text-gray">{labelAfterLabel}</span>}{" "}
+        {isFocus ? capitalEachWords(label || "") : placeholder} {isFocus && labelAfterLabel && <span className="text-gray">{labelAfterLabel}</span>}{" "}
         {isFocus && optional && <span className="text-gray">(Optional)</span>}
       </label>
       {error && <p className="absolute text-red-500 text-[12px] text-start">{error}</p>}

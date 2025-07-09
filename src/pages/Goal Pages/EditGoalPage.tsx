@@ -4,17 +4,17 @@ import TextArea from "@/components/Inputs/TextArea";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { defaultGoalData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords } from "@/utils/stringManip";
 import type { GoalData, TError } from "@/utils/types";
-import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
 import { Edit, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
@@ -22,14 +22,16 @@ type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
 export const EditGoalPage = () => {
   const defaultValue = JSON.parse(sessionStorage.getItem("goal-data") || JSON.stringify(defaultGoalData));
   const navigate = useNavigate();
-  const { goalId } = useParams();
-  const { setData, getData, deleteGoal } = useGoalData();
-  const { openNotification } = useNotification();
 
   const [valueEdit, setValueEdit] = useState<TValueEdit>(defaultValue);
   const [error, setError] = useState<TValueEdit & TError>({ ...defaultGoalData, error: null, targetDate: "", status: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
+
+  const { goalId } = useParams();
+  const { setData, getData, deleteGoal } = useGoalData();
+  const { openNotification } = useNotification();
+  const { handleChangeForm, validateForm } = useValidate(error, setValueEdit, setError);
 
   useEffect(() => {
     if (valueEdit._id !== goalId || !valueEdit._id) {
@@ -42,7 +44,7 @@ export const EditGoalPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultGoalData, error: null, targetDate: "", status: "" });
-    const validate = validateForms(valueEdit, setError, {
+    const validate = validateForm(valueEdit, {
       title: { max: 100 },
       description: { max: 1500 },
       targetDate: true,
@@ -94,21 +96,6 @@ export const EditGoalPage = () => {
     }
   };
 
-  const handleChangeForm = useCallback(
-    (value: Partial<TValueEdit & { config: Config[keyof Config] }>) => {
-      const config: Config = { [Object.keys(value)[0]]: value.config };
-      handleChange(
-        Object.keys(value)[0] as keyof TValueEdit,
-        Object.values(value)[0] as TValueEdit[keyof TValueEdit],
-        error,
-        setValueEdit,
-        setError,
-        config
-      );
-    },
-    [error]
-  );
-
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
       {error.error && <ErrorPopup error={error} />}
@@ -132,7 +119,7 @@ export const EditGoalPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.title}
-              onChange={(e) => handleChangeForm({ title: e.target.value, config: { max: 100 } })}
+              onChange={(e) => handleChangeForm({ title: e.target.value }, { max: 100 })}
               value={valueEdit.title}
               focus
               label="Goal Title"
@@ -141,7 +128,7 @@ export const EditGoalPage = () => {
             />
             <TextArea
               error={error.description}
-              onChange={(e) => handleChangeForm({ description: e.target.value, config: { max: 1500 } })}
+              onChange={(e) => handleChangeForm({ description: e.target.value }, { max: 1500 })}
               value={valueEdit.description}
               focus
               placeholder="Edit your goal description"
@@ -173,9 +160,9 @@ export const EditGoalPage = () => {
                   defaultValue={valueEdit.status}
                   placeholder={"Goal Status"}
                   className="select !size-full"
-                  options={statusOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                  options={statusOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
                   allowClear
-                  onChange={(e) => handleChangeForm(e ? { status: e } : { status: "" })}
+                  onChange={(e) => handleChangeForm<TValueEdit>(e ? { status: e } : { status: "" })}
                 />
                 {error.status && <p className="text-red-500 text-[12px] text-start">{error.status.toString()}</p>}
               </div>

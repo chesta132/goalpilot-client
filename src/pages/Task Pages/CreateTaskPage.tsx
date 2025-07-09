@@ -3,28 +3,29 @@ import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { defaultNewTaskData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
-import toCapitalize from "@/utils/toCapitalize";
+import { capitalEachWords } from "@/utils/stringManip";
 import type { TError, TNewTaskValue } from "@/utils/types";
-import validateForms, { handleChange, type Config } from "@/utils/validateForms";
 import { DatePicker, Select } from "antd";
 import { CirclePlus } from "lucide-react";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const CreateTaskPage = () => {
-  const { taskId } = useParams();
-  const { openNotification } = useNotification();
-  const { getData: getGoalData } = useGoalData();
-
   const [valueCreate, setValueCreate] = useState<TNewTaskValue>(defaultNewTaskData);
   const [error, setError] = useState<TNewTaskValue & TError>({ ...defaultNewTaskData, error: null });
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
+
+  const { taskId } = useParams();
+  const { openNotification } = useNotification();
+  const { getData: getGoalData } = useGoalData();
+  const { handleChangeForm, validateForm } = useValidate(error, setValueCreate, setError);
 
   useEffect(() => {
     const goalId = sessionStorage.getItem("goal-id");
@@ -37,7 +38,7 @@ export const CreateTaskPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultNewTaskData, error: null });
-    const validate = validateForms(valueCreate, setError, {
+    const validate = validateForm(valueCreate, {
       task: { max: 50 },
       description: { max: 1000 },
       targetDate: true,
@@ -72,21 +73,6 @@ export const CreateTaskPage = () => {
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
   };
-
-  const handleChangeForm = useCallback(
-    (value: Partial<TNewTaskValue & { config: Config[keyof Config] }>) => {
-      const config: Config = { [Object.keys(value)[0]]: value.config };
-      handleChange(
-        Object.keys(value)[0] as keyof TNewTaskValue,
-        Object.values(value)[0] as TNewTaskValue[keyof TNewTaskValue],
-        error,
-        setValueCreate,
-        setError,
-        config
-      );
-    },
-    [error]
-  );
 
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
@@ -138,7 +124,7 @@ export const CreateTaskPage = () => {
                   status={error.difficulty && "error"}
                   placeholder={"Difficulty"}
                   className="select !size-full"
-                  options={difficultyOptions.map((option) => ({ value: option, label: toCapitalize(option) }))}
+                  options={difficultyOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
                   allowClear
                   onChange={(e) => handleChangeForm(e ? { difficulty: e } : { difficulty: "" })}
                 />
