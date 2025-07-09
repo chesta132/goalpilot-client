@@ -5,6 +5,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
+import { decrypt } from "@/utils/cryptoUtils";
 import { defaultNewTaskData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
@@ -28,7 +29,7 @@ export const CreateTaskPage = () => {
   const { handleChangeForm, validateForm } = useValidate(error, setValueCreate, setError);
 
   useEffect(() => {
-    const goalId = sessionStorage.getItem("goal-id");
+    const goalId = decrypt(sessionStorage.getItem("goal-id"));
     if (goalId) setValueCreate((prev) => ({ ...prev, goalId }));
     else handleBack();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,6 +7,7 @@ import callApi from "@/utils/callApi";
 import { useNavigate, useParams } from "react-router";
 import { Edit } from "lucide-react";
 import { useGoalData } from "@/contexts/UseContexts";
+import { encrypt } from "@/utils/cryptoUtils";
 
 type TaskProps = {
   task: TaskData;
@@ -58,8 +59,9 @@ const TaskCard = ({ task, setError, index }: TaskProps) => {
     }
   };
 
-  const handleToEditTask = async () => {
-    sessionStorage.setItem("task-data", JSON.stringify(task));
+  const handleToEditTask = () => {
+    const encryptedData = encrypt(JSON.stringify(task));
+    sessionStorage.setItem("task-data", encryptedData);
     navigate(`/task/${task._id}/edit`);
   };
 

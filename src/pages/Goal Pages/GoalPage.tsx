@@ -11,6 +11,7 @@ import { useGoalData, useTheme } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { AddTask } from "@/components/Forms/AddTask";
 import TaskCardCompact from "@/components/Cards/TaskCardCompact";
+import { encrypt } from "@/utils/cryptoUtils";
 
 type AiInput = {
   value: string;
@@ -123,7 +124,8 @@ const GoalPage = () => {
                     className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm bg-goal-accent hover:bg-goal-accent-strong"
                     onClick={() => {
                       if (!loading) {
-                        sessionStorage.setItem("goal-id", data._id);
+                        const encryptedData = encrypt(JSON.stringify(data.id));
+                        sessionStorage.setItem("goal-id", encryptedData);
                         navigate("/task/create");
                       }
                     }}

@@ -6,6 +6,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
+import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultGoalData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
@@ -20,7 +21,7 @@ import { useNavigate, useParams } from "react-router";
 type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
 
 export const EditGoalPage = () => {
-  const defaultValue = JSON.parse(sessionStorage.getItem("goal-data") || JSON.stringify(defaultGoalData));
+  const defaultValue = JSON.parse(decrypt(sessionStorage.getItem("goal-data")) || JSON.stringify(defaultGoalData));
   const navigate = useNavigate();
 
   const [valueEdit, setValueEdit] = useState<TValueEdit>(defaultValue);
@@ -67,7 +68,8 @@ export const EditGoalPage = () => {
     try {
       const response = await callApi("/goal", { method: "PUT", body: { ...valueEdit, goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
-      sessionStorage.setItem("goal-data", JSON.stringify(response.data));
+      const encryptedData = encrypt(JSON.stringify(response.data));
+      sessionStorage.setItem("goal-data", encryptedData);
       if (response.data._id === goalId) setData(response.data);
       else if (goalId) getData(goalId, false);
       handleBack();

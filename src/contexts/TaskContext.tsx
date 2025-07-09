@@ -4,6 +4,7 @@ import { createContext, useState, type ReactNode } from "react";
 import { useGoalData, useUserData, useNotification } from "./UseContexts";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
+import { decrypt } from "@/utils/cryptoUtils";
 
 type TTaskContent = {
   data: TaskData;
@@ -33,7 +34,7 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
   const { getData: getGoalData } = useGoalData();
 
   const getData = () => {
-    const taskData: TaskData = JSON.parse(sessionStorage.getItem("task-data") || JSON.stringify(defaultTaskData));
+    const taskData: TaskData = JSON.parse(decrypt(sessionStorage.getItem("task-data")) || JSON.stringify(defaultTaskData));
     setData(taskData);
   };
 

@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router";
 import { Edit } from "lucide-react";
 import Checkbox from "../Inputs/Checkbox";
 import { useGoalData } from "@/contexts/UseContexts";
+import { encrypt } from "@/utils/cryptoUtils";
 
 type TaskProps = {
   task: TaskData;
@@ -59,7 +60,8 @@ const TaskCardCompact = ({ task, setError, index }: TaskProps) => {
   };
 
   const handleToEditTask = () => {
-    sessionStorage.setItem("task-data", JSON.stringify(task));
+    const encryptedData = encrypt(JSON.stringify(task));
+    sessionStorage.setItem("task-data", encryptedData);
     navigate(`/task/${task._id}/edit`);
   };
 

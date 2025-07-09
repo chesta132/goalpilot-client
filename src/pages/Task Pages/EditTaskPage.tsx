@@ -6,6 +6,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
+import { decrypt } from "@/utils/cryptoUtils";
 import { defaultTaskData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
@@ -18,7 +19,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EditTaskPage = () => {
-  const defaultValue = JSON.parse(sessionStorage.getItem("task-data") || JSON.stringify(defaultTaskData));
+  const defaultValue = JSON.parse(decrypt(sessionStorage.getItem("task-data")) || JSON.stringify(defaultTaskData));
 
   const [valueEdit, setValueEdit] = useState<TaskData>(defaultValue);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });

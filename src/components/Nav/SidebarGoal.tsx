@@ -6,9 +6,11 @@ import StatsCard from "../Cards/StatsCard";
 import { useGoalData } from "@/contexts/UseContexts";
 import { ReadMore } from "@/pages/Goal Pages/GoalPage";
 import { useViewportWidth } from "@/hooks/useViewport";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { AddTask } from "../Forms/AddTask";
+import { decrypt, encrypt } from "@/utils/cryptoUtils";
+import { defaultGoalData } from "@/utils/defaultData";
 
 type TAiInput = {
   value: string;
@@ -23,7 +25,7 @@ type TReadMore = {
 };
 
 export const SidebarGoal = () => {
-  const { loading, data } = useGoalData();
+  const { loading, data, setData } = useGoalData();
 
   const { timelineStatus } = useScrollNavigation();
 
@@ -40,9 +42,19 @@ export const SidebarGoal = () => {
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
 
   const handleToEdit = () => {
-    sessionStorage.setItem("goal-data", JSON.stringify(data));
+    const encryptedData = encrypt(JSON.stringify(data));
+    sessionStorage.setItem("goal-data", encryptedData);
     navigate(`/goal/${data._id}/edit`);
   };
+
+  useEffect(() => {
+    if (JSON.stringify(data) === JSON.stringify(defaultGoalData)) {
+      if (sessionStorage.getItem("goal-data")) {
+        setData(JSON.parse(decrypt(sessionStorage.getItem("goal-data"))));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div

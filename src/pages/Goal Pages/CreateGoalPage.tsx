@@ -5,6 +5,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useNotification, useUserData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
+import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultNewGoalData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import type { TError, TNewGoalValue } from "@/utils/types";
@@ -19,7 +20,7 @@ export const CreateGoalPage = () => {
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const userId = sessionStorage.getItem("user-id");
+  const userId = decrypt(sessionStorage.getItem("user-id"));
 
   const { openNotification } = useNotification();
   const { data, refetchData, setData } = useUserData();
@@ -29,7 +30,8 @@ export const CreateGoalPage = () => {
     const initial = async () => {
       if (!data || !data._id || !userId) {
         await refetchData(false);
-        sessionStorage.setItem("user-id", data!._id);
+        const encryptedData = encrypt(JSON.stringify(data!.id));
+        sessionStorage.setItem("user-id", encryptedData);
       }
     };
     initial();

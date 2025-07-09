@@ -7,6 +7,7 @@ import GoalCard from "@/components/Cards/GoalCard";
 import { Empty } from "antd";
 import { useUserData } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
+import { encrypt } from "@/utils/cryptoUtils";
 
 const Dashboard = () => {
   const { data, loading, error } = useUserData();
@@ -15,7 +16,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleCreateGoal = () => {
-    if (data) sessionStorage.setItem("user-id", data._id);
+    if (data) {
+      const encryptedData = encrypt(JSON.stringify(data.id));
+      sessionStorage.setItem("user-id", encryptedData);
+    }
     navigate("/goal/create");
   };
 

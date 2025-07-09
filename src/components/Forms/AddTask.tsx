@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router";
 import ButtonV from "../Inputs/ButtonV";
 import TextArea from "../Inputs/TextArea";
 import clsx from "clsx";
+import { encrypt } from "@/utils/cryptoUtils";
 
 type AiInput = {
   value: string;
@@ -78,7 +79,8 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
         className="shadow-sm whitespace-nowrap w-full bg-(--goal-accent)! hover:bg-(--goal-accent-strong)! text-[13px]! md:text-[14px]!"
         onClick={() => {
           if (!loading) {
-            sessionStorage.setItem("goal-id", data._id);
+            const encryptedData = encrypt(JSON.stringify(data._id));
+            sessionStorage.setItem("goal-id", encryptedData);
             navigate("/task/create");
           }
         }}

@@ -8,6 +8,7 @@ import StatsCard from "../Cards/StatsCard";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { avgCalc } from "@/utils/math";
 import { useNavigate } from "react-router";
+import { encrypt } from "@/utils/cryptoUtils";
 
 export const SidebarUser = () => {
   const { timelineStatus } = useScrollNavigation();
@@ -18,7 +19,10 @@ export const SidebarUser = () => {
   const navigate = useNavigate();
 
   const handleCreateGoal = () => {
-    if (data) sessionStorage.setItem("user-id", data._id);
+    if (data) {
+      const encryptedData = encrypt(JSON.stringify(data.id));
+      sessionStorage.setItem("user-id", encryptedData);
+    }
     navigate("/goal/create");
   };
 
