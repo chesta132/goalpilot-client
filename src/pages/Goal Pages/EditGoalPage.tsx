@@ -32,7 +32,7 @@ export const EditGoalPage = () => {
   const { goalId } = useParams();
   const { setData, getData, deleteGoal } = useGoalData();
   const { openNotification } = useNotification();
-  const { handleChangeForm, validateForm } = useValidate(error, setValueEdit, setError);
+  const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
   useEffect(() => {
     if (valueEdit._id !== goalId || !valueEdit._id) {

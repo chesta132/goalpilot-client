@@ -9,6 +9,7 @@ export type TSignUp = TSignIn & {
   firstName: string;
   lastName: string;
   rememberMe: boolean;
+  verifyPassword: string;
 };
 
 export type TaskData = {
@@ -111,6 +112,7 @@ export type Values = {
   difficulty: string;
   status: string;
   isCompleted: boolean;
+  verifyPassword: string;
 };
 
 export type ErrorWithValues = TError & Partial<Values>;

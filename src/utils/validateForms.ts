@@ -21,7 +21,7 @@ export type DynamicConfig<T = Config> = Partial<
 >;
 
 type ValidationRule<T> = {
-  condition: (value: T, config: DynamicConfig) => boolean;
+  condition: (value: T, config: DynamicConfig, allValue?: Partial<Values>) => boolean;
   message: string | ((config: DynamicConfig) => string);
 };
 
@@ -88,6 +88,12 @@ export const ValidationRules: FieldValidations<Values> = {
     {
       condition: (value, config) => typeof config.password !== "boolean" && !!config.password?.min && value.length < config.password?.min,
       message: (config) => `Minimum password character is ${typeof config.password !== "boolean" && config.password?.min}`,
+    },
+  ],
+  verifyPassword: [
+    {
+      condition: (value, config, allValue) => !!config.verifyPassword && !!allValue && value !== allValue.password,
+      message: "Password is not match",
     },
   ],
   username: [
@@ -158,7 +164,7 @@ const validateForms = <T extends Partial<Values>>(
     if (!fieldRules) continue;
 
     for (const rule of fieldRules) {
-      if (rule.condition(fieldValue.toString(), config)) {
+      if (rule.condition(fieldValue.toString(), config, value)) {
         const message = typeof rule.message === "function" ? rule.message(config) : rule.message;
         errors[fieldName as keyof Omit<Values, "isCompleted">] = message;
         hasError = true;
@@ -173,20 +179,21 @@ const validateForms = <T extends Partial<Values>>(
   return hasError;
 };
 
-export const validateField = <T extends Partial<Values>>(value: T, config?: DynamicConfig) => {
+export const validateField = <T extends Partial<Values>>(value: T, config?: DynamicConfig, allValue?: T) => {
   const errors: Partial<Record<keyof T, string>> = {};
   if (!config) config = {};
-
+  
   for (const [fieldName, fieldValue] of Object.entries(value)) {
     if (config[fieldName as keyof DynamicConfig] === undefined) {
       config[fieldName as keyof DynamicConfig] = true;
     }
-
+    
     const fieldRules = ValidationRules[fieldName as keyof Omit<Values, "isCompleted">];
     if (!fieldRules) continue;
-
+    
     for (const rule of fieldRules) {
-      if (rule.condition(fieldValue.toString(), config)) {
+      if (rule.condition(fieldValue.toString(), config, allValue)) {
+        console.log(value);
         const message = typeof rule.message === "function" ? rule.message(config) : rule.message;
         errors[fieldName as keyof T] = message;
         break;
@@ -201,13 +208,14 @@ export const handleChangeAndValidate = <T, Z extends Partial<T> & TError>(
   error: Z,
   setValue: React.Dispatch<React.SetStateAction<T>>,
   setError: React.Dispatch<React.SetStateAction<Z>>,
-  config?: DynamicConfig
+  config?: DynamicConfig,
+  allValue?: Partial<Values>
 ) => {
   const value = Object.values(valueProp!)[0] as T[keyof T];
   const field = Object.keys(valueProp!)[0] as keyof T;
   setValue((prev) => ({ ...prev, [field]: value }));
   if (error[field]) setError((prev) => ({ ...prev, [field]: "" }));
-  const errorOnValidate = validateField({ [field]: value }, config);
+  const errorOnValidate = validateField({ [field]: value }, config, allValue);
   if (errorOnValidate[field as keyof Values]) {
     setError((prev) => ({ ...prev, [field]: errorOnValidate[field as keyof Values] }));
   }

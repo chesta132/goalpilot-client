@@ -29,7 +29,7 @@ const SignIn = () => {
   const [error, setError] = useState<TSignIn & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
-  const { handleChangeForm, validateForm } = useValidate(error, setValue, setError);
+  const { handleChangeForm, validateForm } = useValidate(value, error, setValue, setError);
   const { clearError, setData } = useUserData();
 
   const width = useViewportWidth(300);

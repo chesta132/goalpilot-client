@@ -31,7 +31,7 @@ export const EditTaskPage = () => {
   const { taskId } = useParams();
   const { openNotification } = useNotification();
   const { getData: getGoalData, setData: setGoalData, data: goalData } = useGoalData();
-  const { handleChangeForm, validateForm } = useValidate(error, setValueEdit, setError);
+  const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
   useEffect(() => {
     if (valueEdit._id !== taskId || !valueEdit._id) {

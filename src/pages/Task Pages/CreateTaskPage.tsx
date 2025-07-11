@@ -26,7 +26,7 @@ export const CreateTaskPage = () => {
   const { taskId } = useParams();
   const { openNotification } = useNotification();
   const { getData: getGoalData } = useGoalData();
-  const { handleChangeForm, validateForm } = useValidate(error, setValueCreate, setError);
+  const { handleChangeForm, validateForm } = useValidate(valueCreate, error, setValueCreate, setError);
 
   useEffect(() => {
     const goalId = decrypt(sessionStorage.getItem("goal-id"));

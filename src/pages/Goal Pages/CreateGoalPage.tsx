@@ -24,7 +24,7 @@ export const CreateGoalPage = () => {
 
   const { openNotification } = useNotification();
   const { data, refetchData, setData } = useUserData();
-  const { handleChangeForm, validateForm } = useValidate(error, setValueCreate, setError);
+  const { handleChangeForm, validateForm } = useValidate(valueCreate, error, setValueCreate, setError);
 
   useEffect(() => {
     const initial = async () => {

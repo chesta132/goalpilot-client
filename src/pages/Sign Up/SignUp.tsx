@@ -13,21 +13,15 @@ import type { TSignUp, TError } from "@/utils/types";
 import { useUserData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 
-const defaultError = { email: "", password: "", username: "", firstName: "", lastName: "", rememberMe: false, error: null };
+const defaultValue = { username: "", email: "", password: "", firstName: "", lastName: "", rememberMe: false, verifyPassword: "" };
+const defaultError = { ...defaultValue, error: null };
 
 const SignUp = () => {
-  const [value, setValue] = useState<TSignUp>({
-    username: "",
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    rememberMe: false,
-  });
+  const [value, setValue] = useState<TSignUp>(defaultValue);
   const [error, setError] = useState<TSignUp & TError>(defaultError);
   const [submiting, setSubmiting] = useState(false);
 
-  const { handleChangeForm, validateForm } = useValidate(error, setValue, setError);
+  const { handleChangeForm, validateForm } = useValidate(value, error, setValue, setError);
   const { clearError, setData } = useUserData();
 
   const width = useViewportWidth(300);
@@ -45,6 +39,7 @@ const SignUp = () => {
       password: { min: 8 },
       username: { noSpace: true, isLower: true },
       firstName: true,
+      verifyPassword: true,
     });
     if (validate) {
       setSubmiting(false);
@@ -137,7 +132,17 @@ const SignUp = () => {
               password
               onChange={(e) => handleChangeForm({ password: e.target.value }, { min: 8 })}
             />
+            <Input
+              value={value.verifyPassword}
+              labelFocus="-top-2.5 left-3 text-xs text-accent font-medium bg-theme-dark px-1"
+              placeholder={"Verify your password"}
+              error={error.verifyPassword}
+              label={"Verify Password"}
+              type="password"
+              onChange={(e) => handleChangeForm({ verifyPassword: e.target.value })}
+            />
             <Checkbox
+              className="w-fit"
               id={"remember-me"}
               label={"Remember Me"}
               checked={value.rememberMe}
