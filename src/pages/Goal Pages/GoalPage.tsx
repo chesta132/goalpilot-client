@@ -58,7 +58,7 @@ const GoalPage = () => {
       {error.error && <ErrorPopup error={error} />}
 
       {/* Goal Page */}
-      <div className="md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
+      <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
         <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 rounded-xl shadow-lg">
           <h1 className="text-[20px] font-[600] font-heading ml-3">
             Tasks of{" "}

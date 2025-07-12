@@ -11,7 +11,7 @@ type Options =
   | undefined;
 
 export default async function callApi(endpoint: string = "", options: Options = { method: "GET", body: null, headers: {}, directToken: false }) {
-  const apiURL = import.meta.env.VITE_API_URL;
+  const apiURL = import.meta.env.VITE_API_URL_DEV;
   try {
     const response = await axios({
       method: options.method,

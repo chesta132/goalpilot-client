@@ -1,6 +1,6 @@
 import { ChartLineIcon, Goal, Plus, Verified } from "lucide-react";
 import ButtonV from "../Inputs/ButtonV";
-import { useUserData } from "@/contexts/UseContexts";
+import { useTheme, useUserData } from "@/contexts/UseContexts";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import clsx from "clsx";
 import StatsCard from "../Cards/StatsCard";
@@ -8,10 +8,12 @@ import { useViewportWidth } from "@/hooks/useViewport";
 import { avgCalc } from "@/utils/math";
 import { useNavigate } from "react-router";
 import { encrypt } from "@/utils/cryptoUtils";
+import { GoalCardCompact } from "../Cards/GoalCardCompact";
 
 export const SidebarUser = () => {
   const { timelineStatus } = useScrollNavigation();
   const { data, loading } = useUserData();
+  const { settings } = useTheme();
 
   const width = useViewportWidth();
   const navigate = useNavigate();
@@ -53,6 +55,13 @@ export const SidebarUser = () => {
         }
         stats={data?.goals && data?.goals.filter((goal) => goal.progress === 100).length.toString()}
       />
+      {settings.showGoalsShortcut && width > 1024 && (
+        <div className="flex flex-col gap-1.5 overflow-auto h-80 px-1">
+          {data?.goals.map((goal) => (
+            <GoalCardCompact key={goal.id} data={goal} className="cursor-pointer" />
+          ))}
+        </div>
+      )}
       {width < 1024 && (
         <div className="mt-10 w-full">
           <ButtonV

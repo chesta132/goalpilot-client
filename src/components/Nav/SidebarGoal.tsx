@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from "react-router";
 import { AddTask } from "../Forms/AddTask";
 import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultGoalData } from "@/utils/defaultData";
+import { getBgByStatus } from "@/utils/commonUtils";
 
 type TAiInput = {
   value: string;
@@ -89,13 +90,7 @@ export const SidebarGoal = () => {
           <h1
             className={clsx(
               "text-[13px] font-heading mb-2 size-fit rounded-2xl px-2 py-1 text-white",
-              status.toLowerCase() === "active"
-                ? "bg-green-700"
-                : status.toLowerCase() === "pending"
-                ? "bg-yellow-600"
-                : status.toLowerCase() === "paused" || status.toLowerCase() === "canceled"
-                ? "bg-red-700"
-                : status.toLowerCase() === "completed" && "bg-green-500 !text-black",
+              getBgByStatus(status),
               loading && "!text-transparent !bg-transparent"
             )}
           >

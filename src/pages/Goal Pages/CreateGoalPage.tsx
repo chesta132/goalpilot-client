@@ -138,7 +138,7 @@ export const CreateGoalPage = () => {
                   status={error.status && "error"}
                   placeholder={"Status"}
                   className="select !size-full"
-                  options={statusOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
+                  options={statusOptions.slice(0, -2).map((option) => ({ value: option, label: capitalEachWords(option) }))}
                   allowClear
                   onChange={(e) => handleChangeForm<TNewGoalValue>(e ? { status: e } : { status: "" })}
                 />

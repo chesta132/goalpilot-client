@@ -46,29 +46,21 @@ export const SettingsPage = () => {
     updateSettings({ [field]: value });
   };
 
+  const handleShowGoalShortcut = () => {
+    updateSettings({ showGoalsShortcut: !settings.showGoalsShortcut });
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="px-4 md:px-6 flex flex-col gap-8 bg-theme text-theme-reverse text-[14px] pb-25">
-      <div className="bg-theme-dark rounded-2xl">
+    <div className="px-3 md:px-6 flex flex-col gap-8 bg-theme text-theme-reverse text-[14px] pb-25">
+      <div className="bg-theme-dark rounded-2xl shadow-xl">
         <div className="p-6.5 border-b border-gray">
           <h1 className="font-heading text-[18px] font-bold">Appearance</h1>
         </div>
         <div className="p-6 flex flex-col">
-          <div className="flex justify-between items-center">
-            <div>
-              <p>Dark Mode</p>
-              <span className="text-[12px] text-gray">Toggle between light and dark theme</span>
-            </div>
-            <Switch
-              value={settings.themeMode === "light"}
-              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-darker)" }}
-              onChange={handleChangeTheme}
-            />
-          </div>
-          <div className="w-full h-[1px] bg-theme my-3" />
           <div className="flex flex-col gap-1.5">
             <p>Accent Color</p>
             <div className="flex items-center justify-between">
@@ -84,6 +76,30 @@ export const SettingsPage = () => {
                 <div className="size-8 rounded-full bg-accent-strong" />
               </div>
             </div>
+          </div>
+          <div className="w-full h-[1px] bg-theme my-3" />
+          <div className="flex justify-between items-center">
+            <div>
+              <p>Dark Mode</p>
+              <span className="text-[12px] text-gray">Toggle between light and dark theme</span>
+            </div>
+            <Switch
+              value={settings.themeMode === "light"}
+              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-darker)" }}
+              onChange={handleChangeTheme}
+            />
+          </div>
+          <div className="w-full h-[1px] bg-theme my-3 hidden lg:flex" />
+          <div className="justify-between items-center hidden lg:flex">
+            <div>
+              <p>Show Goal Shortcut</p>
+              <span className="text-[12px] text-gray">Show goal shortcut on sidebar</span>
+            </div>
+            <Switch
+              value={settings.showGoalsShortcut}
+              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-darker)" }}
+              onChange={handleShowGoalShortcut}
+            />
           </div>
           <div className="w-full h-[1px] bg-theme my-3" />
           <div className="gap-2 flex flex-col">
@@ -105,7 +121,7 @@ export const SettingsPage = () => {
           </div>
         </div>
       </div>
-      <div className="bg-theme-dark rounded-2xl">
+      <div className="bg-theme-dark rounded-2xl shadow-xl">
         <div className="p-6.5 border-b border-gray">
           <h1 className="font-heading text-[18px] font-bold">Utilities</h1>
         </div>
@@ -122,7 +138,7 @@ export const SettingsPage = () => {
                 placement="topLeft"
                 placeholder={"Goal status"}
                 className="select !size-fit"
-                options={statusOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
+                options={statusOptions.slice(0, -2).map((option) => ({ value: option, label: capitalEachWords(option) }))}
                 allowClear
               />
               <Select

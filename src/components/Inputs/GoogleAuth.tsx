@@ -7,7 +7,7 @@ type GoogleAuthProps = {
 
 const GoogleAuth = ({ label, onClick }: GoogleAuthProps) => {
   return (
-    <Link className="w-full" to={`${import.meta.env.VITE_API_URL}/auth/google`}>
+    <Link className="w-full" to={`${import.meta.env.VITE_API_URL_DEV}/auth/google`}>
       <button
         onClick={onClick}
         className="cursor-pointer rounded-[8px] border border-gray text-[14px] p-3 items-center gap-x-3 flex justify-center w-full"

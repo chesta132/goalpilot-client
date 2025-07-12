@@ -13,6 +13,7 @@ export type ThemeSettings = {
   taskCard: "regular" | "compact";
   defaultGoalStatus: "active" | "completed" | "paused" | "canceled" | "pending" | "";
   defaultTaskDifficulty: "easy" | "medium" | "hard" | "very hard" | "";
+  showGoalsShortcut: boolean;
 };
 
 const defaultSettings: ThemeSettings = {
@@ -26,6 +27,7 @@ const defaultSettings: ThemeSettings = {
   taskCard: "regular",
   defaultGoalStatus: "",
   defaultTaskDifficulty: "",
+  showGoalsShortcut: false,
 };
 
 interface ThemeContextType {
@@ -56,6 +58,7 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
       taskCard: parsedSettings.taskCard ?? defaultSettings.taskCard,
       defaultGoalStatus: parsedSettings.defaultGoalStatus ?? defaultSettings.defaultGoalStatus,
       defaultTaskDifficulty: parsedSettings.defaultTaskDifficulty ?? defaultSettings.defaultTaskDifficulty,
+      showGoalsShortcut: parsedSettings.showGoalsShortcut ?? defaultSettings.showGoalsShortcut,
     };
   } catch (error) {
     console.error("Failed to parse settings from localStorage:", error);
