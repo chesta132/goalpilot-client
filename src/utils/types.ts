@@ -72,6 +72,7 @@ export type TNewGoalValue = {
   targetDate: string;
   color: string;
   isPublic: boolean;
+  status: GoalData["status"];
 };
 
 export type TNewTaskValue = {

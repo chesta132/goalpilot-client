@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { Calendar, Edit, Goal, Verified } from "lucide-react";
 import StatsCard from "../Cards/StatsCard";
 import { useGoalData } from "@/contexts/UseContexts";
-import { ReadMore } from "@/pages/Goal Pages/GoalPage";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -54,17 +53,15 @@ export const SidebarGoal = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data]);
 
   return (
     <div
       className={clsx(
-        "bg-theme-dark rounded-lg px-4 mx-3 lg:mx-0 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
+        "bg-theme-dark rounded-2xl px-4 mx-3 md:mx-6 lg:mx-0 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
         timelineStatus && "lg:!pt-8"
       )}
     >
-      {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
-
       <div className="flex justify-between">
         <div className={clsx("flex gap-2 flex-col w-full", loading && "animate-shimmer rounded-md")}>
           <h1

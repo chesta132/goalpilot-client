@@ -8,6 +8,7 @@ import { Empty } from "antd";
 import { useUserData } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { encrypt } from "@/utils/cryptoUtils";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const { data, loading, error } = useUserData();
@@ -23,6 +24,10 @@ const Dashboard = () => {
     navigate("/goal/create");
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div>
       {/* Header/absolute */}
@@ -30,7 +35,7 @@ const Dashboard = () => {
 
       {/* Dashboard */}
       <div className={clsx("px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10")}>
-        <div className="bg-theme-dark rounded-lg px-3 lg:px-4 py-8 text-theme-reverse shadow-md flex flex-col gap-10">
+        <div className="bg-theme-dark rounded-xl px-3 lg:px-4 py-8 text-theme-reverse shadow-md flex flex-col gap-10">
           <div className="flex flex-col gap-4 relative px-1 lg:px-0">
             <h1 className="text-2xl font-bold font-heading">My Goals</h1>
             <h2 className="font-medium">

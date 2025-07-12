@@ -6,7 +6,9 @@ const Footer = () => {
   const location = useLocation();
 
   const path = location.pathname;
-  const halfFooter = path === "/" || path === "/task/create" || path.startsWith("/goal");
+  const halfFooterPaths = ["/", "/settings"];
+  const halfFooterStartWith = ["/goal", "/task"];
+  const halfFooter = halfFooterPaths.includes(path) || halfFooterStartWith.some((startWith) => path.startsWith(startWith));
 
   return (
     <footer className={clsx("bg-slate-800 text-slate-300 border-t border-slate-700", halfFooter && "lg:ml-[22%]")}>

@@ -182,18 +182,17 @@ const validateForms = <T extends Partial<Values>>(
 export const validateField = <T extends Partial<Values>>(value: T, config?: DynamicConfig, allValue?: T) => {
   const errors: Partial<Record<keyof T, string>> = {};
   if (!config) config = {};
-  
+
   for (const [fieldName, fieldValue] of Object.entries(value)) {
     if (config[fieldName as keyof DynamicConfig] === undefined) {
       config[fieldName as keyof DynamicConfig] = true;
     }
-    
+
     const fieldRules = ValidationRules[fieldName as keyof Omit<Values, "isCompleted">];
     if (!fieldRules) continue;
-    
+
     for (const rule of fieldRules) {
       if (rule.condition(fieldValue.toString(), config, allValue)) {
-        console.log(value);
         const message = typeof rule.message === "function" ? rule.message(config) : rule.message;
         errors[fieldName as keyof T] = message;
         break;

@@ -44,7 +44,7 @@ export const EditTaskPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultTaskData, error: null, difficulty: "" });
-    const validate = validateForm(valueEdit, {
+    const validate = validateForm({
       task: { max: 50 },
       description: { max: 1000 },
       targetDate: true,
@@ -115,7 +115,7 @@ export const EditTaskPage = () => {
   }, []);
 
   return (
-    <div className="pt-22 px-3 text-theme-reverse flex justify-center items-center mb-25">
+    <div className="px-3 text-theme-reverse flex justify-center items-center mb-25">
       {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="task" setClose={() => setDeletePopup(false)} />}
       <form onSubmit={handleSave} className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
@@ -125,7 +125,7 @@ export const EditTaskPage = () => {
             <ButtonV
               type="button"
               disabled={isSubmitting}
-              onClick={handleBack}
+              onClick={() => handleBack()}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />

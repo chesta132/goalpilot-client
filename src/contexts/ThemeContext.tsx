@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, type ReactNode } from "react";
 import { generateAccentColors } from "@/utils/colorUtils";
 import { useGoalData } from "./UseContexts";
 
-type ThemeSettings = {
+export type ThemeSettings = {
   themeMode: "light" | "dark";
   accent: string;
   accentSoft: string;
@@ -11,6 +11,8 @@ type ThemeSettings = {
   goalAccentSoft: string;
   goalAccentStrong: string;
   taskCard: "regular" | "compact";
+  defaultGoalStatus: "active" | "completed" | "paused" | "canceled" | "pending" | "";
+  defaultTaskDifficulty: "easy" | "medium" | "hard" | "very hard" | "";
 };
 
 const defaultSettings: ThemeSettings = {
@@ -22,6 +24,8 @@ const defaultSettings: ThemeSettings = {
   goalAccentSoft: "#9fcfff",
   goalAccentStrong: "#2a94ff",
   taskCard: "regular",
+  defaultGoalStatus: "",
+  defaultTaskDifficulty: "",
 };
 
 interface ThemeContextType {
@@ -50,6 +54,8 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
       goalAccentSoft: parsedSettings.goalAccentSoft ?? defaultSettings.goalAccentSoft,
       goalAccentStrong: parsedSettings.goalAccentStrong ?? defaultSettings.goalAccentStrong,
       taskCard: parsedSettings.taskCard ?? defaultSettings.taskCard,
+      defaultGoalStatus: parsedSettings.defaultGoalStatus ?? defaultSettings.defaultGoalStatus,
+      defaultTaskDifficulty: parsedSettings.defaultTaskDifficulty ?? defaultSettings.defaultTaskDifficulty,
     };
   } catch (error) {
     console.error("Failed to parse settings from localStorage:", error);

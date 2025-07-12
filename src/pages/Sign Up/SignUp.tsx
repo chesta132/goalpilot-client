@@ -34,7 +34,7 @@ const SignUp = () => {
     setSubmiting(true);
     setError(defaultError);
 
-    const validate = validateForm(value, {
+    const validate = validateForm({
       email: { regex: true },
       password: { min: 8 },
       username: { noSpace: true, isLower: true },

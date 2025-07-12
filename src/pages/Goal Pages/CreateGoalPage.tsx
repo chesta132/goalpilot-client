@@ -2,14 +2,17 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { useNotification, useUserData } from "@/contexts/UseContexts";
+import { useNotification, useTheme, useUserData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultNewGoalData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
+import { statusOptions } from "@/utils/selectOptions";
+import { capitalEachWords } from "@/utils/stringManip";
 import type { TError, TNewGoalValue } from "@/utils/types";
-import { ColorPicker, DatePicker, Switch } from "antd";
+import { ColorPicker, DatePicker, Select, Switch } from "antd";
+import clsx from "clsx";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
@@ -25,13 +28,18 @@ export const CreateGoalPage = () => {
   const { openNotification } = useNotification();
   const { data, refetchData, setData } = useUserData();
   const { handleChangeForm, validateForm } = useValidate(valueCreate, error, setValueCreate, setError);
+  const { settings } = useTheme();
 
   useEffect(() => {
     const initial = async () => {
       if (!data || !data._id || !userId) {
         await refetchData(false);
-        const encryptedData = encrypt(JSON.stringify(data!.id));
-        sessionStorage.setItem("user-id", encryptedData);
+        try {
+          const encryptedData = encrypt(JSON.stringify(data!.id));
+          sessionStorage.setItem("user-id", encryptedData);
+        } catch (e) {
+          console.error(e);
+        }
       }
     };
     initial();
@@ -42,11 +50,12 @@ export const CreateGoalPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultNewGoalData, error: null, color: "" });
-    const validate = validateForm(valueCreate, {
+    const validate = validateForm({
       title: { max: 100 },
       description: { max: 1500 },
       targetDate: true,
       color: true,
+      status: true,
     });
     if (validate) {
       setSubmitting(false);
@@ -105,21 +114,35 @@ export const CreateGoalPage = () => {
             />
           </div>
           <div className="flex flex-col gap-4">
+            <div className={clsx("flex flex-col h-13", error.targetDate && "h-16")}>
+              <DatePicker
+                id="targetDate"
+                placement="topLeft"
+                styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
+                classNames={{ popup: { root: "datepicker" } }}
+                needConfirm
+                status={error.targetDate && "error"}
+                size="small"
+                color="var(--theme)"
+                className="text-theme-reverse datepicker size-full"
+                placeholder="Choose target date of goal"
+                onChange={(e) => handleChangeForm(e ? { targetDate: e.format() } : { targetDate: "" })}
+              />
+              {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
+            </div>
             <div className="flex items-center h-13 gap-4">
               <div className="w-1/2 h-full">
-                <DatePicker
-                  placement="topLeft"
-                  styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
-                  classNames={{ popup: { root: "datepicker" } }}
-                  needConfirm
-                  status={error.targetDate && "error"}
-                  size="small"
-                  color="var(--theme)"
-                  className="text-theme-reverse datepicker size-full"
-                  placeholder="Choose target date of goal"
-                  onChange={(e) => handleChangeForm(e ? { targetDate: e.format() } : { targetDate: "" })}
+                <Select
+                  defaultValue={settings.defaultGoalStatus || undefined}
+                  placement="bottomLeft"
+                  status={error.status && "error"}
+                  placeholder={"Status"}
+                  className="select !size-full"
+                  options={statusOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
+                  allowClear
+                  onChange={(e) => handleChangeForm<TNewGoalValue>(e ? { status: e } : { status: "" })}
                 />
-                {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}
+                {error.status && <p className="text-red-500 text-[12px] text-start">{error.status.toString()}</p>}
               </div>
               <div className="w-1/2 h-full flex flex-col">
                 <p className="text-theme-reverse-dark whitespace-nowrap text-[13px]">Goal Color Theme</p>
@@ -127,7 +150,6 @@ export const CreateGoalPage = () => {
                   className="colorpicker"
                   styles={{ popup: { backgroundColor: "var(--theme)" } }}
                   showText
-                  format="hex"
                   value={valueCreate.color}
                   onChangeComplete={(e) => handleChangeForm({ color: e.toHexString() })}
                 />
@@ -140,6 +162,7 @@ export const CreateGoalPage = () => {
                 <p className="text-gray text-[12px]">Allow others to see this goal</p>
               </div>
               <Switch
+                id="isPublic"
                 style={{ backgroundColor: valueCreate.isPublic ? "var(--accent)" : "var(--theme-darker)" }}
                 onChange={(e) => handleChangeForm({ isPublic: e.valueOf() })}
                 value={valueCreate.isPublic}
@@ -151,7 +174,7 @@ export const CreateGoalPage = () => {
           <ButtonV
             type="button"
             disabled={isSubmitting}
-            onClick={handleBack}
+            onClick={() => handleBack()}
             text="Cancel"
             className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
           />

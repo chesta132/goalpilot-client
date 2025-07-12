@@ -6,8 +6,6 @@ import { useViewportWidth } from "../../hooks/useViewport";
 import useScrollNavigation from "../../hooks/useScrollNavigation";
 import type { UserData } from "../../utils/types";
 import clsx from "clsx";
-import { Switch } from "antd";
-import { useGoalData, useTheme } from "@/contexts/UseContexts";
 
 type scrollNav = {
   navRef: React.RefObject<null>;
@@ -26,8 +24,6 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
   const width = useViewportWidth();
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
-  const { settings, updateSettings } = useTheme();
-  const { getData: getGoalData } = useGoalData();
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -62,16 +58,6 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
     else if (timelineStatus) setIsOpen(false);
   }, [timelineStatus, width]);
 
-  const handleChangeTheme = () => {
-    updateSettings({ themeMode: settings.themeMode === "light" ? "dark" : "light" });
-  };
-
-  const handleChangeTaskCard = async () => {
-    await getGoalData(undefined, false);
-    if (settings.taskCard === "regular") updateSettings({ taskCard: "compact" });
-    if (settings.taskCard === "compact") updateSettings({ taskCard: "regular" });
-  };
-
   return (
     <nav>
       <div
@@ -87,20 +73,6 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
           </Link>
         </div>
         <div className="flex items-center">
-          {/* DEBUG ONLY */}
-          <div className="flex gap-5 items-center">
-            <Switch
-              value={settings.taskCard === "regular"}
-              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-dark)" }}
-              onChange={handleChangeTaskCard}
-            />
-            <Switch
-              value={settings.themeMode === "light"}
-              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-dark)" }}
-              onChange={handleChangeTheme}
-            />
-          </div>
-          {/* DEBUG ONLY */}
           <Link to="/profile" className="hover:text-accent ml-4">
             <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
               {data && data.fullName && data.fullName[0].toUpperCase()}

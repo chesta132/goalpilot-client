@@ -8,9 +8,9 @@ export default function SidebarUserLayout() {
   const width = useViewportWidth();
 
   return (
-    <div className={clsx("pt-25 text-theme-reverse flex flex-col gap-10 mb-15")}>
+    <div className={clsx("pt-25 text-theme-reverse bg-theme flex flex-col gap-10 mb-15")}>
       {(width > 1024 || location.pathname === "/") && <SidebarUser />}
-      <div className="lg:pl-[25%]">
+      <div className="lg:pl-[23%]">
         <Outlet />
       </div>
     </div>

@@ -2,7 +2,7 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import { useGoalData, useNotification, useTheme } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { decrypt } from "@/utils/cryptoUtils";
@@ -27,6 +27,7 @@ export const CreateTaskPage = () => {
   const { openNotification } = useNotification();
   const { getData: getGoalData } = useGoalData();
   const { handleChangeForm, validateForm } = useValidate(valueCreate, error, setValueCreate, setError);
+  const { settings } = useTheme();
 
   useEffect(() => {
     const goalId = decrypt(sessionStorage.getItem("goal-id"));
@@ -39,7 +40,7 @@ export const CreateTaskPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultNewTaskData, error: null });
-    const validate = validateForm(valueCreate, {
+    const validate = validateForm({
       task: { max: 50 },
       description: { max: 1000 },
       targetDate: true,
@@ -121,13 +122,14 @@ export const CreateTaskPage = () => {
               </div>
               <div className="w-1/2 h-full">
                 <Select
+                  defaultValue={settings.defaultTaskDifficulty || undefined}
                   placement="bottomLeft"
                   status={error.difficulty && "error"}
                   placeholder={"Difficulty"}
                   className="select !size-full"
                   options={difficultyOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
                   allowClear
-                  onChange={(e) => handleChangeForm(e ? { difficulty: e } : { difficulty: "" })}
+                  onChange={(e) => handleChangeForm<TNewTaskValue>(e ? { difficulty: e } : { difficulty: "" })}
                 />
                 {error.difficulty && <p className="text-red-500 text-[12px] text-start">{error.difficulty.toString()}</p>}
               </div>
@@ -138,7 +140,7 @@ export const CreateTaskPage = () => {
           <ButtonV
             type="button"
             disabled={isSubmitting}
-            onClick={handleBack}
+            onClick={() => handleBack()}
             text="Cancel"
             className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
           />

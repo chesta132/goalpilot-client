@@ -72,6 +72,7 @@ export const defaultNewGoalData: TNewGoalValue = {
   color: "#66b2ff",
   targetDate: "",
   isPublic: true,
+  status: JSON.parse(localStorage.getItem("settings") || "{}")?.defaultGoalStatus || "",
 };
 
 export const defaultEditTaskData: TEditTaskValue = {

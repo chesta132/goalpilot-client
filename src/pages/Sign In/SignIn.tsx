@@ -42,7 +42,7 @@ const SignIn = () => {
     setSubmiting(true);
     setError(defaultError);
 
-    const validate = validateForm(value, { email: { regex: true }, password: { min: 8 } });
+    const validate = validateForm({ email: { regex: true }, password: { min: 8 } });
     if (validate) {
       setSubmiting(false);
       return;
@@ -108,7 +108,7 @@ const SignIn = () => {
                 label={"Remember Me"}
                 size={13}
                 onChange={(e) => handleChangeForm({ rememberMe: e.target.checked })}
-              />{" "}
+              />
               <a href="/forgot-password" className="text-accent hover:underline text-[13px]">
                 Forgot Password?
               </a>

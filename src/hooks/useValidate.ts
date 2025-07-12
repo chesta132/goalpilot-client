@@ -6,7 +6,7 @@ const useValidate = <T>(
   values: Partial<Values>,
   error: T & TError,
   setValue: React.Dispatch<React.SetStateAction<T>>,
-  setError: React.Dispatch<React.SetStateAction<T & TError>>,
+  setError: React.Dispatch<React.SetStateAction<T & TError>>
 ) => {
   const handleChangeForm = useCallback(
     // @ts-expect-error [keyof Z] can't be used on DynamicConfig<Config<Z>>
@@ -19,10 +19,13 @@ const useValidate = <T>(
     [error, values]
   );
 
-  const validateForm = useCallback((value: T & {}, config: DynamicConfig) => {
-    return validateForms<T & {}>(value, setError, config);
+  const validateForm = useCallback(
+    (config: DynamicConfig) => {
+      return validateForms<T & {}>(values as T & {}, setError, config);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    [values]
+  );
 
   return { handleChangeForm, validateForm };
 };

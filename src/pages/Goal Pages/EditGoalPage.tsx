@@ -45,7 +45,7 @@ export const EditGoalPage = () => {
     e.preventDefault();
     setSubmitting(true);
     setError({ ...defaultGoalData, error: null, targetDate: "", status: "" });
-    const validate = validateForm(valueEdit, {
+    const validate = validateForm({
       title: { max: 100 },
       description: { max: 1500 },
       targetDate: true,
@@ -109,7 +109,7 @@ export const EditGoalPage = () => {
             <ButtonV
               type="button"
               disabled={isSubmitting}
-              onClick={handleBack}
+              onClick={() => handleBack(-1)}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />
@@ -141,6 +141,7 @@ export const EditGoalPage = () => {
           <div className="flex flex-col gap-4">
             <div>
               <DatePicker
+                id="targetDate"
                 defaultValue={dayjs(valueEdit.targetDate)}
                 placement="topLeft"
                 styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
@@ -158,6 +159,7 @@ export const EditGoalPage = () => {
             <div className="flex justify-between items-center gap-4 h-12">
               <div className="w-1/2 h-full">
                 <Select
+                  id="status"
                   status={error.status && "error"}
                   defaultValue={valueEdit.status}
                   placeholder={"Goal Status"}
@@ -175,7 +177,6 @@ export const EditGoalPage = () => {
                     className="colorpicker"
                     styles={{ popup: { backgroundColor: "var(--theme)" } }}
                     showText
-                    format="hex"
                     value={valueEdit.color}
                     onChangeComplete={(e) => handleChangeForm({ color: e.toHexString() })}
                   />
@@ -189,6 +190,7 @@ export const EditGoalPage = () => {
                 <p className="text-gray text-[12px]">Allow others to see this goal</p>
               </div>
               <Switch
+                id="isPublic"
                 style={{ backgroundColor: valueEdit.isPublic ? "var(--accent)" : "var(--theme-darker)" }}
                 onChange={(e) => handleChangeForm({ isPublic: e.valueOf() })}
                 value={valueEdit.isPublic}

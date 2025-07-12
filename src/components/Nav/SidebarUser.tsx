@@ -1,9 +1,8 @@
 import { ChartLineIcon, Goal, Plus, Verified } from "lucide-react";
 import ButtonV from "../Inputs/ButtonV";
-import { useTheme, useUserData } from "@/contexts/UseContexts";
+import { useUserData } from "@/contexts/UseContexts";
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import clsx from "clsx";
-import { ColorPicker } from "antd";
 import StatsCard from "../Cards/StatsCard";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { avgCalc } from "@/utils/math";
@@ -12,7 +11,6 @@ import { encrypt } from "@/utils/cryptoUtils";
 
 export const SidebarUser = () => {
   const { timelineStatus } = useScrollNavigation();
-  const { updateSettings } = useTheme();
   const { data, loading } = useUserData();
 
   const width = useViewportWidth();
@@ -29,16 +27,10 @@ export const SidebarUser = () => {
   return (
     <div
       className={clsx(
-        "bg-theme-dark rounded-lg px-4 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative mx-3 lg:mx-0",
+        "bg-theme-dark rounded-2xl px-4 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative mx-3 md:mx-6 lg:mx-0",
         timelineStatus && "lg:!pt-8"
       )}
     >
-      <ColorPicker className="colorpicker" onChangeComplete={(e) => updateSettings({ accent: e.toCssString() })} />
-      <div className="flex">
-        <div className="size-50 bg-accent-soft" />
-        <div className="size-50 bg-accent" />
-        <div className="size-50 bg-accent-strong" />
-      </div>
       <h1 className="text-[20px] font-[600] font-heading mb-2">Quick Stats</h1>
       <StatsCard
         loading={loading}

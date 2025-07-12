@@ -4,7 +4,7 @@ import { type CSSProperties, type ReactNode } from "react";
 type ButtonProps = {
   text: string;
   icon?: ReactNode;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   className?: string;
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
@@ -12,8 +12,8 @@ type ButtonProps = {
 };
 
 const ButtonV = ({ text, icon, onClick, className, disabled = false, type, style }: ButtonProps) => {
-  const handleClick = () => {
-    if (onClick) onClick();
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (onClick) onClick(e);
   };
 
   return (
@@ -26,6 +26,7 @@ const ButtonV = ({ text, icon, onClick, className, disabled = false, type, style
       disabled={disabled}
       type={type || "submit"}
       style={style}
+      id={text}
     >
       {icon && icon}
       {text}

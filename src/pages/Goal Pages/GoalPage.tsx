@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import ButtonV from "@/components/Inputs/ButtonV";
-import { X } from "lucide-react";
 import { capitalWord } from "@/utils/stringManip";
 import TaskCard from "@/components/Cards/TaskCard";
 import { Empty } from "antd";
@@ -18,23 +17,6 @@ type AiInput = {
   error: null | string;
   loading: boolean;
 };
-
-export function ReadMore({ text, title, onClose }: { text: string; title: string; onClose: () => void }) {
-  return (
-    <div className="fixed h-[100dvh] top-0 w-full z-[9999] flex justify-center items-center backdrop-blur-[2px] backdrop-brightness-90">
-      <div className="w-[80%] lg:w-1/2 max-h-100 bg-theme px-8 py-10 flex flex-col rounded-2xl relative">
-        <button
-          className="absolute right-0 mr-8 translate-x-3 -translate-y-3 cursor-pointer p-1 text-theme-reverse hover:text-theme-reverse-dark transition-colors duration-400"
-          onClick={onClose}
-        >
-          <X />
-        </button>
-        <h1 className="text-start text-theme-reverse font-bold text-[19px] mb-7">{title}</h1>
-        <p className="text-theme-reverse-dark overflow-auto leading-6.5">{text}</p>
-      </div>
-    </div>
-  );
-}
 
 const GoalPage = () => {
   const { data, error, setError, getData, loading } = useGoalData();
@@ -64,7 +46,7 @@ const GoalPage = () => {
     return () => document.body.classList.remove("overflow-hidden");
   }, [readMore.desc]);
 
-  const { description, tasks, title } = data;
+  const { tasks, title } = data;
 
   useEffect(() => {
     sessionStorage.removeItem("goal-data");
@@ -74,11 +56,10 @@ const GoalPage = () => {
     <div>
       {/* Header/absolute */}
       {error.error && <ErrorPopup error={error} />}
-      {readMore.desc && <ReadMore text={description} title="Description" onClose={() => setReadMore((prev) => ({ ...prev, desc: false }))} />}
 
       {/* Goal Page */}
-      <div className=" md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
-        <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 mx-2 rounded-xl shadow-lg">
+      <div className="md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
+        <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 rounded-xl shadow-lg">
           <h1 className="text-[20px] font-[600] font-heading ml-3">
             Tasks of{" "}
             {title.length > 30 ? (

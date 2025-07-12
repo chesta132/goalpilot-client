@@ -195,7 +195,7 @@ body.change-theme * {
 
 .select *,
 .select {
-  @apply !bg-transparent !text-theme-reverse;
+  @apply !bg-transparent !text-theme-reverse hover:border-accent!;
 }
 
 .select .ant-select-selector:not(.ant-select-status-error) {

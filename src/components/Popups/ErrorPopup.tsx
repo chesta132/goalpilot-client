@@ -40,7 +40,7 @@ function ErrorPopup<T>({
   if (!message) message = error.error?.message;
   if (showBackToDashboard === undefined) showBackToDashboard = !errorAuth;
   if (showBackToLoginPage === undefined) showBackToLoginPage = errorAuth;
-
+  
   const handleCloseClick = () => {
     setShowCloseConfirm(true);
   };
@@ -75,8 +75,6 @@ function ErrorPopup<T>({
     if (onBackToLoginPage) {
       onBackToLoginPage();
     } else {
-      sessionStorage.removeItem("jwt-token");
-      localStorage.removeItem("jwt-token");
       navigate("/signin");
     }
   };
