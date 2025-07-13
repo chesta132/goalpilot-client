@@ -1,5 +1,5 @@
 import { capitalEachWords } from "@/utils/stringManip";
-import type { GoalData } from "@/utils/types";
+import type { GoalData } from "@/types/types";
 
 type GoalProps = {
   goal: GoalData;

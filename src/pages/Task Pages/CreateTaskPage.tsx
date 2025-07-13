@@ -10,7 +10,7 @@ import { defaultNewTaskData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
 import { capitalEachWords } from "@/utils/stringManip";
-import type { TError, TNewTaskValue } from "@/utils/types";
+import type { TError, TNewTaskValue } from "@/types/types";
 import { DatePicker, Select } from "antd";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
@@ -88,7 +88,7 @@ export const CreateTaskPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.task}
-              onChange={(e) => handleChangeForm({ task: e.target.value })}
+              onChange={(e) => handleChangeForm({ task: e.target.value }, { max: 50 })}
               value={valueCreate.task}
               label="Task Title"
               placeholder="Your task title"
@@ -96,7 +96,7 @@ export const CreateTaskPage = () => {
             />
             <TextArea
               error={error.description}
-              onChange={(e) => handleChangeForm({ description: e.target.value })}
+              onChange={(e) => handleChangeForm({ description: e.target.value }, { max: 1000 })}
               value={valueCreate.description}
               placeholder="Your task description"
               label="Task Description"

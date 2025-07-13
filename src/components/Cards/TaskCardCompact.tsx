@@ -1,10 +1,10 @@
 import { capitalEachWords, capitalWord } from "@/utils/stringManip";
-import type { GoalData, TaskData, TError } from "@/utils/types";
+import type { GoalData, TaskData, TError } from "@/types/types";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
 import { useNavigate, useParams } from "react-router";
-import { Edit } from "lucide-react";
+import { Edit, Info } from "lucide-react";
 import Checkbox from "../Inputs/Checkbox";
 import { useGoalData } from "@/contexts/UseContexts";
 import { encrypt } from "@/utils/cryptoUtils";
@@ -66,11 +66,21 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
     }
   };
 
+  const setTaskData = () => {
+    const encryptedData = encrypt(task);
+    sessionStorage.setItem("task-data", encryptedData);
+  };
+
   const handleToEditTask = () => {
     if (preview) return;
-    const encryptedData = encrypt(JSON.stringify(task));
-    sessionStorage.setItem("task-data", encryptedData);
+    setTaskData();
     navigate(`/task/${task._id}/edit`);
+  };
+
+  const handleToInfoTask = () => {
+    if (preview) return;
+    setTaskData();
+    navigate(`/task/${task._id}`);
   };
 
   return (
@@ -104,7 +114,10 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
             )}
           </div>
         </div>
-        <Edit className="cursor-pointer size-4.5 absolute right-0 mr-4" onClick={handleToEditTask} />
+        <div className="absolute right-0 mr-5 flex gap-2">
+          <Info className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
+          <Edit className="cursor-pointer size-4.5" onClick={handleToEditTask} />
+        </div>
       </div>
     </div>
   );

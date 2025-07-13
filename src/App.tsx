@@ -12,6 +12,7 @@ import SidebarGoalLayout from "./Layout/SidebarGoalLayout.tsx";
 import SidebarUserLayout from "./Layout/SidebarUserLayout.tsx";
 import { CreateGoalPage } from "./pages/Goal Pages/CreateGoalPage.tsx";
 import { SettingsPage } from "./pages/Settings/SettingsPage.tsx";
+import SidebarTaskLayout from "./Layout/SidebarTaskLayout.tsx";
 
 const App = () => {
   return (
@@ -30,13 +31,16 @@ const App = () => {
                       <Route index element={<Dashboard />} />
                       <Route path="/goal/create" element={<CreateGoalPage />} />
                       <Route path="/settings" element={<SettingsPage />} />
-                      <Route path="/task/:taskId/edit" element={<EditTaskPage />} />
                     </Route>
 
                     <Route path="/" element={<SidebarGoalLayout />}>
                       <Route path="/goal/:goalId" element={<GoalPage />} />
                       <Route path="/goal/:goalId/edit" element={<EditGoalPage />} />
                       <Route path="/task/create" element={<CreateTaskPage />} />
+                    </Route>
+
+                    <Route path="/" element={<SidebarTaskLayout />}>
+                      <Route path="/task/:taskId/edit" element={<EditTaskPage />} />
                     </Route>
                   </Route>
                 </Routes>

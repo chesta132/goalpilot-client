@@ -1,7 +1,7 @@
 import callApi from "@/utils/callApi";
 import { defaultGoalData } from "@/utils/defaultData";
 import { handleError } from "@/utils/errorHandler";
-import type { GoalData, TError } from "@/utils/types";
+import type { GoalData, TError } from "@/types/types";
 import { createContext, useState, type ReactNode } from "react";
 import { useNotification, useUserData } from "./UseContexts";
 

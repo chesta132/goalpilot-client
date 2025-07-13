@@ -1,12 +1,12 @@
 import axios, { AxiosError } from "axios";
-import type { ApiErrorResponseData, CodeAuthError, ErrorWithValues, TError } from "./types"; // Import tipe yg udah kita buat
+import type { ApiErrorResponseData, CodeAuthError, ErrorWithValues, TError } from "../types/types"; // Import tipe yg udah kita buat
 
 export function handleError<T extends TError>(error: unknown, setError: React.Dispatch<React.SetStateAction<T>>) {
   const err = error as AxiosError<ApiErrorResponseData>;
   const data = err.response?.data;
   if (err.code === "ERR_NETWORK")
     setError((prev) => ({ ...prev, error: { title: err.message, message: "Network Error, please check your connection", code: data?.code } } as T));
-  else if (data) {
+  else if (typeof data === "object" && data !== null) {
     setError((prev) => ({ ...prev, error: { code: data.code, title: data.title, message: data.message } }));
   } else {
     setError(

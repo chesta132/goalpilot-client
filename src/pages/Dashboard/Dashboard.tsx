@@ -18,7 +18,7 @@ const Dashboard = () => {
 
   const handleCreateGoal = () => {
     if (data) {
-      const encryptedData = encrypt(JSON.stringify(data.id));
+      const encryptedData = encrypt(data.id);
       sessionStorage.setItem("user-id", encryptedData);
     }
     navigate("/goal/create");

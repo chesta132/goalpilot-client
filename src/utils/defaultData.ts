@@ -1,4 +1,4 @@
-import type { GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "./types";
+import type { GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "../types/types";
 
 export const defaultTaskData: TaskData = {
   id: "",

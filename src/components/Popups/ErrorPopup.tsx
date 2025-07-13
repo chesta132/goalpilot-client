@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, RefreshCw, Home, AlertTriangle, User2 } from "lucide-react";
 import { useNavigate } from "react-router";
-import type { TError } from "@/utils/types";
+import type { TError } from "@/types/types";
 import { errorAuthBool } from "@/utils/errorHandler";
 
 type ErrorPopupProps<T> = {
@@ -40,7 +40,9 @@ function ErrorPopup<T>({
   if (!message) message = error.error?.message;
   if (showBackToDashboard === undefined) showBackToDashboard = !errorAuth;
   if (showBackToLoginPage === undefined) showBackToLoginPage = errorAuth;
-  
+
+  if (import.meta.env.VITE_ENV === "production" && error.error?.code === "MISSING_FIELDS") return;
+
   const handleCloseClick = () => {
     setShowCloseConfirm(true);
   };

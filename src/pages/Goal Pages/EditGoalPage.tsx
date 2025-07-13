@@ -11,7 +11,7 @@ import { defaultGoalData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
 import { capitalEachWords } from "@/utils/stringManip";
-import type { GoalData, TError } from "@/utils/types";
+import type { GoalData, TError } from "@/types/types";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
 import { Edit, Trash2 } from "lucide-react";
@@ -68,7 +68,7 @@ export const EditGoalPage = () => {
     try {
       const response = await callApi("/goal", { method: "PUT", body: { ...valueEdit, goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
-      const encryptedData = encrypt(JSON.stringify(response.data));
+      const encryptedData = encrypt(response.data);
       sessionStorage.setItem("goal-data", encryptedData);
       if (response.data._id === goalId) setData(response.data);
       else if (goalId) getData(goalId, false);

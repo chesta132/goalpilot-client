@@ -9,7 +9,7 @@ import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi.ts";
 import { handleFormError } from "@/utils/errorHandler.ts";
 import ButtonV from "@/components/Inputs/ButtonV";
-import type { TSignUp, TError } from "@/utils/types";
+import type { TSignUp, TError } from "@/types/types";
 import { useUserData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 

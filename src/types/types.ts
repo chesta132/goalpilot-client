@@ -95,7 +95,7 @@ export type TError = {
   error?: {
     title: string;
     message: string;
-    code?: CodeAuthError;
+    code?: CodeError;
   } | null;
 };
 

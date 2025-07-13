@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { capitalWord } from "@/utils/stringManip";
 import { Button, notification, Space } from "antd";
 import React, { createContext } from "react";

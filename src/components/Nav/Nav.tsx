@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { Settings } from "lucide-react";
 import { useViewportWidth } from "../../hooks/useViewport";
 import useScrollNavigation from "../../hooks/useScrollNavigation";
-import type { UserData } from "../../utils/types";
+import type { UserData } from "../../types/types";
 import clsx from "clsx";
 
 type scrollNav = {

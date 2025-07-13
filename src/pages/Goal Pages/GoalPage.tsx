@@ -38,7 +38,7 @@ const GoalPage = () => {
       gettingData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goalId]);
+  }, [goalId, data.id]);
 
   useEffect(() => {
     if (readMore.desc) document.body.classList.add("overflow-hidden");
@@ -50,6 +50,7 @@ const GoalPage = () => {
 
   useEffect(() => {
     sessionStorage.removeItem("goal-data");
+    sessionStorage.removeItem("goal-id");
   }, []);
 
   return (
@@ -105,7 +106,7 @@ const GoalPage = () => {
                     className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm bg-goal-accent hover:bg-goal-accent-strong"
                     onClick={() => {
                       if (!loading) {
-                        const encryptedData = encrypt(JSON.stringify(data.id));
+                        const encryptedData = encrypt(data.id);
                         sessionStorage.setItem("goal-id", encryptedData);
                         navigate("/task/create");
                       }

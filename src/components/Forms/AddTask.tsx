@@ -1,7 +1,7 @@
 import { useGoalData, useNotification } from "@/contexts/UseContexts";
 import callApi from "@/utils/callApi";
 import { handleError } from "@/utils/errorHandler";
-import type { GoalData } from "@/utils/types";
+import type { GoalData } from "@/types/types";
 import { Plus } from "lucide-react";
 import React, { type FormEvent, type KeyboardEvent } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -79,7 +79,7 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
         className="shadow-sm whitespace-nowrap w-full bg-(--goal-accent)! hover:bg-(--goal-accent-strong)! text-[13px]! md:text-[14px]!"
         onClick={() => {
           if (!loading) {
-            const encryptedData = encrypt(JSON.stringify(data._id));
+            const encryptedData = encrypt(data.id);
             sessionStorage.setItem("goal-id", encryptedData);
             navigate("/task/create");
           }

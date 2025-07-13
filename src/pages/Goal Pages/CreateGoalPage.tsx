@@ -10,7 +10,7 @@ import { defaultNewGoalData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
 import { capitalEachWords } from "@/utils/stringManip";
-import type { TError, TNewGoalValue } from "@/utils/types";
+import type { TError, TNewGoalValue } from "@/types/types";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import clsx from "clsx";
 import { CirclePlus } from "lucide-react";
@@ -35,7 +35,7 @@ export const CreateGoalPage = () => {
       if (!data || !data._id || !userId) {
         await refetchData(false);
         try {
-          const encryptedData = encrypt(JSON.stringify(data!.id));
+          const encryptedData = encrypt(data!.id);
           sessionStorage.setItem("user-id", encryptedData);
         } catch (e) {
           console.error(e);

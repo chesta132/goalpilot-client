@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import callApi from "@/utils/callApi";
 import { handleError } from "@/utils/errorHandler";
-import type { UserData, TError } from "@/utils/types";
+import type { UserData, TError } from "@/types/types";
 import { defaultUserData } from "@/utils/defaultData";
 
 interface IUserContent {

@@ -1,7 +1,7 @@
 import useScrollNavigation from "@/hooks/useScrollNavigation";
 import { capitalEachWords } from "@/utils/stringManip";
 import clsx from "clsx";
-import { Calendar, Edit, Goal, Verified } from "lucide-react";
+import { Book, Calendar, Edit, Info, Verified } from "lucide-react";
 import StatsCard from "../Cards/StatsCard";
 import { useGoalData } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
@@ -24,7 +24,7 @@ type TReadMore = {
   taskTitle: boolean;
 };
 
-export const SidebarGoal = () => {
+export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
   const { loading, data, setData } = useGoalData();
 
   const { timelineStatus } = useScrollNavigation();
@@ -41,10 +41,10 @@ export const SidebarGoal = () => {
   const createdAt = new Date(data.createdAt);
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
 
-  const handleToEdit = () => {
-    const encryptedData = encrypt(JSON.stringify(data));
+  const handleTo = (to: "edit" | "info") => {
+    const encryptedData = encrypt(data);
     sessionStorage.setItem("goal-data", encryptedData);
-    navigate(`/goal/${data._id}/edit`);
+    navigate(`/goal/${data._id}/${to}`);
   };
 
   useEffect(() => {
@@ -97,8 +97,17 @@ export const SidebarGoal = () => {
             {capitalEachWords(status)}
           </h1>
         </div>
-        <div className="mx-2 !cursor-pointer absolute right-0 mr-5" onClick={handleToEdit}>
-          <Edit />
+        <div className="mx-2 absolute right-0 mr-5 flex gap-2">
+          {withInfo && (
+            <div className="cursor-pointer!" onClick={() => handleTo("info")}>
+              <Info />
+            </div>
+          )}
+          {withEdit && (
+            <div className="!cursor-pointer" onClick={() => handleTo("edit")}>
+              <Edit />
+            </div>
+          )}
         </div>
       </div>
       <StatsCard
@@ -106,7 +115,7 @@ export const SidebarGoal = () => {
         header="Description"
         className={clsx("!bg-theme max-h-100", readMore.desc && "overflow-auto")}
         classStats="text-[15px] font-medium mt-2"
-        icon={<Goal className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
+        icon={<Book className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
         stats={
           description.length > 100 ? (
             <>

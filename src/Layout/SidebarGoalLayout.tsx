@@ -10,7 +10,7 @@ export default function SidebarGoalLayout() {
 
   return (
     <div className="pt-25 text-theme-reverse bg-theme flex flex-col gap-10 mb-15">
-      {(width > 1024 || location.pathname === `/goal/${data._id}`) && <SidebarGoal />}
+      {(width > 1024 || location.pathname === `/goal/${data._id}`) && <SidebarGoal withEdit={!location.pathname.endsWith("/edit")} />}
       <div className="lg:pl-[23%]">
         <Outlet />
       </div>

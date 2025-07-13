@@ -1,4 +1,4 @@
-import type { OneFieldOnly, TError, Values } from "@/utils/types";
+import type { OneFieldOnly, TError, Values } from "@/types/types";
 import validateForms, { handleChangeAndValidate, type Config, type DynamicConfig } from "@/utils/validateForms";
 import { useCallback } from "react";
 

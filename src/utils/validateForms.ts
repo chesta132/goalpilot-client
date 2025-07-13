@@ -1,5 +1,5 @@
 import { difficultyOptions, statusOptions } from "./selectOptions";
-import type { OneFieldOnly, TError, Values } from "./types";
+import type { OneFieldOnly, TError, Values } from "../types/types";
 
 type MinMax = { max?: number; min?: number };
 

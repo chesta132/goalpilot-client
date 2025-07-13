@@ -1,6 +1,6 @@
 import { getBgByStatus } from "@/utils/commonUtils";
 import { capitalWord } from "@/utils/stringManip";
-import type { GoalData } from "@/utils/types";
+import type { GoalData } from "@/types/types";
 import clsx from "clsx";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -16,7 +16,7 @@ export const GoalCardCompact = ({ data, className }: GoalCardCompactProps) => {
 
   return (
     <div
-      className={clsx("border relative rounded-lg py-4 px-4 shadow-md bg-theme border-theme-darker gap-1 flex w-full", className)}
+      className={clsx("relative rounded-lg py-4 px-4 shadow-md bg-theme gap-1 flex w-full", className)}
       onClick={() => navigate(`/goal/${data.id}`)}
     >
       <div className="flex justify-between w-full">

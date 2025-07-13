@@ -3,10 +3,9 @@ import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import { useGoalData, useNotification, useTaskData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
-import { decrypt } from "@/utils/cryptoUtils";
 import { defaultTaskData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
@@ -17,11 +16,12 @@ import dayjs from "dayjs";
 import { Edit, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
+import { decrypt } from "@/utils/cryptoUtils";
 
 export const EditTaskPage = () => {
-  const defaultValue = JSON.parse(decrypt(sessionStorage.getItem("task-data")) || JSON.stringify(defaultTaskData));
+  const { getData: getTaskData, data: taskData, setData: setTaskData } = useTaskData();
 
-  const [valueEdit, setValueEdit] = useState<TaskData>(defaultValue);
+  const [valueEdit, setValueEdit] = useState<TaskData>(defaultTaskData);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
@@ -34,11 +34,26 @@ export const EditTaskPage = () => {
   const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
   useEffect(() => {
-    if (valueEdit._id !== taskId || !valueEdit._id) {
-      sessionStorage.removeItem("task-data");
-      navigate(-1);
+    const f = async () => {
+      if (taskId && taskData.id !== taskId) {
+        await getTaskData(taskId);
+      }
+      setValueEdit(taskData);
+    };
+    f();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId, taskData]);
+
+  useEffect(() => {
+    if (!!valueEdit.id || !!valueEdit._id) {
+      if (valueEdit.id !== taskId && taskId !== decrypt(sessionStorage.getItem("task-id"))) {
+        sessionStorage.removeItem("task-id");
+        setTaskData(defaultTaskData);
+        navigate(-1);
+      }
     }
-  }, [navigate, taskId, valueEdit._id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, taskId, valueEdit.id, valueEdit._id]);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -55,7 +70,7 @@ export const EditTaskPage = () => {
       return;
     }
 
-    if (JSON.stringify(valueEdit) === JSON.stringify(defaultValue)) {
+    if (JSON.stringify(valueEdit) === JSON.stringify(taskData)) {
       openNotification({ message: "Items must have changes", type: "warning", button: "default" });
       setTimeout(() => {
         setSubmitting(false);
@@ -66,8 +81,9 @@ export const EditTaskPage = () => {
     try {
       const response = await callApi("/task", { method: "PUT", body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
       openNotification({ message: response.data.notification, button: "default", type: "success" });
-      const editedTask = goalData.tasks.map((task) => (JSON.stringify(task) === JSON.stringify(defaultValue) ? response.data : task));
+      const editedTask = goalData.tasks.map((task) => (JSON.stringify(task) === JSON.stringify(taskData) ? response.data : task));
       if (response.data.goalId === goalData._id) setGoalData((prev) => ({ ...prev, tasks: editedTask }));
+      setTaskData(response.data);
       handleBack(`/goal/${response.data.goalId}`);
     } catch (err) {
       handleFormError(err, setError);
@@ -77,7 +93,7 @@ export const EditTaskPage = () => {
   };
 
   const handleBack = (to: string | number = -1) => {
-    sessionStorage.removeItem("task-data");
+    sessionStorage.removeItem("task-id");
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
   };
@@ -114,6 +130,8 @@ export const EditTaskPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  console.log(taskData.targetDate);
+
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center mb-25">
       {error.error && <ErrorPopup error={error} />}
@@ -137,7 +155,7 @@ export const EditTaskPage = () => {
           <div className="flex flex-col gap-5">
             <Input
               error={error.task}
-              onChange={(e) => handleChangeForm({ task: e.target.value })}
+              onChange={(e) => handleChangeForm({ task: e.target.value }, { max: 50 })}
               value={valueEdit.task}
               focus
               label="Task Title"
@@ -146,7 +164,7 @@ export const EditTaskPage = () => {
             />
             <TextArea
               error={error.description}
-              onChange={(e) => handleChangeForm({ description: e.target.value })}
+              onChange={(e) => handleChangeForm({ description: e.target.value }, { max: 1000 })}
               value={valueEdit.description}
               focus
               placeholder="Edit your task description"
@@ -158,7 +176,7 @@ export const EditTaskPage = () => {
             <div className="flex justify-between items-center gap-4 h-12">
               <div className="w-1/2 h-full">
                 <DatePicker
-                  defaultValue={dayjs(valueEdit.targetDate)}
+                  value={dayjs(valueEdit.targetDate)}
                   placement="topLeft"
                   styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
                   classNames={{ popup: { root: "datepicker" } }}
@@ -167,7 +185,7 @@ export const EditTaskPage = () => {
                   size="small"
                   color="var(--theme)"
                   className="w-full h-12 text-theme-reverse datepicker"
-                  placeholder="Choose target date of goal"
+                  placeholder="Choose target date of task"
                   onChange={(e) => handleChangeForm(e ? { targetDate: e.format() } : { targetDate: "" })}
                 />
                 {error.targetDate && <p className="text-red-500 text-[12px] text-start">{error.targetDate.toString()}</p>}

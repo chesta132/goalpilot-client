@@ -1,13 +1,14 @@
 import { capitalEachWords, capitalWord } from "@/utils/stringManip";
-import type { GoalData, TaskData, TError } from "@/utils/types";
+import type { GoalData, TaskData, TError } from "@/types/types";
 import ButtonV from "../Inputs/ButtonV";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
 import { useNavigate, useParams } from "react-router";
-import { Edit } from "lucide-react";
+import { Edit, Info } from "lucide-react";
 import { useGoalData } from "@/contexts/UseContexts";
 import { encrypt } from "@/utils/cryptoUtils";
+import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 
 type TaskProps = {
   task: TaskData;
@@ -31,23 +32,7 @@ const TaskCard = ({ task, setError, index, preview, className }: TaskProps) => {
   const intervalMs = date.getTime() - new Date().getTime();
   const timeLeft = Math.ceil(intervalMs / (1000 * 60 * 60 * 24));
 
-  const timeLeftMonthPlural = timeLeft >= 0 ? (Math.floor(timeLeft / 30) > 1 ? "s" : "") : Math.floor(Math.abs(timeLeft) / 30) > 1 ? "s" : "";
-  const timeLeftYearPlural = timeLeft >= 0 ? (Math.floor(timeLeft / 365) > 1 ? "s" : "") : Math.floor(Math.abs(timeLeft) / 365) > 1 ? "s" : "";
-
-  const timeLeftToDisplay =
-    timeLeft >= 0
-      ? timeLeft === 0
-        ? "Today"
-        : timeLeft < 30
-        ? `${timeLeft} day${timeLeft !== 1 ? "s" : ""} left`
-        : timeLeft < 365 && timeLeft >= 30
-        ? `${Math.floor(timeLeft / 30)} Month${timeLeftMonthPlural} left`
-        : `${Math.floor(timeLeft / 365)} Year${timeLeftMonthPlural} left`
-      : timeLeft > -30
-      ? `${Math.abs(timeLeft)} day${Math.abs(timeLeft) !== 1 ? "s" : ""} ago`
-      : timeLeft > -365 && timeLeft <= -30
-      ? `${Math.floor(Math.abs(timeLeft) / 30)} Month${timeLeftYearPlural} ago`
-      : `${Math.floor(Math.abs(timeLeft) / 365)} Year${timeLeftYearPlural} ago`;
+  const timeLeftToDisplay = getTimeLeftToDisplay(timeLeft);
 
   const markCompleteToggle = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -66,18 +51,28 @@ const TaskCard = ({ task, setError, index, preview, className }: TaskProps) => {
     }
   };
 
+  const setTaskData = () => {
+    const encryptedData = encrypt(task);
+    sessionStorage.setItem("task-data", encryptedData);
+  };
+
   const handleToEditTask = () => {
     if (preview) return;
-    const encryptedData = encrypt(JSON.stringify(task));
-    sessionStorage.setItem("task-data", encryptedData);
+    setTaskData();
     navigate(`/task/${task._id}/edit`);
+  };
+
+  const handleToInfoTask = () => {
+    if (preview) return;
+    setTaskData();
+    navigate(`/task/${task._id}`);
   };
 
   return (
     <div className={clsx("border rounded-lg p-6.5 shadow-md relative bg-theme border-theme-darker gap-5 flex flex-col w-full", className)}>
       <div className="flex justify-between w-full">
         <div className="relative flex flex-col gap-3 w-full">
-          <h1 className="font-heading font-semibold text-[18px] max-w-[90%]">{capitalWord(task.task)}</h1>
+          <h1 className="font-heading font-semibold text-[18px] max-w-[85%]">{capitalWord(task.task)}</h1>
           <p
             className={clsx(
               "bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline w-fit",
@@ -104,7 +99,10 @@ const TaskCard = ({ task, setError, index, preview, className }: TaskProps) => {
           </div>
           <p className="text-[15px] text-theme-reverse-darker">{task.description}</p>
         </div>
-        <Edit className="cursor-pointer size-4.5 absolute right-0 mr-5" onClick={handleToEditTask} />
+        <div className="absolute right-0 mr-5 flex gap-2">
+          <Info className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
+          <Edit className="cursor-pointer size-4.5" onClick={handleToEditTask} />
+        </div>
       </div>
       <div className="flex justify-end gap-4">
         <ButtonV
