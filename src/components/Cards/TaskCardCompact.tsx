@@ -80,7 +80,7 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
   const handleToInfoTask = () => {
     if (preview) return;
     setTaskData();
-    navigate(`/task/${task._id}`);
+    navigate(`/task/${task._id}/info`);
   };
 
   return (

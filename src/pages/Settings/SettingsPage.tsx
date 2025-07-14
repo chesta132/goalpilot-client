@@ -97,7 +97,7 @@ export const SettingsPage = () => {
             </div>
             <Switch
               value={settings.showGoalsShortcut}
-              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-darker)" }}
+              style={{ backgroundColor: settings.showGoalsShortcut ? "var(--accent)" : "var(--theme-darker)" }}
               onChange={handleShowGoalShortcut}
             />
           </div>

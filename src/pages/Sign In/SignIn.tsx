@@ -133,7 +133,7 @@ const SignIn = () => {
             </p>
             <ul className="flex flex-col gap-8">
               {lists.map((list) => (
-                <li className="flex gap-4">
+                <li className="flex gap-4" key={list}>
                   <CheckCircleIcon /> {list}
                 </li>
               ))}

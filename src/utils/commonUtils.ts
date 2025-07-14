@@ -39,3 +39,15 @@ export const getTimeLeftToDisplay = (timeLeft: number) => {
     ? `${Math.floor(Math.abs(timeLeft) / 30)} Month${timeLeftYearPlural} ago`
     : `${Math.floor(Math.abs(timeLeft) / 365)} Year${timeLeftYearPlural} ago`;
 };
+
+Date.prototype.toFormattedString = function () {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+
+  const formatter = new Intl.DateTimeFormat("en-US", options);
+  const formattedDate = formatter.format(this);
+  return formattedDate;
+};

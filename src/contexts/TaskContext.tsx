@@ -14,6 +14,7 @@ type TTaskContent = {
   clearError: () => void;
   setError: React.Dispatch<React.SetStateAction<TaskData & TError>>;
   deleteTask: () => Promise<void>;
+  resetData: () => void;
 };
 
 const TaskContext = createContext<TTaskContent>({
@@ -25,6 +26,7 @@ const TaskContext = createContext<TTaskContent>({
   clearError: () => {},
   setError: () => {},
   deleteTask: async () => {},
+  resetData: () => {},
 });
 
 const TaskProvider = ({ children }: { children: ReactNode }) => {
@@ -64,7 +66,8 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const deleteTask = async () => {setLoading(true);
+  const deleteTask = async () => {
+    setLoading(true);
     try {
       const response = await callApi("/task", { method: "DELETE", body: { taskId: data._id } });
       openNotification({ message: response.data.notification, buttonFunc: { f: handleUndo, params: [data._id, data.goalId], label: "Undo" } });
@@ -77,6 +80,10 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resetData = () => {
+    setData(defaultTaskData);
+  };
+
   const contextValue = {
     data,
     setData,
@@ -86,6 +93,7 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     setError,
     clearError,
     deleteTask,
+    resetData,
   };
 
   return <TaskContext.Provider value={contextValue}>{children}</TaskContext.Provider>;

@@ -30,7 +30,7 @@ export const DeletePopup = ({ setClose, deletes, item }: DeletePopupProps) => {
               deletes();
               setClose();
             }}
-            text="Delete Task"
+            text={`Delete ${item}`}
             className="bg-transparent shadow-none border border-red-700 hover:bg-red-700 !py-2 !px-5 !text-theme-reverse"
             icon={<Trash2Icon size={14} />}
           />

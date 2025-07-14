@@ -50,7 +50,7 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
   useEffect(() => {
     if (JSON.stringify(data) === JSON.stringify(defaultGoalData)) {
       if (sessionStorage.getItem("goal-data")) {
-        setData(JSON.parse(decrypt(sessionStorage.getItem("goal-data"))));
+        setData(decrypt(sessionStorage.getItem("goal-data"), { parse: true }));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,12 +100,12 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
         <div className="mx-2 absolute right-0 mr-5 flex gap-2">
           {withInfo && (
             <div className="cursor-pointer!" onClick={() => handleTo("info")}>
-              <Info />
+              <Info size={19.5} />
             </div>
           )}
           {withEdit && (
             <div className="!cursor-pointer" onClick={() => handleTo("edit")}>
-              <Edit />
+              <Edit size={19.5} />
             </div>
           )}
         </div>

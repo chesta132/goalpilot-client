@@ -57,5 +57,5 @@ export const codeAuthError: CodeAuthError[] = [
 
 export function errorAuthBool(error: TError): boolean {
   if (!error?.error?.code) return false;
-  return codeAuthError.includes(error?.error?.code);
+  return codeAuthError.includes(error?.error?.code as CodeAuthError);
 }

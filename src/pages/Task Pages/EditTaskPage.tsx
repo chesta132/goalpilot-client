@@ -3,7 +3,7 @@ import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
-import { useGoalData, useNotification } from "@/contexts/UseContexts";
+import { useGoalData, useNotification, useTaskData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
 import { decrypt } from "@/utils/cryptoUtils";
@@ -19,9 +19,10 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EditTaskPage = () => {
-  const defaultValue = JSON.parse(decrypt(sessionStorage.getItem("task-data")) || JSON.stringify(defaultTaskData));
+  const { data, getData, setData, resetData } = useTaskData();
 
-  const [valueEdit, setValueEdit] = useState<TaskData>(defaultValue);
+  const defaultValue = decrypt(sessionStorage.getItem("task-data"), { parse: true }) || JSON.stringify(defaultTaskData);
+  const [valueEdit, setValueEdit] = useState<TaskData>(data);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
@@ -34,11 +35,13 @@ export const EditTaskPage = () => {
   const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
   useEffect(() => {
-    if (valueEdit._id !== taskId || !valueEdit._id) {
-      sessionStorage.removeItem("task-data");
-      navigate(-1);
-    }
-  }, [navigate, taskId, valueEdit._id]);
+    setValueEdit(data);
+  }, [data]);
+
+  useEffect(() => {
+    if (taskId && taskId !== data.id) getData(taskId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId]);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -65,8 +68,9 @@ export const EditTaskPage = () => {
 
     try {
       const response = await callApi("/task", { method: "PUT", body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
+      setData(response.data);
       openNotification({ message: response.data.notification, button: "default", type: "success" });
-      const editedTask = goalData.tasks.map((task) => (JSON.stringify(task) === JSON.stringify(defaultValue) ? response.data : task));
+      const editedTask = goalData.tasks.map((task) => (task.id === response.data.id ? response.data : task));
       if (response.data.goalId === goalData._id) setGoalData((prev) => ({ ...prev, tasks: editedTask }));
       handleBack(`/goal/${response.data.goalId}`);
     } catch (err) {
@@ -85,6 +89,7 @@ export const EditTaskPage = () => {
   const handleUndo = async (goalId: string) => {
     try {
       const response = await callApi("/task/restore", { method: "PUT", body: { taskId } });
+      setData(response.data);
       openNotification({ message: response.data.notification, button: "default", type: "success" });
       getGoalData(goalId, false);
     } catch (err) {
@@ -102,6 +107,7 @@ export const EditTaskPage = () => {
         message: response.data.notification,
       });
       setGoalData((prev) => ({ ...prev, tasks: prev.tasks.filter((task) => task.id !== valueEdit.id) }));
+      resetData();
       handleBack(`/goal/${valueEdit.goalId}`);
     } catch (err) {
       handleError(err, setError);

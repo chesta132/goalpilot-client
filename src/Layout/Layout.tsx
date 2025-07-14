@@ -1,17 +1,24 @@
 import { Outlet, useLocation, useParams } from "react-router";
 import Nav from "../components/Nav/Nav";
-import { useUserData } from "../contexts/UseContexts";
+import { useGoalData, useTaskData, useUserData } from "../contexts/UseContexts";
 import useScrollNavigation from "../hooks/useScrollNavigation";
 import { useEffect } from "react";
 import Footer from "@/components/Footer/Footer";
+import { decrypt } from "@/utils/cryptoUtils";
 
 const Layout = () => {
-  const { data } = useUserData();
+  const { data: userData } = useUserData();
+  const { clearError: clearGoalError, getData: getGoalData } = useGoalData();
+  const { clearError: clearTaskError } = useTaskData();
   const { navRef, timelineStatus } = useScrollNavigation(20);
   const location = useLocation();
-  const goalId = useParams().goalId;
+  const { goalId } = useParams();
 
   useEffect(() => {
+    // clear error after path changes
+    clearGoalError();
+    clearTaskError();
+    const previewGoal = decrypt(sessionStorage.getItem("preview-goal-data"), { parse: true });
     const clear = () => {
       sessionStorage.removeItem("user-id");
       sessionStorage.removeItem("goal-data");
@@ -26,11 +33,21 @@ const Layout = () => {
     } else if (location.pathname.startsWith("/task")) {
       sessionStorage.removeItem("user-id");
     }
+
+    if (previewGoal && !location.pathname.endsWith("/info")) {
+      getGoalData(goalId, false);
+      if (!location.pathname.endsWith("/edit")) {
+        getGoalData(goalId, false);
+        sessionStorage.removeItem("preview-goal-data");
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return (
     <div>
-      <Nav data={data} param={goalId} scrollNav={{ navRef, timelineStatus }} />
+      <Nav data={userData} param={goalId} scrollNav={{ navRef, timelineStatus }} />
       <main>
         <Outlet />
       </main>

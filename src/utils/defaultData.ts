@@ -34,6 +34,7 @@ export const defaultGoalData: GoalData = {
   isRecycled: false,
   deleteAt: null,
   notification: undefined,
+  completedAt: null,
   __v: 0,
 };
 

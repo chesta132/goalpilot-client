@@ -41,6 +41,7 @@ export type GoalData = {
   isPublic: boolean;
   status: "active" | "completed" | "paused" | "canceled" | "pending" | "";
   targetDate: Date | null;
+  completedAt: Date | null;
   tasks: TaskData[];
   color: string;
   isRecycled: boolean;

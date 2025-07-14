@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { GoalCardCompact } from "../Cards/GoalCardCompact";
-import { decrypt } from "@/utils/cryptoUtils";
 import { defaultGoalData } from "@/utils/defaultData";
 import { useViewportWidth } from "@/hooks/useViewport";
 
@@ -19,7 +18,7 @@ type TReadMore = {
 };
 
 export const SidebarTask = ({ withEdit = true }) => {
-  const { data, setData } = useTaskData();
+  const { data } = useTaskData();
   const { timelineStatus } = useScrollNavigation();
   const { description, task } = data;
   const { data: goalData, getData: getGoalData } = useGoalData();
@@ -35,11 +34,6 @@ export const SidebarTask = ({ withEdit = true }) => {
   const handleTo = (path: "edit" | "info") => {
     navigate(`/task/${data._id}/${path}`);
   };
-
-  useEffect(() => {
-    setData(JSON.parse(decrypt(sessionStorage.getItem("task-data"))));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (JSON.stringify(goalData) === JSON.stringify(defaultGoalData)) {
@@ -106,12 +100,12 @@ export const SidebarTask = ({ withEdit = true }) => {
         </div>
         <div className="mx-2 absolute right-0 mr-5">
           {withEdit ? (
-            <div className="mx-2 !cursor-pointer absolute right-0 mr-5" onClick={() => handleTo("edit")}>
-              <Edit />
+            <div className="!cursor-pointer" onClick={() => handleTo("edit")}>
+              <Edit size={19.5} />
             </div>
           ) : (
             <div className="cursor-pointer!" onClick={() => handleTo("info")}>
-              <Info />
+              <Info size={19.5} />
             </div>
           )}
         </div>

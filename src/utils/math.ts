@@ -12,7 +12,7 @@ function avgCalc(items: number[]) {
 
 function sum(items: number[]) {
   const sum = items.reduce((acc, val) => acc + val, 0);
-  return sum
+  return sum;
 }
 
 export { avgCalc, sum };

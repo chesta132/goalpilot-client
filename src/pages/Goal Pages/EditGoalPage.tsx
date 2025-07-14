@@ -14,23 +14,23 @@ import { capitalEachWords } from "@/utils/stringManip";
 import type { GoalData, TError } from "@/types/types";
 import { ColorPicker, DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
 
 export const EditGoalPage = () => {
-  const defaultValue = JSON.parse(decrypt(sessionStorage.getItem("goal-data")) || JSON.stringify(defaultGoalData));
+  const defaultValue = decrypt(sessionStorage.getItem("goal-data"), { parse: true }) || JSON.stringify(defaultGoalData);
   const navigate = useNavigate();
+  const { setData, getData, deleteGoal, data } = useGoalData();
 
-  const [valueEdit, setValueEdit] = useState<TValueEdit>(defaultValue);
+  const [valueEdit, setValueEdit] = useState<TValueEdit>(data as TValueEdit);
   const [error, setError] = useState<TValueEdit & TError>({ ...defaultGoalData, error: null, targetDate: "", status: "" });
   const [isSubmitting, setSubmitting] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
 
   const { goalId } = useParams();
-  const { setData, getData, deleteGoal } = useGoalData();
   const { openNotification } = useNotification();
   const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
@@ -81,7 +81,7 @@ export const EditGoalPage = () => {
   };
 
   const handleBack = (to: string | number = "./..") => {
-    sessionStorage.removeItem("task-data");
+    sessionStorage.removeItem("goal-data");
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
   };
@@ -96,6 +96,11 @@ export const EditGoalPage = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handlePreview = () => {
+    sessionStorage.setItem("preview-goal-data", encrypt(valueEdit));
+    navigate("./../info");
   };
 
   return (
@@ -198,8 +203,14 @@ export const EditGoalPage = () => {
             </div>
           </div>
         </div>
-        <div className=" mt-3 flex justify-between items-end">
-          <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
+        <div className="flex gap-2 justify-end mt-3">
+          <ButtonV
+            type="button"
+            icon={<Eye size={13} />}
+            text="Preview Edit"
+            onClick={handlePreview}
+            className="text-[12px] !px-3 !py-2 bg-goal-accent hover:bg-goal-accent-strong border-none"
+          />
           <ButtonV
             type="button"
             icon={<Trash2 size={13} />}
@@ -208,6 +219,7 @@ export const EditGoalPage = () => {
             className="text-[12px] !px-3 !py-2 text-white! bg-red-600 border hover:bg-red-700 border-none"
           />
         </div>
+        <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
       </form>
     </div>
   );
