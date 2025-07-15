@@ -37,11 +37,10 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
   const { refetchData } = useUserData();
   const { getData: getGoalData } = useGoalData();
 
-  const getData = async (taskId: string) => {
-    setLoading(true);
+  const getData = async (taskId: string, withLoad = true) => {
+    setLoading(withLoad);
     try {
       const response = await callApi(`/task?taskId=${taskId}`, { method: "GET" });
-      getGoalData(response.data.goalId, false);
       setData(response.data);
     } catch (err) {
       handleError(err, setError);

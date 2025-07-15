@@ -12,6 +12,9 @@ type Options =
 
 export default async function callApi(endpoint: string = "", options: Options = { method: "GET", body: null, headers: {}, directToken: false }) {
   const apiURL = import.meta.env.VITE_API_URL_DEV;
+  const createdError = new Error();
+  const callerLine = createdError.stack?.split("\n")[2];
+
   try {
     const response = await axios({
       method: options.method,
@@ -23,7 +26,10 @@ export default async function callApi(endpoint: string = "", options: Options = 
       },
       withCredentials: true,
     });
-    if (import.meta.env.VITE_ENV !== "production") console.log(`Endpoint:\n${response.config.url?.slice(apiURL.length)}\n`, response, "\n\n");
+    if (import.meta.env.VITE_ENV !== "production") {
+      console.log(`Endpoint:\n${response.config.url?.slice(apiURL.length)}\n\nCalled by: ${callerLine?.trim()}\n\n`, response);
+    }
+
     return response;
   } catch (error) {
     console.error("Error in API call:", error);

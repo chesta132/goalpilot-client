@@ -1,10 +1,10 @@
 import ButtonV from "@/components/Inputs/ButtonV";
+import { ReadMore } from "@/components/Inputs/ReadMore";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
 import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData } from "@/contexts/UseContexts";
 import { getBgByStatus, getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { decrypt } from "@/utils/cryptoUtils";
-import { defaultGoalData } from "@/utils/defaultData";
 import { handleError } from "@/utils/errorHandler";
 import { capitalWord } from "@/utils/stringManip";
 import clsx from "clsx";
@@ -14,15 +14,15 @@ import { useNavigate } from "react-router";
 
 export const InfoGoalPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
-  const [readMore, setReadMore] = useState({ title: false });
 
   const { data, setData, deleteGoal, error, setError } = useGoalData();
 
   const navigate = useNavigate();
 
-  if (JSON.stringify(data) === JSON.stringify(defaultGoalData)) {
+  useEffect(() => {
     setData(decrypt(sessionStorage.getItem("goal-data"), { parse: true }));
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTo = (to: "info" | "edit") => {
     navigate(`./../${to}`);
@@ -44,6 +44,7 @@ export const InfoGoalPage = () => {
       handleError(err, setError);
     }
   };
+
   const intervalMs = new Date(data.targetDate!).getTime() - new Date().getTime();
   const timeLeft = Math.ceil(intervalMs / (1000 * 60 * 60 * 24));
   const timeLeftToDisplay = getTimeLeftToDisplay(timeLeft);
@@ -63,25 +64,7 @@ export const InfoGoalPage = () => {
           <div className="flex justify-between">
             <div className="w-full text-[11px] gap-4 flex flex-col lg:justify-between lg:flex-row">
               <div className="flex flex-col gap-2">
-                <h1 className="font-heading text-[19px] font-bold">
-                  {data.title.length > 30 ? (
-                    <>
-                      {readMore.title ? data.title : `${data.title.substring(0, 30)}...`}
-                      <br />
-                      <button
-                        className="text-gray cursor-pointer w-fit text-[14px] font-normal"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setReadMore((prev) => ({ ...prev, title: !prev.title }));
-                        }}
-                      >
-                        {readMore.title ? "Read less" : "Read more"}
-                      </button>
-                    </>
-                  ) : (
-                    data.title
-                  )}
-                </h1>
+                <ReadMore text={data.title} className="font-heading text-[19px] font-bold" />
                 <div className="flex gap-2 items-center">
                   <p className={clsx("text-white rounded-full px-2 py-1 inline size-fit", getBgByStatus(data.status))}>{capitalWord(data.status)}</p>•
                   <p className="text-gray-500 text-[12px]">{data.isPublic ? "Public" : "Non-public"}</p>•

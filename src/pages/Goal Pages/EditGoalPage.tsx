@@ -35,11 +35,25 @@ export const EditGoalPage = () => {
   const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
   useEffect(() => {
-    if (valueEdit._id !== goalId || !valueEdit._id) {
-      sessionStorage.removeItem("goal-data");
-      navigate(-1);
+    setValueEdit(data as TValueEdit);
+  }, [data]);
+  const previewGoalData = sessionStorage.getItem("preview-goal-data");
+  useEffect(() => {
+    if (!previewGoalData && JSON.stringify(data) === JSON.stringify(defaultGoalData)) {
+      const f = async () => {
+        await getData(goalId);
+        sessionStorage.setItem("goal-data", encrypt(data));
+      };
+      f();
     }
-  }, [goalId, valueEdit._id, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goalId, data]);
+
+  useEffect(() => {
+    const goalData = decrypt(sessionStorage.getItem("goal-data"), { parse: true });
+    if (goalData && !previewGoalData) setData(goalData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -114,7 +128,7 @@ export const EditGoalPage = () => {
             <ButtonV
               type="button"
               disabled={isSubmitting}
-              onClick={() => handleBack(-1)}
+              onClick={() => handleBack()}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />
@@ -219,7 +233,6 @@ export const EditGoalPage = () => {
             className="text-[12px] !px-3 !py-2 text-white! bg-red-600 border hover:bg-red-700 border-none"
           />
         </div>
-        <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
       </form>
     </div>
   );

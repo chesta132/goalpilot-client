@@ -6,7 +6,7 @@ import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification, useTaskData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
-import { decrypt } from "@/utils/cryptoUtils";
+import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultTaskData } from "@/utils/defaultData";
 import { handleError, handleFormError } from "@/utils/errorHandler";
 import { difficultyOptions } from "@/utils/selectOptions";
@@ -14,7 +14,7 @@ import { capitalEachWords } from "@/utils/stringManip";
 import type { TaskData, TError } from "@/types/types";
 import { DatePicker, Select, Switch } from "antd";
 import dayjs from "dayjs";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Eye, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -38,10 +38,23 @@ export const EditTaskPage = () => {
     setValueEdit(data);
   }, [data]);
 
+  const previewTaskData = sessionStorage.getItem("preview-task-data");
   useEffect(() => {
-    if (taskId && taskId !== data.id) getData(taskId);
+    if (!previewTaskData && JSON.stringify(data) === JSON.stringify(defaultTaskData)) {
+      const f = async () => {
+        await getData(taskId!);
+        sessionStorage.setItem("task-data", encrypt(data));
+      };
+      f();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskId]);
+  }, [taskId, data]);
+
+  useEffect(() => {
+    const taskData = decrypt(sessionStorage.getItem("task-data"), { parse: true });
+    if (taskData && !previewTaskData) setData(taskData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -81,9 +94,13 @@ export const EditTaskPage = () => {
   };
 
   const handleBack = (to: string | number = -1) => {
-    sessionStorage.removeItem("task-data");
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
+  };
+
+  const handlePreview = () => {
+    sessionStorage.setItem("preview-task-data", encrypt(valueEdit));
+    navigate("./../info");
   };
 
   const handleUndo = async (goalId: string) => {
@@ -131,7 +148,7 @@ export const EditTaskPage = () => {
             <ButtonV
               type="button"
               disabled={isSubmitting}
-              onClick={() => handleBack()}
+              onClick={() => handleBack(`/goal/${valueEdit.goalId}`)}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />
@@ -204,8 +221,14 @@ export const EditTaskPage = () => {
             </div>
           </div>
         </div>
-        <div className=" mt-3 flex justify-between items-end">
-          <h2 className="text-gray text-[13px]">Created on {new Date(valueEdit.createdAt).toLocaleDateString()}</h2>
+        <div className="flex gap-2 justify-end mt-3">
+          <ButtonV
+            type="button"
+            icon={<Eye size={13} />}
+            text="Preview Edit"
+            onClick={handlePreview}
+            className="text-[12px] !px-3 !py-2 bg-goal-accent hover:bg-goal-accent-strong border-none"
+          />
           <ButtonV
             type="button"
             icon={<Trash2 size={13} />}

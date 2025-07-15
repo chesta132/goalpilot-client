@@ -11,6 +11,7 @@ import { AddTask } from "../Forms/AddTask";
 import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultGoalData } from "@/utils/defaultData";
 import { getBgByStatus } from "@/utils/commonUtils";
+import { ReadMore } from "../Inputs/ReadMore";
 
 type TAiInput = {
   value: string;
@@ -18,18 +19,11 @@ type TAiInput = {
   loading: boolean;
 };
 
-type TReadMore = {
-  title: boolean;
-  desc: boolean;
-  taskTitle: boolean;
-};
-
 export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
   const { loading, data, setData } = useGoalData();
 
   const { timelineStatus } = useScrollNavigation();
 
-  const [readMore, setReadMore] = useState<TReadMore>({ title: false, desc: false, taskTitle: false });
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
   const [aiInput, setAiInput] = useState<TAiInput>({ value: "", error: null, loading: false });
 
@@ -65,28 +59,11 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
     >
       <div className="flex justify-between">
         <div className={clsx("flex gap-2 flex-col w-full", loading && "animate-shimmer rounded-md")}>
-          <h1
-            className={clsx(
-              "text-[20px] font-[600] font-heading max-w-[85%]",
-              loading && "!text-transparent !bg-transparent",
-              readMore.title && "overflow-auto"
-            )}
-          >
-            {title.length > 30 ? (
-              <>
-                {readMore.taskTitle ? capitalEachWords(title) : `${capitalEachWords(title).substring(0, 30)}...`}
-                <br />
-                <button
-                  className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
-                  onClick={() => setReadMore((prev) => ({ ...prev, taskTitle: !prev.taskTitle }))}
-                >
-                  {readMore.taskTitle ? "Read less" : "Read more"}
-                </button>
-              </>
-            ) : (
-              capitalEachWords(title)
-            )}
-          </h1>
+          <ReadMore
+            text={capitalEachWords(title)}
+            className={clsx("text-[20px] font-[600] font-heading max-w-[85%]", loading && "!text-transparent !bg-transparent")}
+            readMoreClass={clsx(loading && "text-transparent")}
+          />
           <h1
             className={clsx(
               "text-[13px] font-heading mb-2 size-fit rounded-2xl px-2 py-1 text-white",
@@ -113,25 +90,10 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
       <StatsCard
         loading={loading}
         header="Description"
-        className={clsx("!bg-theme max-h-100", readMore.desc && "overflow-auto")}
+        className={clsx("!bg-theme max-h-100 overflow-auto")}
         classStats="text-[15px] font-medium mt-2"
         icon={<Book className={clsx("h-8 w-8 p-1 object-contain rounded-md bg-accent", loading && "hidden")} />}
-        stats={
-          description.length > 100 ? (
-            <>
-              {readMore.desc ? capitalEachWords(description) : `${capitalEachWords(description).substring(0, 30)}...`}
-              <br />
-              <button
-                className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
-                onClick={() => setReadMore((prev) => ({ ...prev, desc: !prev.desc }))}
-              >
-                {readMore.desc ? "Read less" : "Read more"}
-              </button>
-            </>
-          ) : (
-            description
-          )
-        }
+        stats={<ReadMore text={description} readMoreClass={clsx(loading && "text-transparent")} />}
       />
       <StatsCard
         loading={loading}

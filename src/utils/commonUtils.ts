@@ -46,8 +46,12 @@ Date.prototype.toFormattedString = function () {
     month: "long",
     day: "numeric",
   };
-
-  const formatter = new Intl.DateTimeFormat("en-US", options);
-  const formattedDate = formatter.format(this);
-  return formattedDate;
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", options);
+    const formattedDate = formatter.format(this);
+    return formattedDate;
+  } catch (error) {
+    console.error(error);
+    return "Invalid Date";
+  }
 };

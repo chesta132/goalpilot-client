@@ -4,26 +4,18 @@ import clsx from "clsx";
 import { Book, Calendar, Edit, Goal, Info } from "lucide-react";
 import StatsCard from "../Cards/StatsCard";
 import { useGoalData, useTaskData } from "@/contexts/UseContexts";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { GoalCardCompact } from "../Cards/GoalCardCompact";
-import { defaultGoalData } from "@/utils/defaultData";
 import { useViewportWidth } from "@/hooks/useViewport";
-
-type TReadMore = {
-  task: boolean;
-  desc: boolean;
-  taskTitle: boolean;
-};
+import { ReadMore } from "../Inputs/ReadMore";
 
 export const SidebarTask = ({ withEdit = true }) => {
   const { data } = useTaskData();
   const { timelineStatus } = useScrollNavigation();
   const { description, task } = data;
   const { data: goalData, getData: getGoalData } = useGoalData();
-
-  const [readMore, setReadMore] = useState<TReadMore>({ task: false, desc: false, taskTitle: false });
 
   const navigate = useNavigate();
   const createdAt = new Date(data.createdAt);
@@ -36,7 +28,7 @@ export const SidebarTask = ({ withEdit = true }) => {
   };
 
   useEffect(() => {
-    if (JSON.stringify(goalData) === JSON.stringify(defaultGoalData)) {
+    if (goalData.id !== data.goalId) {
       getGoalData(data.goalId, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,28 +53,7 @@ export const SidebarTask = ({ withEdit = true }) => {
     >
       <div className="flex justify-between">
         <div className="flex gap-2 flex-col w-full">
-          <h1
-            className={clsx(
-              "text-[20px] font-[600] font-heading max-w-[85%]",
-
-              readMore.task && "overflow-auto"
-            )}
-          >
-            {task.length > 30 ? (
-              <>
-                {readMore.taskTitle ? capitalEachWords(task) : `${capitalEachWords(task).substring(0, 30)}...`}
-                <br />
-                <button
-                  className="text-gray cursor-pointer w-fit text-[14px] font-normal"
-                  onClick={() => setReadMore((prev) => ({ ...prev, taskTitle: !prev.taskTitle }))}
-                >
-                  {readMore.taskTitle ? "Read less" : "Read more"}
-                </button>
-              </>
-            ) : (
-              capitalEachWords(task)
-            )}
-          </h1>
+          <ReadMore text={capitalEachWords(task)} className="text-[20px] font-[600] font-heading max-w-[85%]" />
           {data.isCompleted ? (
             <h1 className="text-green-500 bg-green-500/10 font-heading size-fit rounded-2xl px-2 py-1 flex gap-3 text-[13px]">Completed</h1>
           ) : (
@@ -112,25 +83,10 @@ export const SidebarTask = ({ withEdit = true }) => {
       </div>
       <StatsCard
         header="Description"
-        className={clsx("!bg-theme max-h-100", readMore.desc && "overflow-auto")}
+        className="!bg-theme max-h-100"
         classStats="text-[15px] font-medium mt-2"
         icon={<Book className="h-8 w-8 p-1 object-contain rounded-md bg-accent" />}
-        stats={
-          description.length > 100 ? (
-            <>
-              {readMore.desc ? capitalEachWords(description) : `${capitalEachWords(description).substring(0, 30)}...`}
-              <br />
-              <button
-                className="text-gray cursor-pointer w-fit text-[14px] font-normal"
-                onClick={() => setReadMore((prev) => ({ ...prev, desc: !prev.desc }))}
-              >
-                {readMore.desc ? "Read less" : "Read more"}
-              </button>
-            </>
-          ) : (
-            description
-          )
-        }
+        stats={<ReadMore text={description} />}
       />
       <StatsCard
         header={completedAt ? "Completed At" : "Target Date"}

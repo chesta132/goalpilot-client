@@ -11,6 +11,7 @@ import { useViewportWidth } from "@/hooks/useViewport";
 import { AddTask } from "@/components/Forms/AddTask";
 import TaskCardCompact from "@/components/Cards/TaskCardCompact";
 import { encrypt } from "@/utils/cryptoUtils";
+import { ReadMore } from "@/components/Inputs/ReadMore";
 
 type AiInput = {
   value: string;
@@ -24,7 +25,6 @@ const GoalPage = () => {
 
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
   const [aiInput, setAiInput] = useState<AiInput>({ value: "", error: null, loading: false });
-  const [readMore, setReadMore] = useState({ title: false, desc: false, taskTitle: false });
 
   const { goalId } = useParams();
   const width = useViewportWidth();
@@ -39,12 +39,6 @@ const GoalPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalId, data.id]);
-
-  useEffect(() => {
-    if (readMore.desc) document.body.classList.add("overflow-hidden");
-    else document.body.classList.remove("overflow-hidden");
-    return () => document.body.classList.remove("overflow-hidden");
-  }, [readMore.desc]);
 
   const { tasks, title } = data;
 
@@ -61,23 +55,11 @@ const GoalPage = () => {
       {/* Goal Page */}
       <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
         <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 rounded-xl shadow-lg">
-          <h1 className="text-[20px] font-[600] font-heading ml-3">
-            Tasks of{" "}
-            {title.length > 30 ? (
-              <>
-                {readMore.title ? capitalWord(title) : `${capitalWord(title).substring(0, 30)}...`}
-                <br />
-                <button
-                  className={clsx("text-gray cursor-pointer w-fit text-[14px] font-normal", loading && "text-transparent")}
-                  onClick={() => setReadMore((prev) => ({ ...prev, title: !prev.title }))}
-                >
-                  {readMore.title ? "Read less" : "Read more"}
-                </button>
-              </>
-            ) : (
-              capitalWord(title)
-            )}
-          </h1>
+          <ReadMore
+            text={`Task of ${capitalWord(title)}`}
+            className="text-[20px] font-[600] font-heading ml-3"
+            readMoreClass={clsx(loading && "text-transparent")}
+          />
           {width >= 1024 && (
             <div className="px-5">
               <AddTask

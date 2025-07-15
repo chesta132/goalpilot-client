@@ -1,5 +1,7 @@
 import { capitalEachWords } from "@/utils/stringManip";
 import type { GoalData } from "@/types/types";
+import clsx from "clsx";
+import { getBgByStatus } from "@/utils/commonUtils";
 
 type GoalProps = {
   goal: GoalData;
@@ -11,7 +13,7 @@ const GoalCard = ({ goal }: GoalProps) => {
       <div className="relative flex flex-col gap-3">
         <h1 className="font-heading font-semibold text-[18px]">{capitalEachWords(goal.title)}</h1>
         <div className="flex gap-3 items-center">
-          <p style={{ color: goal.color }} className="bg-theme-darker/60 rounded-full text-[12px] px-2 py-1 inline">
+          <p className={clsx("bg-theme-darker/60 text-white rounded-full text-[12px] px-2 py-1 inline", getBgByStatus(goal.status))}>
             {capitalEachWords(goal.status)}
           </p>
           <p className="text-[14px] text-gray">•</p>
