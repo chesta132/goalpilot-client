@@ -130,8 +130,6 @@ export const EditTaskPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  console.log(taskData.targetDate);
-
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center mb-25">
       {error.error && <ErrorPopup error={error} />}
