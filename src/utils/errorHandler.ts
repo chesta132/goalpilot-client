@@ -52,7 +52,9 @@ export const codeAuthError: CodeAuthError[] = [
   "ACCESS_TOKEN_INVALID",
   "TOKEN_BLACKLISTED",
   "INVALID_ROLE",
-  "INVALID_AUTH_METHODS",
+  "NOT_VERIFIED",
+  "INVALID_VERIFY_EMAIL_TOKEN",
+  "IS_VERIFIED",
 ];
 
 export function errorAuthBool(error: TError): boolean {
