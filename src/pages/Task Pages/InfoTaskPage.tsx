@@ -21,7 +21,7 @@ export const InfoTaskPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setData(decrypt(sessionStorage.getItem("task-data"), { parse: true }));
+    if (sessionStorage.getItem("task-data")) setData(decrypt(sessionStorage.getItem("task-data"), { parse: true }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -55,6 +55,10 @@ export const InfoTaskPage = () => {
     { title: "target date", date: data.targetDate },
     { title: "completed date", date: data?.completedAt },
   ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">

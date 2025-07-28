@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import { sanitizeDatesInObject } from "./callApi";
 
 const key = import.meta.env.VITE_CRYPTO_SECRET;
 
@@ -14,7 +15,7 @@ export const decrypt = (ciphertext?: string | null, options?: { parse?: boolean 
   const decrypted = CryptoJS.AES.decrypt(ciphertext, key).toString(CryptoJS.enc.Utf8);
   if (options?.parse) {
     try {
-      return JSON.parse(decrypted);
+      return sanitizeDatesInObject(JSON.parse(decrypted));
     } catch {
       return null;
     }

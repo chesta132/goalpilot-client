@@ -18,9 +18,8 @@ export const SidebarTask = ({ withEdit = true }) => {
   const { data: goalData, getData: getGoalData } = useGoalData();
 
   const navigate = useNavigate();
-  const createdAt = new Date(data.createdAt);
+  const {createdAt, completedAt} = data
   const targetDate = new Date(data.targetDate);
-  const completedAt = data.completedAt ? new Date(data.completedAt) : null;
   const width = useViewportWidth();
 
   const handleTo = (path: "edit" | "info") => {
@@ -47,7 +46,7 @@ export const SidebarTask = ({ withEdit = true }) => {
   return (
     <div
       className={clsx(
-        "bg-theme-dark rounded-2xl px-4 mx-3 md:mx-6 lg:mx-0 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
+        "bg-theme-dark rounded-2xl px-6 py-7 mx-3 md:mx-6 lg:mx-0 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
         timelineStatus && "lg:!pt-8"
       )}
     >

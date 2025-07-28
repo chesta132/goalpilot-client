@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { Edit, Eye, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
+import clsx from "clsx";
 
 type TValueEdit = Omit<GoalData, "targetDate"> & { targetDate: Date | string };
 
@@ -117,6 +118,10 @@ export const EditGoalPage = () => {
     navigate("./../info");
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10 relative">
       {error.error && <ErrorPopup error={error} />}
@@ -128,7 +133,7 @@ export const EditGoalPage = () => {
             <ButtonV
               type="button"
               disabled={isSubmitting}
-              onClick={() => handleBack()}
+              onClick={() => handleBack(-1)}
               text="Cancel"
               className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
             />
@@ -161,7 +166,7 @@ export const EditGoalPage = () => {
             <div>
               <DatePicker
                 id="targetDate"
-                defaultValue={dayjs(valueEdit.targetDate)}
+                value={dayjs(valueEdit.targetDate)}
                 placement="topLeft"
                 styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
                 classNames={{ popup: { root: "datepicker" } }}
@@ -178,11 +183,12 @@ export const EditGoalPage = () => {
             <div className="flex justify-between items-center gap-4 h-12">
               <div className="w-1/2 h-full">
                 <Select
+                  disabled={valueEdit.status === "completed"}
                   id="status"
                   status={error.status && "error"}
-                  defaultValue={valueEdit.status}
+                  value={valueEdit.status}
                   placeholder={"Goal Status"}
-                  className="select !size-full"
+                  className={clsx("select !size-full", valueEdit.status === "completed" && "opacity-75")}
                   options={statusOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}
                   allowClear
                   onChange={(e) => handleChangeForm<TValueEdit>(e ? { status: e } : { status: "" })}

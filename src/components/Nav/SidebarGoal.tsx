@@ -32,7 +32,7 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
   const navigate = useNavigate();
 
   const { color, description, progress, title, status } = data;
-  const createdAt = new Date(data.createdAt);
+  const createdAt = data.createdAt;
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
 
   const handleTo = (to: "edit" | "info") => {
@@ -53,7 +53,7 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
   return (
     <div
       className={clsx(
-        "bg-theme-dark rounded-2xl px-4 mx-3 md:mx-6 lg:mx-0 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
+        "bg-theme-dark rounded-2xl px-6 py-7 mx-3 md:mx-6 lg:mx-0 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative",
         timelineStatus && "lg:!pt-8"
       )}
     >
@@ -103,7 +103,7 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
         icon={
           <Verified className={clsx("h-8 bg-[#F59E0B] w-8 object-contain rounded-md p-1 fill-theme-reverse stroke-[#F59E0B]", loading && "hidden")} />
         }
-        stats={progress.toString() + "%"}
+        stats={progress.toFixed(2) + "%"}
       >
         <div className={clsx("rounded-full bg-theme-dark h-3 w-full", loading && "bg-transparent")}>
           <div className={clsx("rounded-full h-full bg-(--goal-accent)", loading && "hidden")} style={{ width: `${progress}%` }} />

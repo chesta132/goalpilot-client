@@ -17,14 +17,14 @@ const GoalCard = ({ goal }: GoalProps) => {
             {capitalEachWords(goal.status)}
           </p>
           <p className="text-[14px] text-gray">•</p>
-          <p className="text-[14px] text-gray">{goal.progress}% Complete</p>
+          <p className="text-[14px] text-gray">{goal.progress.toFixed(0)}% Complete</p>
         </div>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <h2 className="text-[14px] font-medium">Progress</h2>
           <h2 className="text-[14px] font-semibold" style={{ color: goal.color }}>
-            {goal.progress}%
+            {goal.progress.toFixed(0)}%
           </h2>
         </div>
         <div className="rounded-full bg-theme-dark h-3">

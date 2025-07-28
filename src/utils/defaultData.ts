@@ -11,10 +11,9 @@ export const defaultTaskData: TaskData = {
   deletedAt: null,
   difficulty: "easy",
   isRecycled: false,
-  rewardPoints: 0,
   targetDate: "",
   notification: undefined,
-  createdAt: new Date(),
+  createdAt: new Date(""),
   __v: 0,
 };
 
@@ -24,17 +23,17 @@ export const defaultGoalData: GoalData = {
   userId: "",
   title: "",
   description: "",
-  createdAt: new Date(),
+  createdAt: new Date(""),
   progress: 0,
   isPublic: false,
   status: "active",
-  targetDate: null,
+  targetDate: new Date(""),
   tasks: [],
   color: "",
   isRecycled: false,
   deleteAt: null,
   notification: undefined,
-  completedAt: null,
+  completedAt: new Date(""),
   __v: 0,
 };
 
@@ -44,15 +43,16 @@ export const defaultUserData: UserData = {
   username: "",
   fullName: "",
   email: "",
-  createdAt: new Date(),
-  lastActive: new Date(),
+  createdAt: new Date(""),
+  lastActive: new Date(""),
   goals: [],
   goalsCompleted: 0,
   tasksCompleted: 0,
-  level: 1,
-  points: 0,
   role: "user",
   __v: 0,
+  status: "offline",
+  timeToAllowSendEmail: new Date(""),
+  verified: false,
 };
 
 export const defaultNewTaskError: TNewTaskValue = {

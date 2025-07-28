@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import checker from "vite-plugin-checker";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,13 +9,7 @@ export default defineConfig({
     host: true,
     port: 3000,
   },
-  plugins: [
-    react(),
-    tailwindcss(),
-    checker({
-      typescript: true,
-    }),
-  ],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

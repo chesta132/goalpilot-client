@@ -30,7 +30,7 @@ export const GoalCardCompact = ({ data, className }: GoalCardCompactProps) => {
             >
               {capitalWord(data.status)}
             </p>
-            •<p>{data.progress}% Complete</p>•<p>{data.isPublic ? "Public" : "Non-public"}</p>
+            •<p>{data.progress.toFixed(0)}% Complete</p>•<p>{data.isPublic ? "Public" : "Non-public"}</p>
           </div>
         </div>
       </div>

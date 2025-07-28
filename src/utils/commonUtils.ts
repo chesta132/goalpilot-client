@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import type { GoalData } from "../types/types";
 
 export const getBgByStatus = (status: GoalData["status"]) => {
@@ -40,18 +41,38 @@ export const getTimeLeftToDisplay = (timeLeft: number) => {
     : `${Math.floor(Math.abs(timeLeft) / 365)} Year${timeLeftYearPlural} ago`;
 };
 
-Date.prototype.toFormattedString = function () {
+Date.prototype.toFormattedString = function (optionsProp = { includeThisYear: true, includeHour: false }) {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
+  const hourOptions: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+  };
   try {
-    const formatter = new Intl.DateTimeFormat("en-US", options);
+    if (this.toString() === "Invalid Date") {
+      return "Invalid Date";
+    }
+    const { includeHour, includeThisYear } = optionsProp;
+    const formatter = new Intl.DateTimeFormat("en-US", includeHour ? { ...options, ...hourOptions } : options);
     const formattedDate = formatter.format(this);
+    const thisYear = new Date().getFullYear().toString();
+
+    if (formattedDate.includes(thisYear) && !includeThisYear) {
+      const splittedDate = formattedDate.split(", " + thisYear);
+      return splittedDate.join("");
+    }
+
     return formattedDate;
   } catch (error) {
     console.error(error);
     return "Invalid Date";
   }
+};
+
+export const isIsoDateValid = (dateString: string | Date) => {
+  const parsedDate = dayjs(dateString);
+  return parsedDate.isValid() && dateString.toString().includes("T") && dateString.toString().includes("Z");
 };

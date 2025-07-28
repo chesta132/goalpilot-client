@@ -52,7 +52,7 @@ const Layout = () => {
   }, [location.pathname, goalId]);
 
   useEffect(() => {
-    const updatedGoal = userData?.goals.map((goal) => (goal.id === goalData.id ? goalData : goal)) as GoalData[];
+    const updatedGoal = userData?.goals?.map((goal) => (goal.id === goalData.id ? goalData : goal)) as GoalData[];
     setUserData((prev) => (prev !== null ? { ...prev, goals: updatedGoal } : null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalData]);

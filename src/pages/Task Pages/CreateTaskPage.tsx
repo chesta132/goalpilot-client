@@ -15,6 +15,7 @@ import { DatePicker, Select } from "antd";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
+import dayjs from "dayjs";
 
 export const CreateTaskPage = () => {
   const [valueCreate, setValueCreate] = useState<TNewTaskValue>(defaultNewTaskData);
@@ -107,6 +108,7 @@ export const CreateTaskPage = () => {
             <div className="flex justify-between items-center gap-4 h-12">
               <div className="w-1/2 h-full">
                 <DatePicker
+                  value={valueCreate.targetDate ? dayjs(valueCreate.targetDate) : undefined}
                   placement="bottomRight"
                   styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
                   classNames={{ popup: { root: "datepicker" } }}

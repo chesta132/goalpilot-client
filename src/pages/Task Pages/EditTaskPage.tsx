@@ -31,7 +31,7 @@ export const EditTaskPage = () => {
 
   const { taskId } = useParams();
   const { openNotification } = useNotification();
-  const { getData: getGoalData, setData: setGoalData, data: goalData } = useGoalData();
+  const { getData: getGoalData } = useGoalData();
   const { handleChangeForm, validateForm } = useValidate(valueEdit, error, setValueEdit, setError);
 
   useEffect(() => {
@@ -51,8 +51,10 @@ export const EditTaskPage = () => {
   }, [taskId, data]);
 
   useEffect(() => {
-    const taskData = decrypt(sessionStorage.getItem("task-data"), { parse: true });
-    if (taskData && !previewTaskData) setData(taskData);
+    if (sessionStorage.getItem("task-data")) {
+      const taskData = decrypt(sessionStorage.getItem("task-data"), { parse: true });
+      if (taskData && !previewTaskData) setData(taskData);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -83,8 +85,7 @@ export const EditTaskPage = () => {
       const response = await callApi("/task", { method: "PUT", body: { ...valueEdit, taskId, goalId: valueEdit.goalId } });
       setData(response.data);
       openNotification({ message: response.data.notification, button: "default", type: "success" });
-      const editedTask = goalData.tasks.map((task) => (task.id === response.data.id ? response.data : task));
-      if (response.data.goalId === goalData._id) setGoalData((prev) => ({ ...prev, tasks: editedTask }));
+      getGoalData(response.data.goalId, false);
       handleBack(`/goal/${response.data.goalId}`);
     } catch (err) {
       handleFormError(err, setError);
@@ -123,7 +124,7 @@ export const EditTaskPage = () => {
         buttonFunc: { f: handleUndo, label: "Undo", params: [valueEdit.goalId] },
         message: response.data.notification,
       });
-      setGoalData((prev) => ({ ...prev, tasks: prev.tasks.filter((task) => task.id !== valueEdit.id) }));
+      getGoalData(valueEdit.goalId, false);
       resetData();
       handleBack(`/goal/${valueEdit.goalId}`);
     } catch (err) {
@@ -181,7 +182,7 @@ export const EditTaskPage = () => {
             <div className="flex justify-between items-center gap-4 h-12">
               <div className="w-1/2 h-full">
                 <DatePicker
-                  defaultValue={dayjs(valueEdit.targetDate)}
+                  value={dayjs(valueEdit.targetDate)}
                   placement="topLeft"
                   styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}
                   classNames={{ popup: { root: "datepicker" } }}
@@ -198,7 +199,7 @@ export const EditTaskPage = () => {
               <div className="w-1/2 h-full">
                 <Select
                   status={error.difficulty && "error"}
-                  defaultValue={valueEdit.difficulty}
+                  value={valueEdit.difficulty}
                   placeholder={"Difficulty"}
                   className="select !size-full"
                   options={difficultyOptions.map((option) => ({ value: option, label: capitalEachWords(option) }))}

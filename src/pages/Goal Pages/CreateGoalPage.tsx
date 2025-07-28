@@ -16,6 +16,7 @@ import clsx from "clsx";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
+import dayjs from "dayjs";
 
 export const CreateGoalPage = () => {
   const [valueCreate, setValueCreate] = useState<TNewGoalValue>(defaultNewGoalData);
@@ -116,6 +117,7 @@ export const CreateGoalPage = () => {
           <div className="flex flex-col gap-4">
             <div className={clsx("flex flex-col h-13", error.targetDate && "h-16")}>
               <DatePicker
+                value={valueCreate.targetDate ? dayjs(valueCreate.targetDate) : undefined}
                 id="targetDate"
                 placement="topLeft"
                 styles={{ root: { background: "transparent", color: "var(--theme-reverse)" } }}

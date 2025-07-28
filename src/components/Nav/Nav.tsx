@@ -25,6 +25,9 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
 
+  const splittedFullName = data && data.fullName.split(" ");
+  const profileName = splittedFullName && splittedFullName[0][0] + splittedFullName[1][0];
+
   // Open permanently the menu on larger screens
   useEffect(() => {
     if (width >= 1024) {
@@ -74,8 +77,8 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
         </div>
         <div className="flex items-center">
           <Link to="/profile" className="hover:text-accent ml-4">
-            <div className="bg-accent text-white rounded-full w-8 h-8 flex items-center justify-center">
-              {data && data.fullName && data.fullName[0].toUpperCase()}
+            <div className="bg-[#66b2ff] text-white rounded-full size-8 text-[14px] flex items-center justify-center">
+              {profileName && profileName.toUpperCase()}
             </div>
           </Link>
           <Link to="/settings" className="ml-4">

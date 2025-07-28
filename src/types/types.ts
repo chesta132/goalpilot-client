@@ -23,7 +23,6 @@ export type TaskData = {
   deletedAt: Date | null;
   difficulty: "easy" | "medium" | "hard" | "very hard" | "";
   isRecycled: boolean;
-  rewardPoints: number;
   targetDate: string | Date;
   notification?: string;
   createdAt: Date;
@@ -40,8 +39,8 @@ export type GoalData = {
   progress: number;
   isPublic: boolean;
   status: "active" | "completed" | "paused" | "canceled" | "pending" | "";
-  targetDate: Date | null;
-  completedAt: Date | null;
+  targetDate: Date;
+  completedAt: Date;
   tasks: TaskData[];
   color: string;
   isRecycled: boolean;
@@ -54,17 +53,18 @@ export type UserData = {
   id: string;
   _id: string;
   username: string;
-  fullName: string;
   email: string;
+  fullName: string;
+  role: "admin" | "user" | "moderator";
   createdAt: Date;
   lastActive: Date;
+  status: "online" | "offline";
   goals: GoalData[];
   goalsCompleted: number;
   tasksCompleted: number;
-  level: number;
-  points: number;
-  role: "user" | "admin" | "tester";
-  __v?: number;
+  verified: boolean;
+  timeToAllowSendEmail: Date;
+  __v: number
 };
 
 export type TNewGoalValue = {
@@ -132,13 +132,33 @@ export type CodeAuthError =
   | "ACCESS_TOKEN_INVALID"
   | "TOKEN_BLACKLISTED"
   | "INVALID_ROLE"
-  | "NOT_VERIFIED"
   | "INVALID_VERIFY_EMAIL_TOKEN"
-  | "IS_VERIFIED";
-export type CodeFieldError = "MISSING_FIELDS" | "INVALID_PASSWORD_FIELD" | "INVALID_EMAIL_FIELD" | "INVALID_USERNAME_FIELD" | "INVALID_OTP_FIELD";
-export type CodeDatabaseError = "USER_NOT_FOUND" | "GOAL_NOT_FOUND" | "TASK_NOT_FOUND" | "OTP_NOT_FOUND" | "VALIDATION_ERROR" | "VERSION_CONFLICT";
+  | "NOT_VERIFIED"
+  | "IS_VERIFIED"
+  | "IS_BINDED"
+  | "NOT_BINDED";
+export type CodeFieldError =
+  | "MISSING_FIELDS"
+  | "INVALID_PASSWORD_FIELD"
+  | "INVALID_EMAIL_FIELD"
+  | "INVALID_USERNAME_FIELD"
+  | "INVALID_OTP_FIELD"
+  | "INVALID_NEW_EMAIL_FIELD"
+  | "INVALID_NEW_PASSWORD_FIELD"
+  | "INVALID_OLD_PASSWORD_FIELD";
+export type CodeDatabaseError =
+  | "USER_NOT_FOUND"
+  | "GOAL_NOT_FOUND"
+  | "TASK_NOT_FOUND"
+  | "OTP_NOT_FOUND"
+  | "VALIDATION_ERROR"
+  | "VERSION_CONFLICT"
+  | "IS_FRIEND"
+  | "IS_PENDING"
+  | "FRIEND_REQUEST_NOT_FOUND";
+export type CodeClientError = "TOO_MUCH_REQUEST" | "SELF_REQUEST";
 
-export type CodeError = CodeAuthError | CodeFieldError | CodeDatabaseError | "SERVER_ERROR";
+export type CodeError = CodeAuthError | CodeFieldError | CodeDatabaseError | CodeClientError | "SERVER_ERROR";
 
 export type ErrorResponse = {
   title: string;

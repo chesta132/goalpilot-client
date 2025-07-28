@@ -18,11 +18,11 @@ type TaskProps = {
 };
 
 const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProps) => {
-  const createdAt = new Date(task.createdAt);
+  const createdAt = task.createdAt;
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
   const navigate = useNavigate();
-  const { setData: setGoalData } = useGoalData();
+  const { setData: setGoalData, getData: getGoalData } = useGoalData();
 
   const date = targetDate
     ? new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())
@@ -61,6 +61,7 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
         return { ...prev, tasks: newTask };
       });
       await callApi("/task", { method: "PUT", body: { goalId, taskId: task._id, isCompleted: !task.isCompleted } });
+      await getGoalData(goalId, false);
     } catch (err) {
       handleError(err, setError!);
     }
@@ -101,10 +102,8 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
             •<p>{capitalEachWords(task.difficulty)}</p>•
             <p>
               {task.isCompleted
-                ? task.completedAt
-                  ? new Date(task.completedAt).toDateString()
-                  : new Date().toDateString()
-                : new Date(date).toDateString()}
+                ? task.completedAt && new Date(task.completedAt).toFormattedString({ includeThisYear: false })
+                : new Date(date).toFormattedString({ includeThisYear: false })}
             </p>
             {!task.isCompleted && "•"}
             {!task.isCompleted && (

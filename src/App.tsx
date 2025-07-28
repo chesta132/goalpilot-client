@@ -15,6 +15,10 @@ import { SettingsPage } from "./pages/Settings/SettingsPage.tsx";
 import SidebarTaskLayout from "./Layout/SidebarTaskLayout.tsx";
 import { InfoTaskPage } from "./pages/Task Pages/InfoTaskPage.tsx";
 import { InfoGoalPage } from "./pages/Goal Pages/InfoGoalPage.tsx";
+import { Profile } from "./pages/Profile/Profile.tsx";
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const API_URL = import.meta.env.VITE_API_URL_DEV_LOCAL;
 
 const App = () => {
   return (
@@ -33,6 +37,7 @@ const App = () => {
                       <Route index element={<Dashboard />} />
                       <Route path="/goal/create" element={<CreateGoalPage />} />
                       <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/profile" element={<Profile />} />
                     </Route>
 
                     <Route path="/" element={<SidebarGoalLayout />}>

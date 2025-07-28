@@ -29,7 +29,7 @@ export const SidebarUser = () => {
   return (
     <div
       className={clsx(
-        "bg-theme-dark rounded-2xl px-4 py-8 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative mx-3 md:mx-6 lg:mx-0",
+        "bg-theme-dark rounded-2xl px-6 py-7 border-theme-darker shadow-md gap-3 flex flex-col lg:left-0 lg:pt-24 lg:top-0 lg:rounded-t-none lg:rounded-b-none lg:h-[100dvh] lg:w-[23%] lg:fixed transition-[padding] duration-600 ease-in-out relative mx-3 md:mx-6 lg:mx-0",
         timelineStatus && "lg:!pt-8"
       )}
     >
@@ -58,7 +58,7 @@ export const SidebarUser = () => {
       {settings.showGoalsShortcut && width > 1024 && (
         <div className="flex flex-col gap-1.5 overflow-auto h-80 px-1">
           {data?.goals.map((goal) => (
-            <GoalCardCompact key={goal.id} data={goal} className="cursor-pointer" />
+            <GoalCardCompact key={goal.id} data={goal} className="cursor-pointer!" />
           ))}
         </div>
       )}

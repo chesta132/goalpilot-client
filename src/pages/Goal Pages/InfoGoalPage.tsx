@@ -20,7 +20,7 @@ export const InfoGoalPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setData(decrypt(sessionStorage.getItem("goal-data"), { parse: true }));
+    if (sessionStorage.getItem("goal-data")) setData(decrypt(sessionStorage.getItem("goal-data"), { parse: true }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -45,7 +45,7 @@ export const InfoGoalPage = () => {
     }
   };
 
-  const intervalMs = new Date(data.targetDate!).getTime() - new Date().getTime();
+  const intervalMs = new Date(data.targetDate).getTime() - new Date().getTime();
   const timeLeft = Math.ceil(intervalMs / (1000 * 60 * 60 * 24));
   const timeLeftToDisplay = getTimeLeftToDisplay(timeLeft);
 
@@ -55,12 +55,16 @@ export const InfoGoalPage = () => {
     { title: "completed date", date: data?.completedAt },
   ];
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
       {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="goal" setClose={() => setDeletePopup(false)} />}
       <div className="rounded-2xl bg-theme-dark overflow-hidden">
-        <div className="p-6 bg-goal-accent/10 flex flex-col gap-4">
+        <div className="px-6 py-7 bg-goal-accent/10 flex flex-col gap-4">
           <div className="flex justify-between">
             <div className="w-full text-[11px] gap-4 flex flex-col lg:justify-between lg:flex-row">
               <div className="flex flex-col gap-2">
@@ -101,7 +105,7 @@ export const InfoGoalPage = () => {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center mb-1.5">
               <h2 className="font-heading font-medium">Progress</h2>
-              <h2 className="font-heading text-goal-accent font-medium">{data.progress}%</h2>
+              <h2 className="font-heading text-goal-accent font-medium">{data.progress.toFixed(2)}%</h2>
             </div>
             <div className="rounded-full bg-theme-dark h-3">
               <div className="rounded-full h-full bg-goal-accent" style={{ width: `${data.progress}%` }} />
@@ -133,7 +137,7 @@ export const InfoGoalPage = () => {
                 info.title === "completed date" && !data.completedAt ? null : (
                   <div className="flex justify-between" key={info.title}>
                     <h2 className="text-[13px] text-theme-reverse-darker">{capitalWord(info.title)}</h2>
-                    <h2 className="font-semibold text-[13px]">{new Date(info.date!).toFormattedString()}</h2>
+                    <h2 className="font-semibold text-[13px]">{info.date.toFormattedString()}</h2>
                   </div>
                 )
               )}
