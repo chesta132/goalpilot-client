@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 
 export const CreateTaskPage = () => {
   const [valueCreate, setValueCreate] = useState<TNewTaskValue>(defaultNewTaskData);
-  const [error, setError] = useState<TNewTaskValue & TError>({ ...defaultNewTaskData, error: null });
+  const [error, setError] = useState<TNewTaskValue & TError>({ ...defaultNewTaskData, error: null, difficulty: "" });
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();

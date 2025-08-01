@@ -64,8 +64,13 @@ export type UserData = {
   tasksCompleted: number;
   verified: boolean;
   timeToAllowSendEmail: Date;
-  __v: number
+  __v: number;
 };
+
+export type SearchProfile = Omit<
+  UserData,
+  "email" | "role" | "createdAt" | "goals" | "goalsCompleted" | "tasksCompleted" | "timeToAllowSendEmail" | "verified"
+>;
 
 export type TNewGoalValue = {
   title: string;
@@ -145,7 +150,8 @@ export type CodeFieldError =
   | "INVALID_OTP_FIELD"
   | "INVALID_NEW_EMAIL_FIELD"
   | "INVALID_NEW_PASSWORD_FIELD"
-  | "INVALID_OLD_PASSWORD_FIELD";
+  | "INVALID_OLD_PASSWORD_FIELD"
+  | "INVALID_SEARCH_TYPE";
 export type CodeDatabaseError =
   | "USER_NOT_FOUND"
   | "GOAL_NOT_FOUND"
@@ -174,3 +180,14 @@ export type OneFieldOnly<T extends Record<string, unknown>> = {
     [P in Exclude<keyof T, K>]?: never;
   };
 }[keyof T];
+
+export type Combination<T extends string, U extends string> = `${T}_${U}`;
+
+export type SearchType =
+  | "ALL"
+  | "PROFILES"
+  | "GOALS"
+  | "TASKS"
+  | Combination<"PROFILES", "GOALS">
+  | Combination<"PROFILES", "TASKS">
+  | Combination<"GOALS", "TASKS">;

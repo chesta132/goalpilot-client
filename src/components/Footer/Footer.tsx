@@ -6,7 +6,7 @@ const Footer = () => {
   const location = useLocation();
 
   const path = location.pathname;
-  const halfFooterPaths = ["/", "/settings"];
+  const halfFooterPaths = ["/", "/settings", "/search"];
   const halfFooterStartWith = ["/goal", "/task", "/profile"];
   const halfFooter = halfFooterPaths.includes(path) || halfFooterStartWith.some((startWith) => path.startsWith(startWith));
 

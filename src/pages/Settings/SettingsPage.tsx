@@ -84,8 +84,8 @@ export const SettingsPage = () => {
               <span className="text-[12px] text-gray">Toggle between light and dark theme</span>
             </div>
             <Switch
-              value={settings.themeMode === "light"}
-              style={{ backgroundColor: settings.themeMode === "light" ? "var(--accent)" : "var(--theme-darker)" }}
+              value={settings.themeMode === "dark"}
+              style={{ backgroundColor: settings.themeMode === "dark" ? "var(--accent)" : "var(--theme-darker)" }}
               onChange={handleChangeTheme}
             />
           </div>

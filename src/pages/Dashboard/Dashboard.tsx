@@ -63,7 +63,7 @@ const Dashboard = () => {
                 </Link>
               ))
             ) : (
-              <Empty className="flex flex-col justify-center">
+              <Empty className="flex flex-col justify-center" description>
                 <p className="text-gray">No Goal Found</p>
                 <div className="relative h-12">
                   <ButtonV

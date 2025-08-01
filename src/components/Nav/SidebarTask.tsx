@@ -18,7 +18,7 @@ export const SidebarTask = ({ withEdit = true }) => {
   const { data: goalData, getData: getGoalData } = useGoalData();
 
   const navigate = useNavigate();
-  const {createdAt, completedAt} = data
+  const { createdAt, completedAt } = data;
   const targetDate = new Date(data.targetDate);
   const width = useViewportWidth();
 

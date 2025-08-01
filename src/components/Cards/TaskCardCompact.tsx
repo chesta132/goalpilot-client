@@ -15,9 +15,10 @@ type TaskProps = {
   index: number;
   preview?: { setTask: React.Dispatch<React.SetStateAction<TaskData>> };
   className?: string;
+  buttons?: { info?: boolean; edit?: boolean; checkbox?: boolean };
 };
 
-const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProps) => {
+const TaskCardCompact = ({ task, setError, index, preview, className, buttons = { edit: true, info: true, checkbox: true } }: TaskProps) => {
   const createdAt = task.createdAt;
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
@@ -86,7 +87,7 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
 
   return (
     <div className={clsx("border relative rounded-lg py-5 px-4 shadow-md bg-theme border-theme-darker gap-1 flex w-full", className)}>
-      <Checkbox label="" id={task.id} size={15} checked={task.isCompleted} onChange={markCompleteToggle} />
+      {buttons.checkbox && <Checkbox label="" id={task.id} size={15} checked={task.isCompleted} onChange={markCompleteToggle} />}
       <div className="flex justify-between w-full">
         <div className="relative flex flex-col gap-2 w-full">
           <h1 className="font-heading font-semibold text-[14px] md:text-[15px] max-w-[90%]">{capitalWord(task.task)}</h1>
@@ -114,8 +115,8 @@ const TaskCardCompact = ({ task, setError, index, preview, className }: TaskProp
           </div>
         </div>
         <div className="absolute right-0 mr-5 flex gap-2">
-          <Info className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
-          <Edit className="cursor-pointer size-4.5" onClick={handleToEditTask} />
+          {buttons.info && <Info className="cursor-pointer size-4.5" onClick={handleToInfoTask} />}
+          {buttons.edit && <Edit className="cursor-pointer size-4.5" onClick={handleToEditTask} />}
         </div>
       </div>
     </div>

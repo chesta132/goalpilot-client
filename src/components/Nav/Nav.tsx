@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Squash as Hamburger } from "hamburger-react";
-import { Link } from "react-router";
-import { Settings } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { Search, Settings } from "lucide-react";
 import { useViewportWidth } from "../../hooks/useViewport";
 import useScrollNavigation from "../../hooks/useScrollNavigation";
 import type { UserData } from "../../types/types";
@@ -24,6 +24,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
   const width = useViewportWidth();
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
+  const navigate = useNavigate();
 
   const splittedFullName = data && data.fullName.split(" ");
   const profileName = splittedFullName && splittedFullName[0][0] + splittedFullName[1][0];
@@ -75,13 +76,16 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
             <span className="text-primary">Goal</span>Pilot
           </Link>
         </div>
-        <div className="flex items-center">
-          <Link to="/profile" className="hover:text-accent ml-4">
+        <div className="flex items-center gap-4">
+          <button className="cursor-pointer bg-none border-none" onClick={() => navigate("/search")}>
+            <Search />
+          </button>
+          <Link to="/profile">
             <div className="bg-[#66b2ff] text-white rounded-full size-8 text-[14px] flex items-center justify-center">
               {profileName && profileName.toUpperCase()}
             </div>
           </Link>
-          <Link to="/settings" className="ml-4">
+          <Link to="/settings">
             <Settings />
           </Link>
         </div>

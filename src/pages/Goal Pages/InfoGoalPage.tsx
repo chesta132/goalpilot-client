@@ -10,12 +10,13 @@ import { capitalWord } from "@/utils/stringManip";
 import clsx from "clsx";
 import { ArrowLeftIcon, Clock, Edit2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 export const InfoGoalPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
 
-  const { data, setData, deleteGoal, error, setError } = useGoalData();
+  const { data, setData, deleteGoal, error, setError, getData } = useGoalData();
+  const { goalId } = useParams();
 
   const navigate = useNavigate();
 
@@ -30,9 +31,8 @@ export const InfoGoalPage = () => {
 
   const previewData = decrypt(sessionStorage.getItem("preview-goal-data"), { parse: true });
   useEffect(() => {
-    if (previewData) {
-      setData(previewData);
-    }
+    if (previewData) setData(previewData);
+    else getData(goalId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

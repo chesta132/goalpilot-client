@@ -1,84 +1,32 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useDebounce } from "./useDebounce";
 
 function useViewportWidth(delay = 500) {
   const [width, setWidth] = useState(window.innerWidth);
-  const timerRef = useRef<number | null>(null);
+  const debounce = useDebounce(() => setWidth(window.innerWidth), delay);
 
   useEffect(() => {
-    const handleResize = () => {
-      // Clear previous timeout
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+    window.addEventListener("resize", debounce);
 
-      // Set new timeout
-      timerRef.current = window.setTimeout(() => {
-        setWidth(window.innerWidth);
-      }, delay);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup function
     return () => {
-      window.removeEventListener("resize", handleResize);
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      window.removeEventListener("resize", debounce);
     };
-  }, [delay]);
+  }, [debounce]);
 
   return width;
 }
 
-const useViewportHeight = () => {
-  const [documentHeight, setDocumentHeight] = useState(0);
+const useViewportHeight = (delay = 500) => {
+  const [documentHeight, setDocumentHeight] = useState(window.innerHeight);
+  const debounce = useDebounce(() => setDocumentHeight(window.innerHeight), delay);
 
   useEffect(() => {
-    const updateHeight = () => {
-      // Menggunakan scrollHeight untuk mendapatkan total tinggi dokumen
-      const height = Math.max(
-        document.body.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight
-      );
-      setDocumentHeight(height);
-    };
+    window.addEventListener("resize", debounce);
 
-    // Update height saat pertama kali mount
-    updateHeight();
-
-    // Observer untuk mendeteksi perubahan ukuran konten
-    const resizeObserver = new ResizeObserver(() => {
-      updateHeight();
-    });
-
-    // Observer untuk mendeteksi perubahan DOM
-    const mutationObserver = new MutationObserver(() => {
-      updateHeight();
-    });
-
-    // Observe perubahan pada body dan html
-    resizeObserver.observe(document.body);
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-
-    // Event listener untuk resize window (optional, untuk safety)
-    window.addEventListener("resize", updateHeight);
-
-    // Cleanup
     return () => {
-      resizeObserver.disconnect();
-      mutationObserver.disconnect();
-      window.removeEventListener("resize", updateHeight);
+      window.removeEventListener("resize", debounce);
     };
-  }, []);
+  }, [debounce]);
 
   return documentHeight;
 };

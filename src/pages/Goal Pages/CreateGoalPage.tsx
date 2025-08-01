@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 
 export const CreateGoalPage = () => {
   const [valueCreate, setValueCreate] = useState<TNewGoalValue>(defaultNewGoalData);
-  const [error, setError] = useState<TNewGoalValue & TError>({ ...defaultNewGoalData, error: null, color: "" });
+  const [error, setError] = useState<TNewGoalValue & TError>({ ...defaultNewGoalData, error: null, color: "", status: "" });
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();

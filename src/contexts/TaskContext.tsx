@@ -4,6 +4,7 @@ import { createContext, useState, type ReactNode } from "react";
 import { useGoalData, useUserData, useNotification } from "./UseContexts";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
+import { encrypt } from "@/utils/cryptoUtils";
 
 type TTaskContent = {
   data: TaskData;
@@ -42,6 +43,7 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await callApi(`/task?taskId=${taskId}`, { method: "GET" });
       setData(response.data);
+      sessionStorage.setItem("task-data", encrypt(response.data));
     } catch (err) {
       handleError(err, setError);
     } finally {

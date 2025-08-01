@@ -10,18 +10,21 @@ import { capitalWord } from "@/utils/stringManip";
 import clsx from "clsx";
 import { ArrowLeftIcon, Clock, Edit2, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 export const InfoTaskPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
 
-  const { data, setData, deleteTask, error, setError } = useTaskData();
+  const { data, setData, deleteTask, error, setError, getData } = useTaskData();
   const { data: goalData } = useGoalData();
+  const { taskId } = useParams();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (sessionStorage.getItem("task-data")) setData(decrypt(sessionStorage.getItem("task-data"), { parse: true }));
+    const decrypted = decrypt(sessionStorage.getItem("task-data"), { parse: true });
+    if (decrypted && decrypted.id === taskId) setData(decrypted);
+    else getData(taskId!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
