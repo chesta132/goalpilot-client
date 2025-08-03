@@ -1,4 +1,3 @@
-import ErrorPopup from "@/components/Popups/ErrorPopup";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -20,7 +19,7 @@ type AiInput = {
 };
 
 const GoalPage = () => {
-  const { data, error, setError, getData, loading } = useGoalData();
+  const { data, setError, getData, loading } = useGoalData();
   const { settings } = useTheme();
 
   const [addTaskAIInput, setAddTaskAIInput] = useState(false);
@@ -49,9 +48,6 @@ const GoalPage = () => {
 
   return (
     <div>
-      {/* Header/absolute */}
-      {error.error && <ErrorPopup error={error} />}
-
       {/* Goal Page */}
       <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
         <div className="flex flex-col gap-6 lg:gap-11 bg-theme-dark px-3 py-10 rounded-xl shadow-lg">

@@ -1,7 +1,6 @@
 import ButtonV from "@/components/Inputs/ButtonV";
 import { ReadMore } from "@/components/Inputs/ReadMore";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
-import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData } from "@/contexts/UseContexts";
 import { getBgByStatus, getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { decrypt } from "@/utils/cryptoUtils";
@@ -15,7 +14,7 @@ import { useNavigate, useParams } from "react-router";
 export const InfoGoalPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
 
-  const { data, setData, deleteGoal, error, setError, getData } = useGoalData();
+  const { data, setData, deleteGoal, setError, getData } = useGoalData();
   const { goalId } = useParams();
 
   const navigate = useNavigate();
@@ -61,7 +60,6 @@ export const InfoGoalPage = () => {
 
   return (
     <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
-      {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="goal" setClose={() => setDeletePopup(false)} />}
       <div className="rounded-2xl bg-theme-dark overflow-hidden">
         <div className="px-6 py-7 bg-goal-accent/10 flex flex-col gap-4">

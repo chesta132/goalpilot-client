@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, RefreshCw, Home, AlertTriangle, User2 } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import type { TError } from "@/types/types";
 import { errorAuthBool } from "@/utils/errorHandler";
 
@@ -28,20 +28,31 @@ function ErrorPopup<T>({
   onBackToDashboard,
   onBackToLoginPage,
   showRefresh = true,
-  showBackToDashboard,
-  showBackToLoginPage,
+  showBackToDashboard: showBackToDashboardProps,
+  showBackToLoginPage: showBackToLoginPageProps,
 }: ErrorPopupProps<T>) {
   const [isOpen, setIsOpen] = useState(open);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [showBackToDashboard, setShowBackToDashboard] = useState(showBackToDashboardProps);
+  const [showBackToLoginPage, setShowBackToLoginPage] = useState(showBackToLoginPageProps);
   const navigate = useNavigate();
   const errorAuth = errorAuthBool(error);
+  const path = useLocation().pathname;
 
   if (!title) title = error.error?.title;
   if (!message) message = error.error?.message;
-  if (showBackToDashboard === undefined) showBackToDashboard = !errorAuth;
-  if (showBackToLoginPage === undefined) showBackToLoginPage = errorAuth;
+  if (showBackToDashboardProps === undefined) setShowBackToDashboard(!errorAuth);
+  if (showBackToLoginPage === undefined) setShowBackToLoginPage(errorAuth);
 
-  if (import.meta.env.VITE_ENV === "production" && error.error?.code === "MISSING_FIELDS") return;
+  useEffect(() => {
+    const startsWithRules = [{ path: "/signin", showBackToDashboard: false, showBackToLoginPage: false }];
+
+    startsWithRules.map((startsWith) => {
+      if (path.startsWith(startsWith.path)) {
+        if (startsWith.showBackToDashboard) setShowBackToDashboard(startsWith.showBackToDashboard);
+      }
+    });
+  }, [path]);
 
   const handleCloseClick = () => {
     setShowCloseConfirm(true);
@@ -82,6 +93,7 @@ function ErrorPopup<T>({
   };
 
   if (!isOpen) return null;
+  if (import.meta.env.VITE_ENV === "production" && error.error?.code === "MISSING_FIELDS") return;
 
   return (
     <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-[#1b1b1b11] backdrop-blur-xs">

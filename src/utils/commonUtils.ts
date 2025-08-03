@@ -110,3 +110,13 @@ export const omit = <T extends Record<string, any>, Z extends (keyof T)[]>(data:
     }
   return omittedData;
 };
+
+export const searchItemTerms = (type: string) => {
+  const isUserType = type.includes("profiles") || type.includes("all");
+  const isGoalType = type.includes("goals") || type.includes("all");
+  const isTaskType = type.includes("tasks") || type.includes("all");
+
+  return `${isUserType ? (isTaskType || isGoalType ? "users, " : "users") : ""}${isGoalType ? (isTaskType ? "goals, " : "goals") : ""}${
+    isTaskType ? "tasks" : ""
+  }`;
+};

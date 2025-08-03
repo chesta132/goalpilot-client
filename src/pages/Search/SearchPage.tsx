@@ -1,6 +1,5 @@
 import { useSearch } from "@/contexts/UseContexts";
-import { SearchBar, searchItemTerms } from "./SearchBar";
-import ErrorPopup from "@/components/Popups/ErrorPopup";
+import { SearchBar } from "./SearchBar";
 import { useEffect, useRef, useState } from "react";
 import { ChevronUp, Search } from "lucide-react";
 import { Link } from "react-router";
@@ -14,6 +13,7 @@ import { capitalEachWords, capitalWord } from "@/utils/stringManip";
 import clsx from "clsx";
 import { Loading } from "@/components/Static/Loading";
 import ButtonV from "@/components/Inputs/ButtonV";
+import { searchItemTerms } from "@/utils/commonUtils";
 
 const ListComponent = ({
   data,
@@ -57,6 +57,7 @@ const ListComponent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
+  
   if (!type.includes(dataProp) && type !== "all") return;
   return (
     <div className="px-3 py-4 flex flex-col gap-3 border-t-1 border-gray/30">
@@ -67,7 +68,7 @@ const ListComponent = ({
         <button
           onClick={() => setFullView((prev) => ({ ...prev, [dataProp]: !prev[dataProp] }))}
           className={clsx("cursor-pointer transition", fullView[dataProp] && "rotate-180")}
-        >
+          >
           <ChevronUp />
         </button>
       </div>
@@ -76,9 +77,9 @@ const ListComponent = ({
           {data.length > 0 ? (
             data.map((item, index) => (
               <Link
-                to={isUserType ? `/profile/${(item as SearchProfile).username}` : isGoalType ? `/goal/${item.id}` : `/task/${item.id}/info`}
-                key={item.id}
-                onClickCapture={() => window.scrollTo(0, 0)}
+              to={isUserType ? `/profile/${(item as SearchProfile).username}` : isGoalType ? `/goal/${item.id}` : `/task/${item.id}/info`}
+              key={item.id}
+              onClickCapture={() => window.scrollTo(0, 0)}
               >
                 {isUserType ? (
                   <UserCardCompact user={item as SearchProfile} />
@@ -97,14 +98,14 @@ const ListComponent = ({
           {type === "profiles" && dataProp === "profiles" && searchData.isNext && <Loading ref={loaderRef} />}
           {(type === "profiles" || type === "all") && dataProp === "profiles" && searchData.isNext && (
             <ButtonV
-              disabled={isLoad}
-              text="Load more User"
-              className="px-3! py-1! text-[12px] inset-shadow-xs inset-shadow-accent-strong"
-              onClick={async () => {
-                setIsLoad(true);
-                await getSequelProfile();
-                setIsLoad(false);
-              }}
+            disabled={isLoad}
+            text="Load more User"
+            className="px-3! py-1! text-[12px] inset-shadow-xs inset-shadow-accent-strong"
+            onClick={async () => {
+              setIsLoad(true);
+              await getSequelProfile();
+              setIsLoad(false);
+            }}
             />
           )}
         </div>
@@ -120,16 +121,16 @@ type FullView = {
 };
 
 export const SearchPage = () => {
-  const { data, error, params, setParams, getData, setData } = useSearch();
+  const { data, params, setParams, getData, setData } = useSearch();
   const [fullView, setFullView] = useState<FullView>({ profiles: true, goals: true, tasks: true });
-
+  
   const filterConfig = ["all", "profiles", "goals", "tasks"];
-
+  
   const handleChangeType = (filter: string) => {
     const indexOfType = params.type.indexOf(filter);
     let updatedType =
-      indexOfType === -1 ? `${params.type}_${filter}` : params.type.slice(0, indexOfType) + params.type.slice(indexOfType + filter.length);
-
+    indexOfType === -1 ? `${params.type}_${filter}` : params.type.slice(0, indexOfType) + params.type.slice(indexOfType + filter.length);
+    
     if (filter === "all" || params.type.includes("all")) {
       if (filter === "all") {
         updatedType = "all";
@@ -142,7 +143,7 @@ export const SearchPage = () => {
     if (updatedType[updatedType.length - 1] === "_") updatedType = updatedType.slice(0, -1);
     if (!updatedType) updatedType = "all";
     if (updatedType.includes("profiles") && updatedType.includes("goals") && updatedType.includes("tasks")) updatedType = "all";
-
+    
     setParams((params) => {
       const dataKeys = Object.keys(data).filter((data) => data !== "isNext" && data !== "nextOffset");
       const dataIncludesNewType = updatedType.split("_").every((type) => dataKeys.includes(type));
@@ -151,7 +152,7 @@ export const SearchPage = () => {
         const oldData = data;
         delete oldData.isNext;
         delete oldData.nextOffset;
-
+        
         getData({ type: updatedType }).then(() => {
           setData((prev) => ({ ...prev, ...oldData }));
         });
@@ -159,10 +160,9 @@ export const SearchPage = () => {
       return { ...params, type: updatedType };
     });
   };
-
+  
   return (
     <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
-      {error.error && <ErrorPopup error={error} />}
       <div className="flex flex-col bg-theme-dark rounded-xl shadow-lg px-3 py-10 gap-6">
         <div className="flex flex-col gap-5">
           <div className="flex justify-center items-center">

@@ -2,7 +2,6 @@ import ButtonV from "@/components/Inputs/ButtonV";
 import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
-import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification, useTaskData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
@@ -124,7 +123,6 @@ export const EditTaskPage = () => {
 
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center mb-25">
-      {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="task" setClose={() => setDeletePopup(false)} />}
       <form onSubmit={handleSave} className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-250 shadow-lg mx-auto">
         <div className="flex justify-between items-center">

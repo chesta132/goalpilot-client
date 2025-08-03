@@ -1,7 +1,6 @@
 import ButtonV from "@/components/Inputs/ButtonV";
 import Input from "@/components/Inputs/Input";
 import TextArea from "@/components/Inputs/TextArea";
-import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useNotification, useTheme } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
@@ -79,7 +78,6 @@ export const CreateTaskPage = () => {
 
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
-      {error.error && <ErrorPopup error={error} />}
       <form onSubmit={handleCreate} className="px-6 py-7 bg-theme-dark rounded-xl gap-4 flex flex-col w-full max-w-200 shadow-lg mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="font-heading text-[18px] font-semibold">Create Task</h1>

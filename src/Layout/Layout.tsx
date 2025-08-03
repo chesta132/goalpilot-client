@@ -1,19 +1,24 @@
 import { Outlet, useLocation, useParams } from "react-router";
 import Nav from "../components/Nav/Nav";
-import { useGoalData, useTaskData, useUserData } from "../contexts/UseContexts";
+import { useFriend, useGoalData, useSearch, useTaskData, useUserData } from "../contexts/UseContexts";
 import useScrollNavigation from "../hooks/useScrollNavigation";
 import { useEffect } from "react";
 import Footer from "@/components/Static/Footer";
 import { defaultTaskData } from "@/utils/defaultData";
 import type { GoalData } from "@/types/types";
+import ErrorPopup from "@/components/Popups/ErrorPopup";
 
 const Layout = () => {
-  const { data: userData, setData: setUserData } = useUserData();
-  const { clearError: clearGoalError, getData: getGoalData, data: goalData } = useGoalData();
-  const { clearError: clearTaskError, setData: setTaskData } = useTaskData();
+  const { data: userData, setData: setUserData, error: userError } = useUserData();
+  const { clearError: clearGoalError, getData: getGoalData, data: goalData, error: goalError } = useGoalData();
+  const { clearError: clearTaskError, setData: setTaskData, error: taskError } = useTaskData();
+  const { error: searchError } = useSearch();
+  const { error: friendError } = useFriend();
   const { navRef, timelineStatus } = useScrollNavigation(20);
   const location = useLocation();
   const { goalId } = useParams();
+
+  const errors = [userError, goalError, taskError, searchError, friendError];
 
   useEffect(() => {
     // clear error after path changes
@@ -59,6 +64,7 @@ const Layout = () => {
 
   return (
     <div>
+      {errors.map((error) => error.error && <ErrorPopup error={error} />)}
       <Nav param={goalId} scrollNav={{ navRef, timelineStatus }} />
       <main>
         <Outlet />

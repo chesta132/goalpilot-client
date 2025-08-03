@@ -1,7 +1,6 @@
 import ButtonV from "@/components/Inputs/ButtonV";
 import { ReadMore } from "@/components/Inputs/ReadMore";
 import { DeletePopup } from "@/components/Popups/DeletePopup";
-import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { useGoalData, useTaskData } from "@/contexts/UseContexts";
 import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { decrypt } from "@/utils/cryptoUtils";
@@ -15,7 +14,7 @@ import { useNavigate, useParams } from "react-router";
 export const InfoTaskPage = () => {
   const [deletePopup, setDeletePopup] = useState(false);
 
-  const { data, setData, deleteTask, error, setError, getData } = useTaskData();
+  const { data, setData, deleteTask, setError, getData } = useTaskData();
   const { data: goalData } = useGoalData();
   const { taskId } = useParams();
 
@@ -65,7 +64,6 @@ export const InfoTaskPage = () => {
 
   return (
     <div className="px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10">
-      {error.error && <ErrorPopup error={error} />}
       {deletePopup && <DeletePopup deletes={handleDelete} item="task" setClose={() => setDeletePopup(false)} />}
       <div className="rounded-2xl bg-theme-dark overflow-hidden">
         <div className="p-6 bg-goal-accent/10 flex flex-col gap-4">

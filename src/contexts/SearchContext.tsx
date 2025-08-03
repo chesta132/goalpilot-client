@@ -1,6 +1,6 @@
 import type { GoalData, SearchProfile, TaskData, TError } from "@/types/types";
 import callApi from "@/utils/callApi";
-import { handleError } from "@/utils/errorHandler";
+import { handleFormError } from "@/utils/errorHandler";
 import { createContext, useState, type ReactNode } from "react";
 
 export type SearchData = {
@@ -75,7 +75,7 @@ const SearchProvider = ({ children }: { children: ReactNode }) => {
       if (!response) return;
       setData(response.data);
     } catch (err) {
-      handleError(err, setError);
+      handleFormError(err, setError);
     }
   };
 
@@ -87,7 +87,7 @@ const SearchProvider = ({ children }: { children: ReactNode }) => {
       const { isNext, nextOffset } = data;
       setData((prev) => ({ ...prev, isNext, nextOffset, profiles: [...(prev.profiles || []), ...data.profiles] }));
     } catch (err) {
-      handleError(err, setError);
+      handleFormError(err, setError);
     }
   };
   const clearError = () => setError({ error: null, search: "" });

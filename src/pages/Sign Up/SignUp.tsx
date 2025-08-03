@@ -5,7 +5,6 @@ import GoogleAuth from "@/components/Inputs/GoogleAuth";
 import { useViewportWidth, useViewportHeight } from "@/hooks/useViewport.ts";
 import { CheckCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router";
-import ErrorPopUp from "@/components/Popups/ErrorPopup";
 import callApi from "@/utils/callApi.ts";
 import { handleFormError } from "@/utils/errorHandler.ts";
 import ButtonV from "@/components/Inputs/ButtonV";
@@ -65,7 +64,6 @@ const SignUp = () => {
   return (
     <div className="flex flex-row-reverse justify-center lg:justify-between items-center h-full m-0 p-0 bg-theme text-theme-reverse">
       <div className="flex flex-col justify-center items-center gap-5 py-10" style={{ width: width > 1024 ? "50%" : "100%" }}>
-        {error.error && <ErrorPopUp error={error} showBackToDashboard={false} showBackToLoginPage={false} />}
         <div className="flex flex-col text-center gap-2">
           <h1 className="font-bold text-2xl leading-8 font-heading">
             <span className="text-primary">Goal</span>Pilot

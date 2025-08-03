@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import { codeAuthError } from "./errorHandler";
 import { API_URL } from "@/App";
 import { isIsoDateValid } from "./commonUtils";
@@ -34,7 +34,7 @@ export const sanitizeDatesInObject = (obj: any) => {
   return obj;
 };
 
-export default async function callApi(endpoint: string = "", options: Options = { method: "GET", body: null, headers: {}, directToken: false }) {
+export default async function callApi<T = any>(endpoint: string = "", options: Options = { method: "GET", body: null, headers: {}, directToken: false }) {
   const apiURL = API_URL;
   const createdError = new Error();
   const callerLine = createdError.stack?.split("\n")[2];
@@ -54,7 +54,7 @@ export default async function callApi(endpoint: string = "", options: Options = 
       console.log(`Endpoint:\n${response.config.url?.slice(apiURL.length)}\n\nCalled by: ${callerLine?.trim()}\n\n`, response);
     }
     sanitizeDatesInObject(response.data);
-    return response;
+    return response as AxiosResponse<T, any>;
   } catch (error) {
     console.error("Error in API call:", error);
     if (options.directToken) {

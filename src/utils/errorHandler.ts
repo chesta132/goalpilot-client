@@ -26,17 +26,25 @@ export function handleFormError<T extends ErrorWithValues>(err: unknown, setErro
   if (axios.isAxiosError(err) && err.response && err.response.data) {
     const responseData = err.response.data as ApiErrorResponseData;
 
-    // email validation
-    if (responseData.code === "INVALID_EMAIL_FIELD") {
+    // email error
+    if (responseData.code === "INVALID_EMAIL_FIELD" || responseData.code === "INVALID_NEW_EMAIL_FIELD") {
       setError((prev) => ({ ...prev, email: responseData.message } as T));
     }
-    // password validation
-    else if (responseData.code === "INVALID_PASSWORD_FIELD") {
+    // password error
+    else if (responseData.code === "INVALID_PASSWORD_FIELD" || responseData.code === "INVALID_OLD_PASSWORD_FIELD") {
       setError((prev) => ({ ...prev, password: responseData.message } as T));
     }
-    // username validation
+    // username error
     else if (responseData.code === "INVALID_USERNAME_FIELD") {
       setError((prev) => ({ ...prev, username: responseData.message } as T));
+    }
+    // token error
+    else if (responseData.code === "INVALID_OTP_FIELD") {
+      setError((prev) => ({ ...prev, token: responseData.message }));
+    }
+    // search error
+    else if (responseData.code === "INVALID_SEARCH_TYPE") {
+      setError((prev) => ({ ...prev, search: responseData.message }));
     } else {
       handleError(err, setError);
     }
@@ -55,6 +63,7 @@ export const codeAuthError: CodeAuthError[] = [
   "NOT_VERIFIED",
   "INVALID_VERIFY_EMAIL_TOKEN",
   "IS_VERIFIED",
+  "NOT_BINDED",
 ];
 
 export function errorAuthBool(error: TError): boolean {

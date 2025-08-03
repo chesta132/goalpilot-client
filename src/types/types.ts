@@ -180,3 +180,21 @@ export type OneFieldOnly<T extends Record<string, unknown>> = {
     [P in Exclude<keyof T, K>]?: never;
   };
 }[keyof T];
+
+export type FriendUser = Omit<
+  UserData,
+  "email" | "role" | "createdAt" | "goals" | "goalsCompleted" | "tasksCompleted" | "verified" | "timeToAllowSendEmail" | "__v"
+>;
+
+export type FriendData = {
+  data: {
+    id: string;
+    _id: string;
+    status: "PENDING" | "FRIEND";
+    createdAt: Date;
+    updatedAt: Date;
+    user: FriendUser;
+    friend: FriendUser;
+  }[];
+  notification?: string;
+};

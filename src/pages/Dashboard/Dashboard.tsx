@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router";
-import ErrorPopup from "@/components/Popups/ErrorPopup";
 import { Plus } from "lucide-react";
 import ButtonV from "@/components/Inputs/ButtonV";
 import clsx from "clsx";
@@ -11,7 +10,7 @@ import { encrypt } from "@/utils/cryptoUtils";
 import { useEffect } from "react";
 
 const Dashboard = () => {
-  const { data, loading, error } = useUserData();
+  const { data, loading } = useUserData();
 
   const width = useViewportWidth();
   const navigate = useNavigate();
@@ -30,9 +29,6 @@ const Dashboard = () => {
 
   return (
     <div>
-      {/* Header/absolute */}
-      {error.error && <ErrorPopup error={error} />}
-
       {/* Dashboard */}
       <div className={clsx("px-3 md:px-6 text-theme-reverse bg-theme w-full h-full gap-10 flex flex-col pb-10")}>
         <div className="bg-theme-dark rounded-xl px-3 lg:px-4 py-8 text-theme-reverse shadow-md flex flex-col gap-10">
