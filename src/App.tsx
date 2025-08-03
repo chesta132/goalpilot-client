@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import SignIn from "./pages/Sign In/SignIn.tsx";
 import SignUp from "./pages/Sign Up/SignUp.tsx";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
-import { UserProvider, ThemeProvider, NotificationProvider, GoalProvider, TaskProvider, SearchProvider } from "./contexts/UseContexts.tsx";
+import { UserProvider, ThemeProvider, NotificationProvider, GoalProvider, TaskProvider, SearchProvider, FriendProvider } from "./contexts/UseContexts.tsx";
 import GoalPage from "./pages/Goal Pages/GoalPage.tsx";
 import Layout from "./Layout/Layout.tsx";
 import { EditGoalPage } from "./pages/Goal Pages/EditGoalPage.tsx";
@@ -29,34 +29,36 @@ const App = () => {
           <ThemeProvider>
             <TaskProvider>
               <SearchProvider>
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/signin" index element={<SignIn />} />
-                    <Route path="/signup" element={<SignUp />} />
+                <FriendProvider>
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/signin" index element={<SignIn />} />
+                      <Route path="/signup" element={<SignUp />} />
 
-                    <Route path="/" element={<Layout />}>
-                      <Route path="/" element={<SidebarUserLayout />}>
-                        <Route index element={<Dashboard />} />
-                        <Route path="/goal/create" element={<CreateGoalPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/search" element={<SearchPage />} />
-                      </Route>
+                      <Route path="/" element={<Layout />}>
+                        <Route path="/" element={<SidebarUserLayout />}>
+                          <Route index element={<Dashboard />} />
+                          <Route path="/goal/create" element={<CreateGoalPage />} />
+                          <Route path="/settings" element={<SettingsPage />} />
+                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/search" element={<SearchPage />} />
+                        </Route>
 
-                      <Route path="/" element={<SidebarGoalLayout />}>
-                        <Route path="/goal/:goalId/info" element={<InfoGoalPage />} />
-                        <Route path="/goal/:goalId" element={<GoalPage />} />
-                        <Route path="/goal/:goalId/edit" element={<EditGoalPage />} />
-                        <Route path="/task/create" element={<CreateTaskPage />} />
-                      </Route>
+                        <Route path="/" element={<SidebarGoalLayout />}>
+                          <Route path="/goal/:goalId/info" element={<InfoGoalPage />} />
+                          <Route path="/goal/:goalId" element={<GoalPage />} />
+                          <Route path="/goal/:goalId/edit" element={<EditGoalPage />} />
+                          <Route path="/task/create" element={<CreateTaskPage />} />
+                        </Route>
 
-                      <Route path="/" element={<SidebarTaskLayout />}>
-                        <Route path="/task/:taskId/edit" element={<EditTaskPage />} />
-                        <Route path="/task/:taskId/info" element={<InfoTaskPage />} />
+                        <Route path="/" element={<SidebarTaskLayout />}>
+                          <Route path="/task/:taskId/edit" element={<EditTaskPage />} />
+                          <Route path="/task/:taskId/info" element={<InfoTaskPage />} />
+                        </Route>
                       </Route>
-                    </Route>
-                  </Routes>
-                </BrowserRouter>
+                    </Routes>
+                  </BrowserRouter>
+                </FriendProvider>
               </SearchProvider>
             </TaskProvider>
           </ThemeProvider>
