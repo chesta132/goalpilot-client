@@ -80,7 +80,7 @@ const GoalPage = () => {
                 tasks.map((task, index) => <TaskCardCompact index={index} task={task} setError={setError} key={task._id} />)
               )
             ) : (
-              <Empty className="flex flex-col justify-center">
+              <Empty className="flex flex-col justify-center" description>
                 <p className="text-gray">No Task Found</p>
                 <div className="relative h-12">
                   <ButtonV

@@ -61,11 +61,9 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
     e.preventDefault();
     if (e.key !== "Tab") return;
     else if (aiInput.value.trim() === "") {
-      const descFirstDot = data.description.indexOf(".");
-      const descSecDot = data.description.indexOf(".", descFirstDot + 1);
       setAiInput((prev) => ({
         ...prev,
-        value: `I want 5 task to achieve ${data.title}. Here's description of the goal, ${data.description.slice(0, descSecDot).trim()}.`,
+        value: `I want 5 task to achieve ${data.title}. Here's description of the goal, ${data.description}.`,
       }));
     }
   };

@@ -3,7 +3,7 @@ import Nav from "../components/Nav/Nav";
 import { useGoalData, useTaskData, useUserData } from "../contexts/UseContexts";
 import useScrollNavigation from "../hooks/useScrollNavigation";
 import { useEffect } from "react";
-import Footer from "@/components/Footer/Footer";
+import Footer from "@/components/Static/Footer";
 import { defaultTaskData } from "@/utils/defaultData";
 import type { GoalData } from "@/types/types";
 
@@ -59,7 +59,7 @@ const Layout = () => {
 
   return (
     <div>
-      <Nav data={userData} param={goalId} scrollNav={{ navRef, timelineStatus }} />
+      <Nav param={goalId} scrollNav={{ navRef, timelineStatus }} />
       <main>
         <Outlet />
       </main>

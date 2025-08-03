@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router";
 import { Search, Settings } from "lucide-react";
 import { useViewportWidth } from "../../hooks/useViewport";
 import useScrollNavigation from "../../hooks/useScrollNavigation";
-import type { UserData } from "../../types/types";
 import clsx from "clsx";
+import { useUserData } from "@/contexts/UseContexts";
 
 type scrollNav = {
   navRef: React.RefObject<null>;
@@ -13,21 +13,17 @@ type scrollNav = {
 };
 
 type NavProps = {
-  data?: UserData | null;
   param?: string;
   showNavbar?: boolean;
   scrollNav?: scrollNav;
 };
 
-const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
+const Nav = ({ param, showNavbar, scrollNav }: NavProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const width = useViewportWidth();
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
   const navigate = useNavigate();
-
-  const splittedFullName = data && data.fullName.split(" ");
-  const profileName = splittedFullName && splittedFullName[0][0] + splittedFullName[1][0];
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -81,9 +77,7 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
             <Search />
           </button>
           <Link to="/profile">
-            <div className="bg-[#66b2ff] text-white rounded-full size-8 text-[14px] flex items-center justify-center">
-              {profileName && profileName.toUpperCase()}
-            </div>
+            <UserProfile />
           </Link>
           <Link to="/settings">
             <Settings />
@@ -91,6 +85,17 @@ const Nav = ({ data, param, showNavbar, scrollNav }: NavProps) => {
         </div>
       </div>
     </nav>
+  );
+};
+
+export const UserProfile = ({ name }: { name?: string }) => {
+  const { data } = useUserData();
+  const splittedFullName = name?.split(" ") || (data && data.fullName.split(" "));
+  const profileName = splittedFullName && splittedFullName[0][0] + (splittedFullName[1] ? splittedFullName[1][0] : "");
+  return (
+    <div className="bg-[#66b2ff] text-white rounded-full size-8 text-[14px] flex items-center justify-center">
+      {profileName ? profileName.toUpperCase() : "UK"}
+    </div>
   );
 };
 

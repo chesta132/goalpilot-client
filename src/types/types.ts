@@ -180,14 +180,3 @@ export type OneFieldOnly<T extends Record<string, unknown>> = {
     [P in Exclude<keyof T, K>]?: never;
   };
 }[keyof T];
-
-export type Combination<T extends string, U extends string> = `${T}_${U}`;
-
-export type SearchType =
-  | "ALL"
-  | "PROFILES"
-  | "GOALS"
-  | "TASKS"
-  | Combination<"PROFILES", "GOALS">
-  | Combination<"PROFILES", "TASKS">
-  | Combination<"GOALS", "TASKS">;

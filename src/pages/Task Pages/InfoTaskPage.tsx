@@ -43,7 +43,7 @@ export const InfoTaskPage = () => {
   const handleDelete = async () => {
     try {
       await deleteTask();
-      navigate("/");
+      navigate(`/goal/${goalData.id}`);
     } catch (err) {
       handleError(err, setError);
     }

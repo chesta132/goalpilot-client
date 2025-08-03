@@ -19,7 +19,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EditTaskPage = () => {
-  const { data, getData, setData, resetData } = useTaskData();
+  const { data, getData, setData, deleteTask } = useTaskData();
 
   const defaultValue = decrypt(sessionStorage.getItem("task-data"), { parse: true }) || JSON.stringify(defaultTaskData);
   const [valueEdit, setValueEdit] = useState<TaskData>(data);
@@ -104,29 +104,13 @@ export const EditTaskPage = () => {
     navigate("./../info");
   };
 
-  const handleUndo = async (goalId: string) => {
-    try {
-      const response = await callApi("/task/restore", { method: "PUT", body: { taskId } });
-      setData(response.data);
-      openNotification({ message: response.data.notification, button: "default", type: "success" });
-      getGoalData(goalId, false);
-    } catch (err) {
-      handleError(err, setError);
-    }
-  };
-
   const handleDelete = async () => {
     setSubmitting(true);
     try {
-      const response = await callApi("/task", { method: "DELETE", body: { taskId, goalId: valueEdit.goalId } });
-      openNotification({
-        type: "success",
-        buttonFunc: { f: handleUndo, label: "Undo", params: [valueEdit.goalId] },
-        message: response.data.notification,
-      });
-      getGoalData(valueEdit.goalId, false);
-      resetData();
-      handleBack(`/goal/${valueEdit.goalId}`);
+      const goalId = valueEdit.goalId;
+      await deleteTask();
+      getGoalData(goalId, false);
+      handleBack(`/goal/${goalId}`);
     } catch (err) {
       handleError(err, setError);
     } finally {
