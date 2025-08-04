@@ -89,14 +89,9 @@ const Nav = ({ param, showNavbar, scrollNav }: NavProps) => {
 };
 
 export const UserProfile = ({ name }: { name?: string }) => {
-  const { data } = useUserData();
-  const splittedFullName = name?.split(" ") || (data && data.fullName.split(" "));
-  const profileName = splittedFullName && splittedFullName[0][0] + (splittedFullName[1] ? splittedFullName[1][0] : "");
-  return (
-    <div className="bg-[#66b2ff] text-white rounded-full size-8 text-[14px] flex items-center justify-center">
-      {profileName ? profileName.toUpperCase() : "UK"}
-    </div>
-  );
+  const { getProfileInitial } = useUserData();
+  const profileName = getProfileInitial(name);
+  return <div className="bg-[#66b2ff] text-white rounded-full size-8 text-[14px] flex items-center justify-center">{profileName.toUpperCase()}</div>;
 };
 
 export default Nav;

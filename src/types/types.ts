@@ -181,10 +181,7 @@ export type OneFieldOnly<T extends Record<string, unknown>> = {
   };
 }[keyof T];
 
-export type FriendUser = Omit<
-  UserData,
-  "email" | "role" | "createdAt" | "goals" | "goalsCompleted" | "tasksCompleted" | "verified" | "timeToAllowSendEmail" | "__v"
->;
+export type FriendUser = Omit<UserProfile, "role" | "goals" | "goalsCompleted" | "tasksCompleted" | "__v">;
 
 export type FriendData = {
   data: Friend[];
@@ -200,3 +197,5 @@ export type Friend = {
   user: FriendUser;
   friend: FriendUser;
 };
+
+export type UserProfile = Omit<UserData, "email" | "createdAt" | "verified" | "timeToAllowSendEmail">;

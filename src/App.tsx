@@ -41,6 +41,7 @@ const App = () => {
                           <Route path="/goal/create" element={<CreateGoalPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                           <Route path="/profile" element={<Profile />} />
+                          <Route path="/profile/:username" element={<Profile withParams />} />
                           <Route path="/search" element={<SearchPage />} />
                         </Route>
 

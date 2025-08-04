@@ -1,13 +1,11 @@
 import { GoalCardCompact } from "@/components/Cards/GoalCardCompact";
 import { useUserData } from "@/contexts/UseContexts";
-import type { UserData } from "@/types/types";
 import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { capitalEachWords } from "@/utils/stringManip";
+import { Empty } from "antd";
 import clsx from "clsx";
-
-type ProfileProps = {
-  userData?: UserData;
-};
+import { useEffect } from "react";
+import { useParams } from "react-router";
 
 const StatsCard = ({ label, value, loading }: { label: string; value: any; loading: boolean }) => {
   return (
@@ -23,20 +21,31 @@ const StatsCard = ({ label, value, loading }: { label: string; value: any; loadi
   );
 };
 
-export const Profile = ({ userData }: ProfileProps) => {
-  const { data: contextData, loading } = useUserData();
-  const data = userData || contextData;
-  const splittedFullName = data && data.fullName.split(" ");
-  const profileName = splittedFullName && splittedFullName[0][0] + splittedFullName[1][0];
+export const Profile = ({ withParams }: { withParams?: boolean }) => {
+  const { data: userData, loading, getProfileInitial, getProfileData, profileData } = useUserData();
+  const { username } = useParams();
+
+  const data = (withParams && profileData) || userData;
+
+  useEffect(() => {
+    if (username && username !== data?.username) getProfileData(username);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [withParams, username]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const profileName = getProfileInitial(data?.fullName);
   const stats = [{ "completed goals": data?.goalsCompleted }, { "completed tasks": data?.tasksCompleted }];
 
   const lastActiveDate = new Date(data?.lastActive || "Invalid Date").toFormattedString({ includeThisYear: true });
   const intervalMs = data?.lastActive && data?.lastActive.getTime() - new Date().getTime();
   const timeLeft = intervalMs && Math.ceil(intervalMs / (1000 * 60 * 60 * 24));
   const lastActive =
-    data?.lastActive && timeLeft && data.lastActive > new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
-      ? lastActiveDate
-      : getTimeLeftToDisplay(timeLeft!);
+    data?.lastActive &&
+    timeLeft &&
+    (data.lastActive > new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) ? lastActiveDate : getTimeLeftToDisplay(timeLeft));
 
   return (
     <div>
@@ -83,9 +92,13 @@ export const Profile = ({ userData }: ProfileProps) => {
           <h1 className="font-heading text-[20px] font-semibold mb-4">Goals</h1>
           {data?.goals && (
             <div className="flex flex-col gap-1.5 px-1">
-              {data.goals.map((goal) => (
-                <GoalCardCompact key={goal.id} data={goal} className="cursor-pointer! bg-theme-dark" />
-              ))}
+              {data.goals.length > 0 ? (
+                data.goals.map((goal) => <GoalCardCompact key={goal.id} data={goal} className="cursor-pointer! bg-theme-dark" />)
+              ) : (
+                <Empty className="flex flex-col justify-center" description>
+                  <p className="text-gray">No Goal Found</p>
+                </Empty>
+              )}
             </div>
           )}
         </div>
