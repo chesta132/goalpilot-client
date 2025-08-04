@@ -187,14 +187,16 @@ export type FriendUser = Omit<
 >;
 
 export type FriendData = {
-  data: {
-    id: string;
-    _id: string;
-    status: "PENDING" | "FRIEND";
-    createdAt: Date;
-    updatedAt: Date;
-    user: FriendUser;
-    friend: FriendUser;
-  }[];
+  data: Friend[];
   notification?: string;
+};
+
+export type Friend = {
+  id: string;
+  _id: string;
+  status: "PENDING" | "FRIEND";
+  createdAt: Date;
+  updatedAt: Date;
+  user: FriendUser;
+  friend: FriendUser;
 };

@@ -1,8 +1,10 @@
-import type { FriendData, TError } from "@/types/types";
+import type { Friend, FriendData, TError } from "@/types/types";
 import callApi from "@/utils/callApi";
 import { handleError } from "@/utils/errorHandler";
 import { createContext, useEffect, useState, type ReactNode } from "react";
 import { useNotification } from "./UseContexts";
+
+type FindProps = { friendId?: string; userId?: string }
 
 type TFriendContent = {
   data: FriendData;
@@ -14,6 +16,7 @@ type TFriendContent = {
   setError: React.Dispatch<React.SetStateAction<TError>>;
   unFriend: () => Promise<void>;
   requestFriend: (requestTo: string) => Promise<void>;
+  find: ({ friendId, userId }: FindProps) => Friend | undefined;
 };
 
 const FriendContext = createContext<TFriendContent>({
@@ -26,6 +29,7 @@ const FriendContext = createContext<TFriendContent>({
   setError: () => {},
   unFriend: async () => {},
   requestFriend: async () => {},
+  find: () => undefined,
 });
 
 const FriendProvider = ({ children }: { children: ReactNode }) => {
@@ -67,7 +71,7 @@ const FriendProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const response = await callApi<FriendData>("/friend/request", { method: "POST", body: { requestTo } });
-      // setData(response.data);
+      setData(response.data);
       if (response.data.notification) {
         openNotification({ message: response.data.notification });
       }
@@ -76,6 +80,19 @@ const FriendProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const find = ({ friendId, userId }: FindProps) => {
+    const friendValidate = (data: Friend) => friendId === data.friend.id;
+    const userValidate = (data: Friend) => userId === data.user.id;
+
+    if (friendId && userId) {
+      const finded = data.data.find((data) => friendValidate(data) && userValidate(data));
+      return finded;
+    }
+
+    const finded = data.data.find((data) => (friendId && friendValidate(data)) || (userId && userValidate(data)));
+    return finded;
   };
 
   useEffect(() => {
@@ -92,6 +109,7 @@ const FriendProvider = ({ children }: { children: ReactNode }) => {
     clearError,
     unFriend,
     requestFriend,
+    find
   };
 
   return <FriendContext.Provider value={contextValue}>{children}</FriendContext.Provider>;

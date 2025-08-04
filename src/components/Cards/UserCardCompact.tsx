@@ -1,10 +1,10 @@
 import { useFriend, useUserData } from "@/contexts/UseContexts";
-import type { FriendData, SearchProfile, UserData } from "@/types/types";
+import type { Friend, SearchProfile, UserData } from "@/types/types";
 import clsx from "clsx";
 import { UserProfile } from "../Nav/Nav";
 import { capitalEachWords, capitalWord } from "@/utils/stringManip";
 import { User, UserCheck2, UserPlus2, UserRoundCogIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 type UserCardCompactProps = {
   user?: UserData | SearchProfile;
@@ -12,9 +12,9 @@ type UserCardCompactProps = {
 };
 
 export const UserCardCompact = ({ user, className }: UserCardCompactProps) => {
-  const [localFriendStatus, setLocalFriendStatus] = useState<null | FriendData["data"][number]["status"]>(null);
+  const [localFriendStatus, setLocalFriendStatus] = useState<null | Friend["status"]>(null);
   const { data: userData } = useUserData();
-  const { requestFriend, data: friendData } = useFriend();
+  const { requestFriend, find } = useFriend();
   const data = (user || userData) as UserData | SearchProfile;
 
   const handleAddFriend = async (e: React.MouseEvent<SVGSVGElement>) => {
@@ -28,9 +28,7 @@ export const UserCardCompact = ({ user, className }: UserCardCompactProps) => {
     }
   };
 
-  const friend = useMemo(() => {
-    return friendData.data.find((friend) => (user ? friend.friend.id : friend.user.id) === data.id);
-  }, [friendData.data, user, data.id]);
+  const friend = find({ friendId: data.id });
 
   const currentFriend = localFriendStatus ? { status: localFriendStatus } : friend;
 
