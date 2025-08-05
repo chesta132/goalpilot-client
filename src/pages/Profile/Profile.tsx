@@ -1,11 +1,15 @@
 import { GoalCardCompact } from "@/components/Cards/GoalCardCompact";
-import { useUserData } from "@/contexts/UseContexts";
+import { useFriend, useUserData } from "@/contexts/UseContexts";
 import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { capitalEachWords } from "@/utils/stringManip";
 import { Empty } from "antd";
 import clsx from "clsx";
-import { useEffect } from "react";
-import { useParams } from "react-router";
+import { useEffect, useState, type MouseEvent } from "react";
+import { useNavigate, useParams } from "react-router";
+import type { UserData } from "@/types/types";
+import ButtonV from "@/components/Inputs/ButtonV";
+import { Edit2, UserCheck2, UserPlus2, UserRoundCogIcon } from "lucide-react";
+import { defaultFriend } from "@/utils/defaultData";
 
 const StatsCard = ({ label, value, loading }: { label: string; value: any; loading: boolean }) => {
   return (
@@ -21,20 +25,38 @@ const StatsCard = ({ label, value, loading }: { label: string; value: any; loadi
   );
 };
 
-export const Profile = ({ withParams }: { withParams?: boolean }) => {
+export const Profile = () => {
   const { data: userData, loading, getProfileInitial, getProfileData, profileData } = useUserData();
+  const { find, requestFriend } = useFriend();
   const { username } = useParams();
-
-  const data = (withParams && profileData) || userData;
+  const navigate = useNavigate();
+  const data = (username && profileData) || userData;
+  const [friend, setFriend] = useState(find({ friendId: data?.id }));
 
   useEffect(() => {
     if (username && username !== data?.username) getProfileData(username);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [withParams, username]);
+  }, [username]);
+
+  useEffect(() => {
+    if (data) setFriend(find({ friendId: data.id }));
+  }, [data, find]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleAddFriend = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const oldFriend = friend;
+    try {
+      setFriend((prev) => (prev ? { ...prev, status: "PENDING" } : { ...defaultFriend, status: "PENDING" }));
+      if (data?.id) await requestFriend(data?.id);
+    } catch {
+      setFriend(oldFriend);
+    }
+  };
 
   const profileName = getProfileInitial(data?.fullName);
   const stats = [{ "completed goals": data?.goalsCompleted }, { "completed tasks": data?.tasksCompleted }];
@@ -46,6 +68,8 @@ export const Profile = ({ withParams }: { withParams?: boolean }) => {
     data?.lastActive &&
     timeLeft &&
     (data.lastActive > new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) ? lastActiveDate : getTimeLeftToDisplay(timeLeft));
+
+  const buttonEditAndFriendClass = "text-[12px] py-2! px-5!";
 
   return (
     <div>
@@ -64,7 +88,7 @@ export const Profile = ({ withParams }: { withParams?: boolean }) => {
           </div>
           <div className="cursor-default">
             <h1 className="text-2xl font-heading font-semibold">{data && capitalEachWords(data.fullName)}</h1>
-            <h2 className="flex gap-2 justify-center items-center">
+            <div className="flex gap-2 justify-center items-center">
               {data && "@" + data.username}
               {data && data.role !== "user" && (
                 <h3
@@ -77,8 +101,45 @@ export const Profile = ({ withParams }: { withParams?: boolean }) => {
                   {capitalEachWords(data.role)}
                 </h3>
               )}
-            </h2>
+            </div>
             {data?.status === "offline" && <h3 className="text-[12px] text-gray">Last Active: {lastActive}</h3>}
+            {(data as UserData)?.email && <h3 className="text-[13px] text-gray">{(data as UserData).email}</h3>}
+            <div className="mt-4 flex justify-center">
+              {data && userData && userData.id === data.id ? (
+                <ButtonV
+                  text="Change Profile"
+                  icon={<Edit2 size={12} />}
+                  iconPosition="right"
+                  className={buttonEditAndFriendClass}
+                  // CHANGE PROFILE WIP
+                  onClick={() => navigate("./change-profile")}
+                />
+              ) : friend ? (
+                friend.status === "FRIEND" ? (
+                  <ButtonV
+                    text="Friend"
+                    icon={<UserCheck2 size={14} />}
+                    iconPosition="right"
+                    className={clsx(buttonEditAndFriendClass, "cursor-default! bg-accent-soft! hover:bg-accent-soft!")}
+                  />
+                ) : (
+                  <ButtonV
+                    text="Requesting Friend"
+                    icon={<UserRoundCogIcon size={14} />}
+                    iconPosition="right"
+                    className={clsx(buttonEditAndFriendClass, "cursor-default! bg-accent-strong!")}
+                  />
+                )
+              ) : (
+                <ButtonV
+                  text="Request Friend"
+                  iconPosition="right"
+                  icon={<UserPlus2 size={14} />}
+                  onClick={handleAddFriend}
+                  className={buttonEditAndFriendClass}
+                />
+              )}
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-6 lg:flex-row">

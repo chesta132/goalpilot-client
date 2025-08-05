@@ -1,5 +1,5 @@
 import { useFriend, useUserData } from "@/contexts/UseContexts";
-import type { Friend, SearchProfile, UserData } from "@/types/types";
+import type { SearchProfile, UserData } from "@/types/types";
 import clsx from "clsx";
 import { UserProfile } from "../Nav/Nav";
 import { capitalEachWords, capitalWord } from "@/utils/stringManip";
@@ -12,25 +12,21 @@ type UserCardCompactProps = {
 };
 
 export const UserCardCompact = ({ user, className }: UserCardCompactProps) => {
-  const [localFriendStatus, setLocalFriendStatus] = useState<null | Friend["status"]>(null);
   const { data: userData } = useUserData();
   const { requestFriend, find } = useFriend();
   const data = (user || userData) as UserData | SearchProfile;
+  const [friend, setFriend] = useState(find({ friendId: data.id }));
 
   const handleAddFriend = async (e: React.MouseEvent<SVGSVGElement>) => {
     e.preventDefault();
     e.stopPropagation();
     try {
-      setLocalFriendStatus("PENDING");
-      if (user?.id) await requestFriend(user?.id);
+      setFriend((prev) => prev && { ...prev, status: "PENDING" });
+      if (data?.id) await requestFriend(data?.id);
     } catch {
-      setLocalFriendStatus(null);
+      setFriend(undefined);
     }
   };
-
-  const friend = find({ friendId: data.id });
-
-  const currentFriend = localFriendStatus ? { status: localFriendStatus } : friend;
 
   return (
     <div className={clsx("border relative rounded-lg py-5 px-4 shadow-md bg-theme border-theme-darker gap-1 flex w-full items-center", className)}>
@@ -56,14 +52,13 @@ export const UserCardCompact = ({ user, className }: UserCardCompactProps) => {
           </div>
         </div>
         <div className="absolute right-0 mr-5 flex gap-2">
-          {/* WIP add friend */}
           {userData?.id === data.id ? (
-            <User className="cursor-pointer size-7 rounded-md p-1 bg-accent" />
-          ) : currentFriend ? (
-            currentFriend.status === "FRIEND" ? (
-              <UserCheck2 className="cursor-pointer size-7 rounded-md p-1 bg-accent-soft" />
+            <User className="size-7 rounded-md p-1 bg-accent" />
+          ) : friend ? (
+            friend.status === "FRIEND" ? (
+              <UserCheck2 className="size-7 rounded-md p-1 bg-accent-soft" />
             ) : (
-              <UserRoundCogIcon className="cursor-pointer size-7 rounded-md p-1 bg-accent-strong" />
+              <UserRoundCogIcon className="size-7 rounded-md p-1 bg-accent-strong" />
             )
           ) : (
             <UserPlus2 className="cursor-pointer size-7 transition hover:bg-accent rounded-md p-1" onClick={handleAddFriend} />

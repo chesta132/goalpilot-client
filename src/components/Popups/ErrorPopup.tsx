@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X, RefreshCw, Home, AlertTriangle, User2 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import type { TError } from "@/types/types";
 import { errorAuthBool } from "@/utils/errorHandler";
 
 type ErrorPopupProps<T> = {
   error: T & TError;
-  open?: boolean;
   title?: string;
   message?: string;
   onClose?: () => void;
@@ -20,9 +19,8 @@ type ErrorPopupProps<T> = {
 
 function ErrorPopup<T>({
   error,
-  open = true,
-  title,
-  message,
+  title: titleProps,
+  message: messageProps,
   onClose,
   onRefresh,
   onBackToDashboard,
@@ -31,28 +29,37 @@ function ErrorPopup<T>({
   showBackToDashboard: showBackToDashboardProps,
   showBackToLoginPage: showBackToLoginPageProps,
 }: ErrorPopupProps<T>) {
-  const [isOpen, setIsOpen] = useState(open);
-  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-  const [showBackToDashboard, setShowBackToDashboard] = useState(showBackToDashboardProps);
-  const [showBackToLoginPage, setShowBackToLoginPage] = useState(showBackToLoginPageProps);
-  const navigate = useNavigate();
   const errorAuth = errorAuthBool(error);
-  const path = useLocation().pathname;
+  const errorItem = error.error;
+  const [isOpen, setIsOpen] = useState(true);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [showBackToDashboard, setShowBackToDashboard] = useState(showBackToDashboardProps === undefined ? errorAuth : showBackToDashboardProps);
+  const [showBackToLoginPage, setShowBackToLoginPage] = useState(showBackToLoginPageProps === undefined ? errorAuth : showBackToLoginPageProps);
+  const title = useMemo(() => titleProps || errorItem?.title, [errorItem?.title, titleProps]);
+  const message = useMemo(() => messageProps || errorItem?.message, [errorItem?.message, messageProps]);
 
-  if (!title) title = error.error?.title;
-  if (!message) message = error.error?.message;
-  if (showBackToDashboardProps === undefined) setShowBackToDashboard(!errorAuth);
-  if (showBackToLoginPage === undefined) setShowBackToLoginPage(errorAuth);
+  const navigate = useNavigate();
+  const { pathname: path } = useLocation();
+  const params = useParams();
 
   useEffect(() => {
     const startsWithRules = [{ path: "/signin", showBackToDashboard: false, showBackToLoginPage: false }];
+    const paramsRules = [{ param: params.username, showBackToDashboard: true, showBackToLoginPage: true }];
 
-    startsWithRules.map((startsWith) => {
-      if (path.startsWith(startsWith.path)) {
-        if (startsWith.showBackToDashboard) setShowBackToDashboard(startsWith.showBackToDashboard);
+    startsWithRules.map((startsWithRule) => {
+      if (path.startsWith(startsWithRule.path)) {
+        if (startsWithRule.showBackToDashboard) setShowBackToDashboard(startsWithRule.showBackToDashboard);
+        if (startsWithRule.showBackToLoginPage) setShowBackToLoginPage(startsWithRule.showBackToLoginPage);
       }
     });
-  }, [path]);
+
+    paramsRules.map((paramsRule) => {
+      if (paramsRule.param) {
+        if (paramsRule.showBackToDashboard) setShowBackToDashboard(paramsRule.showBackToDashboard);
+        if (paramsRule.showBackToLoginPage) setShowBackToLoginPage(paramsRule.showBackToLoginPage);
+      }
+    });
+  }, [path, params]);
 
   const handleCloseClick = () => {
     setShowCloseConfirm(true);
@@ -92,8 +99,8 @@ function ErrorPopup<T>({
     }
   };
 
-  if (!isOpen) return null;
-  if (import.meta.env.VITE_ENV === "production" && error.error?.code === "MISSING_FIELDS") return;
+  if (!isOpen) return;
+  if (import.meta.env.VITE_ENV === "production" && errorItem?.code === "MISSING_FIELDS") return;
 
   return (
     <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-[#1b1b1b11] backdrop-blur-xs">

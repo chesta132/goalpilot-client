@@ -1,4 +1,4 @@
-import type { GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "../types/types";
+import type { Friend, FriendUser, GoalData, TaskData, TEditTaskValue, TNewGoalValue, TNewTaskValue, UserData } from "../types/types";
 
 export const defaultTaskData: TaskData = {
   id: "",
@@ -79,4 +79,16 @@ export const defaultNewGoalData: TNewGoalValue = {
 export const defaultEditTaskData: TEditTaskValue = {
   ...defaultNewTaskData,
   isCompleted: false,
+};
+
+export const defaultUserFriend: FriendUser = { _id: "", fullName: "", id: "", lastActive: new Date(""), status: "offline", username: "" };
+
+export const defaultFriend: Friend = {
+  _id: "",
+  id: "",
+  createdAt: new Date(""),
+  friend: defaultUserFriend,
+  user: defaultUserFriend,
+  status: "PENDING",
+  updatedAt: new Date(""),
 };

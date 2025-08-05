@@ -64,7 +64,7 @@ const Layout = () => {
 
   return (
     <div>
-      {errors.map((error) => error.error && <ErrorPopup error={error} />)}
+      {errors.map((error, index) => error?.error && <ErrorPopup error={error} key={error.error.code || index} />)}
       <Nav param={goalId} scrollNav={{ navRef, timelineStatus }} />
       <main>
         <Outlet />

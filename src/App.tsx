@@ -2,7 +2,15 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import SignIn from "./pages/Sign In/SignIn.tsx";
 import SignUp from "./pages/Sign Up/SignUp.tsx";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
-import { UserProvider, ThemeProvider, NotificationProvider, GoalProvider, TaskProvider, SearchProvider, FriendProvider } from "./contexts/UseContexts.tsx";
+import {
+  UserProvider,
+  ThemeProvider,
+  NotificationProvider,
+  GoalProvider,
+  TaskProvider,
+  SearchProvider,
+  FriendProvider,
+} from "./contexts/UseContexts.tsx";
 import GoalPage from "./pages/Goal Pages/GoalPage.tsx";
 import Layout from "./Layout/Layout.tsx";
 import { EditGoalPage } from "./pages/Goal Pages/EditGoalPage.tsx";
@@ -41,7 +49,7 @@ const App = () => {
                           <Route path="/goal/create" element={<CreateGoalPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                           <Route path="/profile" element={<Profile />} />
-                          <Route path="/profile/:username" element={<Profile withParams />} />
+                          <Route path="/profile/:username" element={<Profile />} />
                           <Route path="/search" element={<SearchPage />} />
                         </Route>
 
