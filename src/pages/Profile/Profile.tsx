@@ -5,7 +5,7 @@ import { capitalEachWords } from "@/utils/stringManip";
 import { Empty } from "antd";
 import clsx from "clsx";
 import { useEffect, useState, type MouseEvent } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import type { UserData } from "@/types/types";
 import ButtonV from "@/components/Inputs/ButtonV";
 import { Edit2, UserCheck2, UserPlus2, UserRoundCogIcon } from "lucide-react";
@@ -29,7 +29,6 @@ export const Profile = () => {
   const { data: userData, loading, getProfileInitial, getProfileData, profileData } = useUserData();
   const { find, requestFriend } = useFriend();
   const { username } = useParams();
-  const navigate = useNavigate();
   const data = (username && profileData) || userData;
   const [friend, setFriend] = useState(find({ friendId: data?.id }));
 
@@ -112,7 +111,7 @@ export const Profile = () => {
                   iconPosition="right"
                   className={buttonEditAndFriendClass}
                   // CHANGE PROFILE WIP
-                  onClick={() => navigate("./change-profile")}
+                  link={{ to: "./change-profile" }}
                 />
               ) : friend ? (
                 friend.status === "FRIEND" ? (

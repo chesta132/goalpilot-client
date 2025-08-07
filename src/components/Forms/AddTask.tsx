@@ -4,7 +4,7 @@ import { handleError } from "@/utils/errorHandler";
 import type { GoalData } from "@/types/types";
 import { Plus } from "lucide-react";
 import React, { type FormEvent, type KeyboardEvent } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import ButtonV from "../Inputs/ButtonV";
 import TextArea from "../Inputs/TextArea";
 import clsx from "clsx";
@@ -26,7 +26,6 @@ type AddTaskComponentProps = {
 };
 
 export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, setAddTaskAIInput }: AddTaskComponentProps) {
-  const navigate = useNavigate();
   const { goalId } = useParams();
   const { clearError, getData, setError } = useGoalData();
   const { openNotification } = useNotification();
@@ -68,20 +67,22 @@ export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, se
     }
   };
 
+  const setGoalId = () => {
+    if (!loading) {
+      const encryptedData = encrypt(data.id);
+      sessionStorage.setItem("goal-id", encryptedData);
+    }
+  };
+
   return (
     <div className="mt-10 lg:mt-0 w-full flex flex-col gap-3">
       <ButtonV
+        link={{ to: !loading ? "/task/create" : "." }}
+        onClick={setGoalId}
         style={{ background: data.color }}
         text="Create New Task"
         icon={<Plus className="bg-transparent" />}
         className="shadow-sm whitespace-nowrap w-full bg-(--goal-accent)! hover:bg-(--goal-accent-strong)! text-[13px]! md:text-[14px]!"
-        onClick={() => {
-          if (!loading) {
-            const encryptedData = encrypt(data.id);
-            sessionStorage.setItem("goal-id", encryptedData);
-            navigate("/task/create");
-          }
-        }}
       />
       <form onSubmit={handleSubmit} onKeyUpCapture={onTab}>
         {addTaskAIInput && (

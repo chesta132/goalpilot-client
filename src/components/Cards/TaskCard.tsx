@@ -4,7 +4,7 @@ import ButtonV from "../Inputs/ButtonV";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
-import { useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Edit, Info } from "lucide-react";
 import { useGoalData } from "@/contexts/UseContexts";
 import { encrypt } from "@/utils/cryptoUtils";
@@ -22,7 +22,6 @@ const TaskCard = ({ task, setError, index, preview, className }: TaskProps) => {
   const createdAt = task.createdAt;
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
-  const navigate = useNavigate();
   const { setData: setGoalData, getData: getGoalData } = useGoalData();
 
   const date = targetDate
@@ -57,18 +56,6 @@ const TaskCard = ({ task, setError, index, preview, className }: TaskProps) => {
     sessionStorage.setItem("task-data", encryptedData);
   };
 
-  const handleToEditTask = () => {
-    if (preview) return;
-    setTaskData();
-    navigate(`/task/${task._id}/edit`);
-  };
-
-  const handleToInfoTask = () => {
-    if (preview) return;
-    setTaskData();
-    navigate(`/task/${task._id}/info`);
-  };
-
   return (
     <div className={clsx("border rounded-lg p-6.5 shadow-md relative bg-theme border-theme-darker gap-5 flex flex-col w-full", className)}>
       <div className="flex justify-between w-full">
@@ -99,8 +86,12 @@ const TaskCard = ({ task, setError, index, preview, className }: TaskProps) => {
           <p className="text-[15px] text-theme-reverse-darker">{task.description}</p>
         </div>
         <div className="absolute right-0 mr-5 flex gap-2">
-          <Info className="cursor-pointer size-4.5" onClick={handleToInfoTask} />
-          <Edit className="cursor-pointer size-4.5" onClick={handleToEditTask} />
+          <Link to={preview ? "." : `/task/${task._id}/info`} onClick={setTaskData}>
+            <Info className="cursor-pointer size-4.5" />
+          </Link>
+          <Link to={preview ? "." : `/task/${task._id}/edit`} onClick={setTaskData}>
+            <Edit className="cursor-pointer size-4.5" />
+          </Link>
         </div>
       </div>
       <div className="flex justify-end gap-4">

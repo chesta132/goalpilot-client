@@ -6,7 +6,7 @@ import StatsCard from "../Cards/StatsCard";
 import { useGoalData } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 import { AddTask } from "../Forms/AddTask";
 import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultGoalData } from "@/utils/defaultData";
@@ -29,16 +29,14 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
 
   const width = useViewportWidth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const { color, description, progress, title, status } = data;
   const createdAt = data.createdAt;
   const targetDate = data.targetDate ? new Date(data.targetDate) : null;
 
-  const handleTo = (to: "edit" | "info") => {
+  const setGoalData = () => {
     const encryptedData = encrypt(data);
     sessionStorage.setItem("goal-data", encryptedData);
-    navigate(`/goal/${data._id}/${to}`);
   };
 
   useEffect(() => {
@@ -76,14 +74,14 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
         </div>
         <div className="mx-2 absolute right-0 mr-5 flex gap-2">
           {withInfo && (
-            <div className="cursor-pointer!" onClick={() => handleTo("info")}>
+            <Link className="cursor-pointer!" to={`/goal/${data._id}/info`} onClick={setGoalData}>
               <Info size={19.5} />
-            </div>
+            </Link>
           )}
           {withEdit && (
-            <div className="!cursor-pointer" onClick={() => handleTo("edit")}>
+            <Link className="!cursor-pointer" to={`/goal/${data._id}/edit`} onClick={setGoalData}>
               <Edit size={19.5} />
-            </div>
+            </Link>
           )}
         </div>
       </div>

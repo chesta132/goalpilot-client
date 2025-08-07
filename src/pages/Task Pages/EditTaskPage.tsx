@@ -20,7 +20,7 @@ import { useNavigate, useParams } from "react-router";
 export const EditTaskPage = () => {
   const { data, getData, setData, deleteTask } = useTaskData();
 
-  const defaultValue = decrypt(sessionStorage.getItem("task-data"), { parse: true }) || JSON.stringify(defaultTaskData);
+  const defaultValue = decrypt(sessionStorage.getItem("task-data"), { parse: true }) || defaultTaskData;
   const [valueEdit, setValueEdit] = useState<TaskData>(data);
   const [error, setError] = useState<TaskData & TError>({ ...defaultTaskData, error: null, difficulty: "" });
   const [isSubmitting, setSubmitting] = useState(false);
@@ -37,23 +37,12 @@ export const EditTaskPage = () => {
     setValueEdit(data);
   }, [data]);
 
-  const previewTaskData = sessionStorage.getItem("preview-task-data");
   useEffect(() => {
-    if (!previewTaskData && JSON.stringify(data) === JSON.stringify(defaultTaskData)) {
-      const f = async () => {
-        await getData(taskId!);
-        sessionStorage.setItem("task-data", encrypt(data));
-      };
-      f();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskId, data]);
-
-  useEffect(() => {
-    if (sessionStorage.getItem("task-data")) {
-      const taskData = decrypt(sessionStorage.getItem("task-data"), { parse: true });
-      if (taskData && !previewTaskData) setData(taskData);
-    }
+    const decrPreviewData = decrypt(sessionStorage.getItem("preview-task-data"), { parse: true });
+    const decrTaskData = decrypt(sessionStorage.getItem("task-data"), { parse: true });
+    if (decrTaskData && decrTaskData.id === taskId) setData(decrTaskData);
+    else if (!decrPreviewData && taskId) getData(taskId);
+    else navigate(-1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -96,11 +85,6 @@ export const EditTaskPage = () => {
   const handleBack = (to: string | number = -1) => {
     if (typeof to === "string") navigate(to);
     else if (typeof to === "number") navigate(to);
-  };
-
-  const handlePreview = () => {
-    sessionStorage.setItem("preview-task-data", encrypt(valueEdit));
-    navigate("./../info");
   };
 
   const handleDelete = async () => {
@@ -209,7 +193,7 @@ export const EditTaskPage = () => {
             type="button"
             icon={<Eye size={13} />}
             text="Preview Edit"
-            onClick={handlePreview}
+            link={{ to: "./../info", onClick: () => sessionStorage.setItem("preview-task-data", encrypt(valueEdit)) }}
             className="text-[12px] !px-3 !py-2 bg-goal-accent hover:bg-goal-accent-strong border-none"
           />
           <ButtonV

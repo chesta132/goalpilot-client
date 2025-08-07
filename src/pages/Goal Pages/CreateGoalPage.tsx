@@ -4,7 +4,6 @@ import TextArea from "@/components/Inputs/TextArea";
 import { useNotification, useTheme, useUserData } from "@/contexts/UseContexts";
 import useValidate from "@/hooks/useValidate";
 import callApi from "@/utils/callApi";
-import { decrypt, encrypt } from "@/utils/cryptoUtils";
 import { defaultNewGoalData } from "@/utils/defaultData";
 import { handleFormError } from "@/utils/errorHandler";
 import { statusOptions } from "@/utils/selectOptions";
@@ -23,28 +22,11 @@ export const CreateGoalPage = () => {
   const [isSubmitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const userId = decrypt(sessionStorage.getItem("user-id"));
 
   const { openNotification } = useNotification();
   const { data, refetchData, setData } = useUserData();
   const { handleChangeForm, validateForm } = useValidate(valueCreate, error, setValueCreate, setError);
   const { settings } = useTheme();
-
-  useEffect(() => {
-    const initial = async () => {
-      if (!data || !data._id || !userId) {
-        await refetchData(false);
-        try {
-          const encryptedData = encrypt(data!.id);
-          sessionStorage.setItem("user-id", encryptedData);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
-    initial();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,7 +50,7 @@ export const CreateGoalPage = () => {
       setValueCreate(response.data);
       if (data) setData((prev) => ({ ...prev!, goals: [response.data, ...prev!.goals] }));
       else refetchData();
-      handleBack("/");
+      navigate("/");
     } catch (err) {
       handleFormError(err, setError);
     } finally {
@@ -79,12 +61,6 @@ export const CreateGoalPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const handleBack = (to: string | number = -1) => {
-    sessionStorage.removeItem("user-id");
-    if (typeof to === "string") navigate(to);
-    else if (typeof to === "number") navigate(to);
-  };
 
   return (
     <div className="px-3 text-theme-reverse flex justify-center items-center pb-10">
@@ -172,9 +148,9 @@ export const CreateGoalPage = () => {
         </div>
         <div className="flex gap-3 justify-end mt-10">
           <ButtonV
+            link={{ to: "./.." }}
             type="button"
             disabled={isSubmitting}
-            onClick={() => handleBack()}
             text="Cancel"
             className="text-[12px] !px-3 !py-2 bg-theme-darker/20 border hover:!text-white hover:bg-red-600 hover:border-red-500 border-gray !text-theme-reverse"
           />

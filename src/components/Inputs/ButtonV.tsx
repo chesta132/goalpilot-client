@@ -1,15 +1,17 @@
 import clsx from "clsx";
 import { type ReactNode } from "react";
+import { type LinkProps, Link } from "react-router";
 
 type ButtonProps = {
   text: string;
   icon?: ReactNode;
   className?: string;
   iconPosition?: "left" | "right";
+  link?: LinkProps;
 } & React.ComponentProps<"button">;
 
-const ButtonV = ({ text, icon, className, iconPosition = "left", ...rest }: ButtonProps) => {
-  return (
+const ButtonV = ({ text, icon, className, iconPosition = "left", link, ...rest }: ButtonProps) => {
+  const button = (
     <button
       {...rest}
       className={clsx(
@@ -22,6 +24,7 @@ const ButtonV = ({ text, icon, className, iconPosition = "left", ...rest }: Butt
       {iconPosition === "right" && icon && icon}
     </button>
   );
+  return <>{link ? <Link {...link}>{button}</Link> : button}</>;
 };
 
 export default ButtonV;

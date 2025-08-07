@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import ButtonV from "@/components/Inputs/ButtonV";
 import { capitalWord } from "@/utils/stringManip";
 import TaskCard from "@/components/Cards/TaskCard";
@@ -27,7 +27,6 @@ const GoalPage = () => {
 
   const { goalId } = useParams();
   const width = useViewportWidth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const gettingData = async () => {
@@ -82,12 +81,9 @@ const GoalPage = () => {
                   <ButtonV
                     text="Create New Task"
                     className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm bg-goal-accent hover:bg-goal-accent-strong"
-                    onClick={() => {
-                      if (!loading) {
-                        const encryptedData = encrypt(data.id);
-                        sessionStorage.setItem("goal-id", encryptedData);
-                        navigate("/task/create");
-                      }
+                    link={{
+                      to: !loading ? "/task/create" : ".",
+                      onClick: () => !loading && sessionStorage.setItem("goal-id", encrypt(data.id)),
                     }}
                   />
                 </div>

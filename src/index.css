@@ -26,29 +26,6 @@
   --animate-transparent-shimmer: transparent-shimmer 1s infinite;
 }
 
-@layer utilities {
-  .overflow-auto::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-
-  .overflow-auto::-webkit-scrollbar-track {
-    border-radius: 100vh;
-    background: var(--gray);
-  }
-
-  .overflow-auto::-webkit-scrollbar-thumb {
-    background: #b1b1b1;
-    border-radius: 100vh;
-    border: 0.5px solid #b1b1b1;
-  }
-
-  .overflow-auto::-webkit-scrollbar-thumb:hover {
-    background: #949494;
-    border: #949494;
-  }
-}
-
 @keyframes shimmer {
   0% {
     background: linear-gradient(-45deg, var(--theme-darker) 40%, var(--theme-dark) 50%, var(--theme-darker) 60%);
@@ -97,27 +74,6 @@
 
 body {
   background: var(--theme);
-}
-
-body::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-body::-webkit-scrollbar-track {
-  border-radius: 100vh;
-  background: var(--gray);
-}
-
-body::-webkit-scrollbar-thumb {
-  background: var(--theme-reverse);
-  border-radius: 100vh;
-  border: 0.5px solid var(--theme-reverse);
-}
-
-body::-webkit-scrollbar-thumb:hover {
-  background: var(--theme-darker);
-  border: var(--theme-darker);
 }
 
 button:focus {

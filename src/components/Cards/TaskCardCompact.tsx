@@ -3,7 +3,7 @@ import type { GoalData, TaskData, TError } from "@/types/types";
 import clsx from "clsx";
 import { handleError } from "@/utils/errorHandler";
 import callApi from "@/utils/callApi";
-import { useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Edit, Info } from "lucide-react";
 import Checkbox from "../Inputs/Checkbox";
 import { useGoalData } from "@/contexts/UseContexts";
@@ -22,8 +22,8 @@ const TaskCardCompact = ({ task, setError, index, preview, className, buttons = 
   const createdAt = task.createdAt;
   const targetDate = task.targetDate ? new Date(task.targetDate) : null;
   const goalId = useParams().goalId;
-  const navigate = useNavigate();
   const { setData: setGoalData, getData: getGoalData } = useGoalData();
+  const { checkbox, edit, info } = buttons;
 
   const date = targetDate
     ? new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())
@@ -73,21 +73,9 @@ const TaskCardCompact = ({ task, setError, index, preview, className, buttons = 
     sessionStorage.setItem("task-data", encryptedData);
   };
 
-  const handleToEditTask = () => {
-    if (preview) return;
-    setTaskData();
-    navigate(`/task/${task._id}/edit`);
-  };
-
-  const handleToInfoTask = () => {
-    if (preview) return;
-    setTaskData();
-    navigate(`/task/${task._id}/info`);
-  };
-
   return (
     <div className={clsx("border relative rounded-lg py-5 px-4 shadow-md bg-theme border-theme-darker gap-1 flex w-full", className)}>
-      {buttons.checkbox && <Checkbox label="" id={task.id} size={15} checked={task.isCompleted} onChange={markCompleteToggle} />}
+      {checkbox && <Checkbox label="" id={task.id} size={15} checked={task.isCompleted} onChange={markCompleteToggle} />}
       <div className="flex justify-between w-full">
         <div className="relative flex flex-col gap-2 w-full">
           <h1 className="font-heading font-semibold text-[14px] md:text-[15px] max-w-[90%]">{capitalWord(task.task)}</h1>
@@ -115,8 +103,16 @@ const TaskCardCompact = ({ task, setError, index, preview, className, buttons = 
           </div>
         </div>
         <div className="absolute right-0 mr-5 flex gap-2">
-          {buttons.info && <Info className="cursor-pointer size-4.5" onClick={handleToInfoTask} />}
-          {buttons.edit && <Edit className="cursor-pointer size-4.5" onClick={handleToEditTask} />}
+          {info && (
+            <Link to={preview ? "." : `/task/${task._id}/info`} onClick={setTaskData}>
+              <Info className="cursor-pointer size-4.5" />
+            </Link>
+          )}
+          {edit && (
+            <Link to={preview ? "." : `/task/${task._id}/info`} onClick={setTaskData}>
+              <Edit className="cursor-pointer size-4.5" />
+            </Link>
+          )}
         </div>
       </div>
     </div>

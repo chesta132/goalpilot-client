@@ -24,10 +24,6 @@ export const InfoGoalPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTo = (to: "info" | "edit") => {
-    navigate(`./../${to}`);
-  };
-
   const previewData = decrypt(sessionStorage.getItem("preview-goal-data"), { parse: true });
   useEffect(() => {
     if (previewData) setData(previewData);
@@ -78,7 +74,7 @@ export const InfoGoalPage = () => {
               </div>
               <div className="flex flex-col gap-2 lg:flex-row">
                 <ButtonV
-                  onClick={() => handleTo("edit")}
+                  link={{ to: "./../edit" }}
                   text="Edit"
                   icon={<Edit2 size={14} />}
                   className="px-4! py-2! text-[12px] h-fit bg-goal-accent! hover:bg-goal-accent-strong!"

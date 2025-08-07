@@ -85,13 +85,13 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
       "--goal-accent": settings.goalAccent,
       "--goal-accent-soft": settings.goalAccentSoft,
       "--goal-accent-strong": settings.goalAccentStrong,
+      "color-scheme": settings.themeMode,
     };
 
+    document.body.classList.add("change-theme");
     for (const [key, value] of Object.entries(dynamicCssVar)) {
       document.documentElement.style.setProperty(key, value);
     }
-
-    document.body.classList.add("change-theme");
 
     setTimeout(() => {
       document.body.classList.remove("change-theme");

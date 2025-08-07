@@ -5,7 +5,7 @@ import { Book, Calendar, Edit, Goal, Info } from "lucide-react";
 import StatsCard from "../Cards/StatsCard";
 import { useGoalData, useTaskData } from "@/contexts/UseContexts";
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { getTimeLeftToDisplay } from "@/utils/commonUtils";
 import { GoalCardCompact } from "../Cards/GoalCardCompact";
 import { useViewportWidth } from "@/hooks/useViewport";
@@ -17,14 +17,9 @@ export const SidebarTask = ({ withEdit = true }) => {
   const { description, task } = data;
   const { data: goalData, getData: getGoalData } = useGoalData();
 
-  const navigate = useNavigate();
   const { createdAt, completedAt } = data;
   const targetDate = new Date(data.targetDate);
   const width = useViewportWidth();
-
-  const handleTo = (path: "edit" | "info") => {
-    navigate(`/task/${data._id}/${path}`);
-  };
 
   useEffect(() => {
     if (goalData.id !== data.goalId) {
@@ -70,13 +65,13 @@ export const SidebarTask = ({ withEdit = true }) => {
         </div>
         <div className="mx-2 absolute right-0 mr-5">
           {withEdit ? (
-            <div className="!cursor-pointer" onClick={() => handleTo("edit")}>
+            <Link className="!cursor-pointer" to={`/task/${data._id}/edit`}>
               <Edit size={19.5} />
-            </div>
+            </Link>
           ) : (
-            <div className="cursor-pointer!" onClick={() => handleTo("info")}>
+            <Link className="cursor-pointer!" to={`/task/${data._id}/info`}>
               <Info size={19.5} />
-            </div>
+            </Link>
           )}
         </div>
       </div>
@@ -108,9 +103,9 @@ export const SidebarTask = ({ withEdit = true }) => {
         }
       />
       <StatsCard header="Goal" icon={<Goal className="h-8 w-8 p-1 object-contain rounded-md" style={{ background: goalData.color }} />} stats="">
-        <div className="cursor-pointer" onClick={() => navigate(`/goal/${goalData.id}`)}>
+        <Link className="cursor-pointer" to={`/goal/${goalData.id}`}>
           <GoalCardCompact data={goalData} />
-        </div>
+        </Link>
       </StatsCard>
     </div>
   );

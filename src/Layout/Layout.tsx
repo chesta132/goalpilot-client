@@ -2,7 +2,7 @@ import { Outlet, useLocation, useParams } from "react-router";
 import Nav from "../components/Nav/Nav";
 import { useFriend, useGoalData, useSearch, useTaskData, useUserData } from "../contexts/UseContexts";
 import useScrollNavigation from "../hooks/useScrollNavigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Footer from "@/components/Static/Footer";
 import { defaultTaskData } from "@/utils/defaultData";
 import type { GoalData } from "@/types/types";
@@ -17,6 +17,7 @@ const Layout = () => {
   const { navRef, timelineStatus } = useScrollNavigation(20);
   const location = useLocation();
   const { goalId } = useParams();
+  const [isError, setIsError] = useState(false);
 
   const errors = [userError, goalError, taskError, searchError, friendError];
 
@@ -25,7 +26,6 @@ const Layout = () => {
     clearGoalError();
     clearTaskError();
     const clear = () => {
-      sessionStorage.removeItem("user-id");
       sessionStorage.removeItem("goal-data");
       sessionStorage.removeItem("goal-id");
       sessionStorage.removeItem("task-data");
@@ -34,9 +34,6 @@ const Layout = () => {
       clear();
     } else if (location.pathname.startsWith("/goal")) {
       sessionStorage.removeItem("task-data");
-      sessionStorage.removeItem("user-id");
-    } else if (location.pathname.startsWith("/task")) {
-      sessionStorage.removeItem("user-id");
     }
 
     const previewGoal = sessionStorage.getItem("preview-goal-data");
@@ -64,7 +61,12 @@ const Layout = () => {
 
   return (
     <div>
-      {errors.map((error, index) => error?.error && <ErrorPopup error={error} key={error.error.code || index} />)}
+      {errors.map((error, index) => {
+        if (error?.error && !isError) {
+          setIsError(true);
+          return <ErrorPopup error={error} key={error.error.code || index} />;
+        }
+      })}
       <Nav param={goalId} scrollNav={{ navRef, timelineStatus }} />
       <main>
         <Outlet />

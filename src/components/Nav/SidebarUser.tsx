@@ -6,9 +6,8 @@ import clsx from "clsx";
 import StatsCard from "../Cards/StatsCard";
 import { useViewportWidth } from "@/hooks/useViewport";
 import { avgCalc } from "@/utils/math";
-import { useNavigate } from "react-router";
-import { encrypt } from "@/utils/cryptoUtils";
 import { GoalCardCompact } from "../Cards/GoalCardCompact";
+import { Link } from "react-router";
 
 export const SidebarUser = () => {
   const { timelineStatus } = useScrollNavigation();
@@ -16,15 +15,6 @@ export const SidebarUser = () => {
   const { settings } = useTheme();
 
   const width = useViewportWidth();
-  const navigate = useNavigate();
-
-  const handleCreateGoal = () => {
-    if (data) {
-      const encryptedData = encrypt(data.id);
-      sessionStorage.setItem("user-id", encryptedData);
-    }
-    navigate("/goal/create");
-  };
 
   return (
     <div
@@ -63,14 +53,9 @@ export const SidebarUser = () => {
         </div>
       )}
       {width < 1024 && (
-        <div className="mt-10 w-full">
-          <ButtonV
-            text="Create New Goal"
-            icon={<Plus className="bg-transparent" />}
-            className="shadow-sm whitespace-nowrap w-full"
-            onClick={handleCreateGoal}
-          />
-        </div>
+        <Link className="mt-10 w-full" to={"/goal/create"}>
+          <ButtonV text="Create New Goal" icon={<Plus className="bg-transparent" />} className="shadow-sm whitespace-nowrap w-full" />
+        </Link>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Squash as Hamburger } from "hamburger-react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { Search, Settings } from "lucide-react";
 import { useViewportWidth } from "../../hooks/useViewport";
 import useScrollNavigation from "../../hooks/useScrollNavigation";
@@ -23,7 +23,6 @@ const Nav = ({ param, showNavbar, scrollNav }: NavProps) => {
   const width = useViewportWidth();
   const defaultScrollNav = useScrollNavigation();
   const { navRef, timelineStatus } = scrollNav || defaultScrollNav;
-  const navigate = useNavigate();
 
   // Open permanently the menu on larger screens
   useEffect(() => {
@@ -73,9 +72,9 @@ const Nav = ({ param, showNavbar, scrollNav }: NavProps) => {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <button className="cursor-pointer bg-none border-none" onClick={() => navigate("/search")}>
+          <Link className="cursor-pointer bg-none border-none" to={"/search"}>
             <Search />
-          </button>
+          </Link>
           <Link to="/profile">
             <UserProfile />
           </Link>

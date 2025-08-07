@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { Plus } from "lucide-react";
 import ButtonV from "@/components/Inputs/ButtonV";
 import clsx from "clsx";
@@ -6,22 +6,12 @@ import GoalCard from "@/components/Cards/GoalCard";
 import { Empty } from "antd";
 import { useUserData } from "@/contexts/UseContexts";
 import { useViewportWidth } from "@/hooks/useViewport";
-import { encrypt } from "@/utils/cryptoUtils";
 import { useEffect } from "react";
 
 const Dashboard = () => {
   const { data, loading } = useUserData();
 
   const width = useViewportWidth();
-  const navigate = useNavigate();
-
-  const handleCreateGoal = () => {
-    if (data) {
-      const encryptedData = encrypt(data.id);
-      sessionStorage.setItem("user-id", encryptedData);
-    }
-    navigate("/goal/create");
-  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -42,14 +32,12 @@ const Dashboard = () => {
             </div>
           </div>
           {width >= 1024 && (
-            <div className="mx-5 mb-4">
-              <ButtonV
-                text="Create New Goal"
-                icon={<Plus className="bg-transparent" />}
-                className="shadow-sm whitespace-nowrap w-full"
-                onClick={handleCreateGoal}
-              />
-            </div>
+            <ButtonV
+              link={{ className: "mx-5 mb-4", to: "/goal/create" }}
+              text="Create New Goal"
+              icon={<Plus className="bg-transparent" />}
+              className="shadow-sm whitespace-nowrap w-full"
+            />
           )}
           <div className="flex flex-col gap-6">
             {data?.goals && data?.goals.length > 0 ? (
@@ -61,13 +49,11 @@ const Dashboard = () => {
             ) : (
               <Empty className="flex flex-col justify-center" description>
                 <p className="text-gray">No Goal Found</p>
-                <div className="relative h-12">
-                  <ButtonV
-                    text="Create New Goal"
-                    className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm"
-                    onClick={handleCreateGoal}
-                  />
-                </div>
+                <ButtonV
+                  text="Create New Goal"
+                  link={{ to: "/goal/create", className: "relative h-12" }}
+                  className="absolute left-1/2 top-1/2 -translate-1/2 whitespace-nowrap h-7 shadow-sm"
+                />
               </Empty>
             )}
           </div>

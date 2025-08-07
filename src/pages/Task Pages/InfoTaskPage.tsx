@@ -20,21 +20,17 @@ export const InfoTaskPage = () => {
 
   const navigate = useNavigate();
 
+  const decrPreviewData = decrypt(sessionStorage.getItem("preview-task-data"), { parse: true });
   useEffect(() => {
-    const decrypted = decrypt(sessionStorage.getItem("task-data"), { parse: true });
-    if (decrypted && decrypted.id === taskId) setData(decrypted);
-    else getData(taskId!);
+    const decrTaskData = decrypt(sessionStorage.getItem("task-data"), { parse: true });
+    if (decrTaskData && decrTaskData.id === taskId) setData(decrTaskData);
+    else if (!decrPreviewData) getData(taskId!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTo = (to: "info" | "edit") => {
-    navigate(`./../${to}`);
-  };
-
   useEffect(() => {
-    const previewData = decrypt(sessionStorage.getItem("preview-task-data"), { parse: true });
-    if (previewData) {
-      setData(previewData);
+    if (decrPreviewData) {
+      setData(decrPreviewData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -88,7 +84,7 @@ export const InfoTaskPage = () => {
               </div>
               <div className="flex flex-col gap-2 lg:flex-row">
                 <ButtonV
-                  onClick={() => handleTo("edit")}
+                  link={{ to: "./../edit" }}
                   text="Edit"
                   icon={<Edit2 size={14} />}
                   className="px-4! py-2! text-[12px] h-fit bg-goal-accent! hover:bg-goal-accent-strong!"
