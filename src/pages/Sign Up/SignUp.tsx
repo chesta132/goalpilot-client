@@ -21,7 +21,7 @@ const SignUp = () => {
   const [submiting, setSubmiting] = useState(false);
 
   const { handleChangeForm, validateForm } = useValidate(value, error, setValue, setError);
-  const { clearError, setData } = useUserData();
+  const { clearUserError, setData } = useUserData();
 
   const width = useViewportWidth(300);
   const height = useViewportHeight();
@@ -56,7 +56,7 @@ const SignUp = () => {
       handleFormError(err, setError);
     } finally {
       setSubmiting(false);
-      clearError();
+      clearUserError();
     }
   };
 

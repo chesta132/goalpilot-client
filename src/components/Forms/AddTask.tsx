@@ -27,11 +27,11 @@ type AddTaskComponentProps = {
 
 export function AddTask({ data, loading, addTaskAIInput, setAiInput, aiInput, setAddTaskAIInput }: AddTaskComponentProps) {
   const { goalId } = useParams();
-  const { clearError, getData, setError } = useGoalData();
+  const { clearGoalError, getData, setError } = useGoalData();
   const { openNotification } = useNotification();
 
   const generateWithAI = async () => {
-    clearError();
+    clearGoalError();
     if (aiInput.value.length < 20) {
       setAiInput((prev) => ({ ...prev, error: "Minimum character is 20 character" }));
       return;

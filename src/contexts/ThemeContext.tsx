@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { generateAccentColors } from "@/utils/colorUtils";
-import { useGoalData } from "./UseContexts";
 
 export type ThemeSettings = {
   themeMode: "light" | "dark";
@@ -33,19 +32,20 @@ const defaultSettings: ThemeSettings = {
 interface ThemeContextType {
   settings: ThemeSettings;
   updateSettings: (newValues: Partial<ThemeSettings>) => void;
-  dark: boolean;
+  setToDefault: (valueToDefault: Partial<Record<keyof ThemeSettings, boolean | 0 | 1>>) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   settings: defaultSettings,
   updateSettings: () => {},
-  dark: false,
+  setToDefault: () => {},
 });
 
 const getSettingsFromLocalStorage = (): ThemeSettings => {
   try {
     const storedSettings = localStorage.getItem("settings");
-    const parsedSettings: Partial<ThemeSettings> = storedSettings ? JSON.parse(storedSettings) : {};
+    if (!storedSettings) return defaultSettings;
+    const parsedSettings: Partial<ThemeSettings> = JSON.parse(storedSettings);
 
     return {
       themeMode: parsedSettings.themeMode ?? defaultSettings.themeMode,
@@ -68,8 +68,6 @@ const getSettingsFromLocalStorage = (): ThemeSettings => {
 
 const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<ThemeSettings>(getSettingsFromLocalStorage());
-  const [dark, setDark] = useState(false);
-  const { data: goalData } = useGoalData();
 
   useEffect(() => {
     const dynamicCssVar = {
@@ -117,33 +115,26 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
       };
     }
     setSettings(updated);
-    localStorage.setItem("settings", JSON.stringify(updated));
   };
 
   useEffect(() => {
-    if (goalData.color && goalData.color !== settings.goalAccent) {
-      const generatedColors = generateAccentColors(goalData.color);
-      setSettings((prev) => ({
-        ...prev,
-        goalAccent: generatedColors.accent,
-        goalAccentSoft: generatedColors.accentSoft,
-        goalAccentStrong: generatedColors.accentStrong,
-      }));
-
-      localStorage.setItem("settings", JSON.stringify(settings));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goalData.color]);
-
-  useEffect(() => {
-    if (settings.themeMode === "light") setDark(false);
-    else setDark(true);
+    localStorage.setItem("settings", JSON.stringify(settings));
   }, [settings]);
+
+  const setToDefault = (valueToDef: Partial<Record<keyof ThemeSettings, boolean | 0 | 1>>) => {
+    let toUpdate = {} as ThemeSettings;
+    for (const [k, value] of Object.entries(valueToDef)) {
+      const key = k as keyof ThemeSettings;
+      if (!value) continue;
+      toUpdate = { ...toUpdate, [key]: defaultSettings[key] };
+    }
+    setSettings((prev) => ({ ...prev, ...toUpdate }));
+  };
 
   const contextValue: ThemeContextType = {
     settings,
     updateSettings,
-    dark,
+    setToDefault,
   };
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;

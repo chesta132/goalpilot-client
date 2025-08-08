@@ -11,7 +11,7 @@ type TGoalContent = {
   setData: React.Dispatch<React.SetStateAction<GoalData>>;
   loading: boolean;
   error: GoalData & TError;
-  clearError: () => void;
+  clearGoalError: () => void;
   setError: React.Dispatch<React.SetStateAction<GoalData & TError>>;
   deleteGoal: () => Promise<void>;
 };
@@ -22,7 +22,7 @@ const GoalContext = createContext<TGoalContent>({
   setData: () => {},
   loading: true,
   error: { ...defaultGoalData, error: null, status: "" },
-  clearError: () => {},
+  clearGoalError: () => {},
   setError: () => {},
   deleteGoal: async () => {},
 });
@@ -70,7 +70,7 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const clearError = () => setError({ ...defaultGoalData, error: null, status: "" });
+  const clearGoalError = () => setError({ ...defaultGoalData, error: null, status: "" });
 
   const contextValue = {
     data,
@@ -79,7 +79,7 @@ const GoalProvider = ({ children }: { children: ReactNode }) => {
     error,
     getData,
     setError,
-    clearError,
+    clearGoalError,
     deleteGoal,
   };
 

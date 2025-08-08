@@ -12,7 +12,7 @@ type TFriendContent = {
   setData: React.Dispatch<React.SetStateAction<FriendData>>;
   loading: boolean;
   error: TError;
-  clearError: () => void;
+  clearFriendError: () => void;
   setError: React.Dispatch<React.SetStateAction<TError>>;
   unFriend: () => Promise<void>;
   requestFriend: (requestTo: string) => Promise<void>;
@@ -25,7 +25,7 @@ const FriendContext = createContext<TFriendContent>({
   setData: () => {},
   loading: true,
   error: { error: null },
-  clearError: () => {},
+  clearFriendError: () => {},
   setError: () => {},
   unFriend: async () => {},
   requestFriend: async () => {},
@@ -50,7 +50,7 @@ const FriendProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const clearError = () => setError({ error: null });
+  const clearFriendError = () => setError({ error: null });
 
   const unFriend = async () => {
     setLoading(true);
@@ -106,7 +106,7 @@ const FriendProvider = ({ children }: { children: ReactNode }) => {
     error,
     getData,
     setError,
-    clearError,
+    clearFriendError,
     unFriend,
     requestFriend,
     find

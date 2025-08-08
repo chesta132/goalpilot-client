@@ -148,7 +148,9 @@ export const CreateGoalPage = () => {
         </div>
         <div className="flex gap-3 justify-end mt-10">
           <ButtonV
-            link={{ to: "./.." }}
+            onClick={() => {
+              navigate(-1);
+            }}
             type="button"
             disabled={isSubmitting}
             text="Cancel"

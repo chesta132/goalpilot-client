@@ -10,7 +10,7 @@ interface IUserContent {
   loading: boolean;
   error: UserData & TError;
   refetchData: (withLoad?: boolean, direct?: boolean) => Promise<void>;
-  clearError: () => void;
+  clearUserError: () => void;
   setError: React.Dispatch<React.SetStateAction<UserData & TError>>;
   getProfileInitial: (name?: string) => string;
   getProfileData: (username: string, withLoad?: boolean) => Promise<void>;
@@ -24,7 +24,7 @@ const UserContext = createContext<IUserContent>({
   loading: true,
   error: { ...defaultUserData, error: null },
   refetchData: async () => {},
-  clearError: () => {},
+  clearUserError: () => {},
   setError: () => {},
   getProfileInitial: () => "",
   getProfileData: async () => {},
@@ -75,7 +75,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const clearError = () => setError({ ...defaultUserData, error: null });
+  const clearUserError = () => setError({ ...defaultUserData, error: null });
 
   const getProfileInitial = (name?: string) => {
     const splittedFullName = name?.split(" ") || (data && data.fullName.split(" "));
@@ -89,7 +89,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     loading,
     error,
     refetchData: fetchData,
-    clearError,
+    clearUserError,
     setError,
     getProfileInitial,
     getProfileData,

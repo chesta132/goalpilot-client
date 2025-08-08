@@ -12,7 +12,7 @@ type TTaskContent = {
   getData: (taskId: string) => Promise<void>;
   setData: React.Dispatch<React.SetStateAction<TaskData>>;
   error: TaskData & TError;
-  clearError: () => void;
+  clearTaskError: () => void;
   setError: React.Dispatch<React.SetStateAction<TaskData & TError>>;
   deleteTask: () => Promise<void>;
   resetData: () => void;
@@ -24,7 +24,7 @@ const TaskContext = createContext<TTaskContent>({
   getData: async () => {},
   setData: () => {},
   error: { ...defaultTaskData, error: null },
-  clearError: () => {},
+  clearTaskError: () => {},
   setError: () => {},
   deleteTask: async () => {},
   resetData: () => {},
@@ -51,7 +51,7 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const clearError = () => setError({ ...defaultTaskData, error: null });
+  const clearTaskError = () => setError({ ...defaultTaskData, error: null });
 
   const handleUndo = async (taskId: string, goalId: string) => {
     setLoading(true);
@@ -92,7 +92,7 @@ const TaskProvider = ({ children }: { children: ReactNode }) => {
     error,
     getData,
     setError,
-    clearError,
+    clearTaskError,
     deleteTask,
     resetData,
   };

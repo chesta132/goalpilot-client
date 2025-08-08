@@ -25,7 +25,7 @@ type TSearchContext = {
   getSequelProfile: (options?: Omit<GetDataProps, "type">) => Promise<void>;
   setData: React.Dispatch<React.SetStateAction<SearchData>>;
   error: TError & { search: string };
-  clearError: () => void;
+  clearSearchError: () => void;
   setError: React.Dispatch<React.SetStateAction<TError & { search: string }>>;
   params: Params;
   setParams: React.Dispatch<React.SetStateAction<Params>>;
@@ -42,7 +42,7 @@ const SearchContext = createContext<TSearchContext>({
   getSequelProfile: async () => {},
   setData: () => {},
   error: { error: null, search: "" },
-  clearError: () => {},
+  clearSearchError: () => {},
   setError: () => {},
   params: defaultParams,
   setParams: () => {},
@@ -90,7 +90,7 @@ const SearchProvider = ({ children }: { children: ReactNode }) => {
       handleFormError(err, setError);
     }
   };
-  const clearError = () => setError({ error: null, search: "" });
+  const clearSearchError = () => setError({ error: null, search: "" });
 
   const contextValue: TSearchContext = {
     data,
@@ -99,7 +99,7 @@ const SearchProvider = ({ children }: { children: ReactNode }) => {
     setData,
     error,
     setError,
-    clearError,
+    clearSearchError,
     params,
     setParams,
     query,
