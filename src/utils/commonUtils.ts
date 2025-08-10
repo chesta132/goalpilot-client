@@ -135,7 +135,7 @@ Object.compare = function <T extends object>(...objectsProp: T[]) {
   });
 
   return Object.entries(objects[longestObjectKeysIndex]).every(([key, value]) => {
-    objects.slice(longestObjectKeysIndex, 1);
+    objects.splice(longestObjectKeysIndex, 1);
     return objects.every((object) => Object.getOwnPropertyNames(object).includes(key) && object[key as keyof T] === value);
   });
 };
