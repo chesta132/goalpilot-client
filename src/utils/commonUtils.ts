@@ -126,16 +126,16 @@ Object.compare = function <T extends object>(...objectsProp: T[]) {
   let longestObjectKeys = 0;
   let longestObjectKeysIndex = 0;
 
-  objects.map((object, index) => {
+  objects.forEach((object, index) => {
     const length = Object.entries(object).length;
     if (longestObjectKeys < length) {
       longestObjectKeys = length;
       longestObjectKeysIndex = index;
     }
   });
+  const [longestObject] = objects.splice(longestObjectKeysIndex, 1);
 
-  return Object.entries(objects[longestObjectKeysIndex]).every(([key, value]) => {
-    objects.splice(longestObjectKeysIndex, 1);
+  return Object.entries(longestObject).every(([key, value]) => {
     return objects.every((object) => Object.getOwnPropertyNames(object).includes(key) && object[key as keyof T] === value);
   });
 };
