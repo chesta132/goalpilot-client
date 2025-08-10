@@ -39,7 +39,7 @@ export const EditGoalPage = () => {
   }, [data]);
   const previewGoalData = sessionStorage.getItem("preview-goal-data");
   useEffect(() => {
-    if (!previewGoalData && JSON.stringify(data) === JSON.stringify(defaultGoalData)) {
+    if (!previewGoalData && Object.compare(data, defaultGoalData)) {
       const f = async () => {
         await getData(goalId);
         sessionStorage.setItem("goal-data", encrypt(data));
@@ -71,7 +71,7 @@ export const EditGoalPage = () => {
       return;
     }
 
-    if (JSON.stringify(valueEdit) === JSON.stringify(defaultValue)) {
+    if (Object.compare(valueEdit, defaultValue)) {
       openNotification({ message: "Items must have changes", type: "warning", button: "default" });
       setTimeout(() => {
         setSubmitting(false);

@@ -55,9 +55,13 @@ const Layout = () => {
       sessionStorage.removeItem("preview-goal-data");
       sessionStorage.removeItem("preview-task-data");
     }
+
+    if (!path.endsWith("/profile") && !path.endsWith("/change-profile")) {
+      sessionStorage.removeItem("preview-profile-edit");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, goalId, clearErrors]);
-  
+
   useEffect(() => {
     if (goalData.color && goalData.color !== settings.goalAccent && (path.startsWith("/goal") || path.startsWith("/task"))) {
       const generatedColors = generateAccentColors(goalData.color);
@@ -67,8 +71,7 @@ const Layout = () => {
         goalAccentStrong: generatedColors.accentStrong,
       };
       updateSettings(accentToUpdate);
-    }
-    else if (!path.startsWith("/goal") && !path.startsWith("/task")) setToDefault({ goalAccent: 1, goalAccentSoft: 1, goalAccentStrong: 1 });
+    } else if (!path.startsWith("/goal") && !path.startsWith("/task")) setToDefault({ goalAccent: 1, goalAccentSoft: 1, goalAccentStrong: 1 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalData.color, settings.goalAccent, path]);
 

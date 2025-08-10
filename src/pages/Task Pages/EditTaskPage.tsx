@@ -61,7 +61,7 @@ export const EditTaskPage = () => {
       return;
     }
 
-    if (JSON.stringify(valueEdit) === JSON.stringify(defaultValue)) {
+    if (Object.compare(valueEdit, defaultValue)) {
       openNotification({ message: "Items must have changes", type: "warning", button: "default" });
       setTimeout(() => {
         setSubmitting(false);

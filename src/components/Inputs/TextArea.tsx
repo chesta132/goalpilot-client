@@ -38,7 +38,7 @@ const TextArea = ({
   labelAfterLabel,
 }: TextAreaProps) => {
   const [internalValue, setInternalValue] = useState(value);
-  const [isFocus, setIsFocus] = useState(focus);
+  const [isFocus, setIsFocus] = useState(focus === undefined ? internalValue !== "" : focus);
 
   useEffect(() => {
     setInternalValue(value);
@@ -46,7 +46,7 @@ const TextArea = ({
   }, [value, internalValue]);
 
   useEffect(() => {
-    setIsFocus(focus);
+    if (focus !== undefined) setIsFocus(focus);
   }, [focus]);
 
   return (

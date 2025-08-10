@@ -39,7 +39,7 @@ const Input = ({
   TWBackgroundLabel,
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(value);
-  const [isFocus, setIsFocus] = useState(focus);
+  const [isFocus, setIsFocus] = useState(focus === undefined ? internalValue !== "" : focus);
   const [whatType, setWhatType] = useState(type);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const Input = ({
   }, [value, internalValue]);
 
   useEffect(() => {
-    setIsFocus(focus);
+    if (focus !== undefined) setIsFocus(focus);
   }, [focus]);
 
   return (

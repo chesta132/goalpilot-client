@@ -85,9 +85,9 @@ export const isIsoDateValid = (dateString: string | Date) => {
  * @returns The object with only picked properties.
  */
 export const pick = <T extends Record<string, any>, Z extends (keyof T)[]>(data: T, picks?: Z): Pick<T, Z[number]> => {
-  const pickedData = data;
+  const pickedData = { ...data };
   if (picks)
-    for (const pick of Object.keys(data)) {
+    for (const pick of Object.keys(pickedData)) {
       if (!picks.includes(pick as keyof object)) {
         delete pickedData[pick as keyof object];
       }
@@ -103,7 +103,7 @@ export const pick = <T extends Record<string, any>, Z extends (keyof T)[]>(data:
  * @returns The object with omitted properties.
  */
 export const omit = <T extends Record<string, any>, Z extends (keyof T)[]>(data: T, omits?: Z): Omit<T, Z[number]> => {
-  const omittedData = data;
+  const omittedData = { ...data };
   if (omits)
     for (const omit of omits) {
       delete omittedData[omit];
@@ -119,4 +119,23 @@ export const searchItemTerms = (type: string) => {
   return `${isUserType ? (isTaskType || isGoalType ? "users, " : "users") : ""}${isGoalType ? (isTaskType ? "goals, " : "goals") : ""}${
     isTaskType ? "tasks" : ""
   }`;
+};
+
+Object.compare = function <T extends object>(...objectsProp: T[]) {
+  const objects = [...objectsProp];
+  let longestObjectKeys = 0;
+  let longestObjectKeysIndex = 0;
+
+  objects.map((object, index) => {
+    const length = Object.entries(object).length;
+    if (longestObjectKeys < length) {
+      longestObjectKeys = length;
+      longestObjectKeysIndex = index;
+    }
+  });
+
+  return Object.entries(objects[longestObjectKeysIndex]).every(([key, value]) => {
+    objects.slice(longestObjectKeysIndex, 1);
+    return objects.every((object) => Object.getOwnPropertyNames(object).includes(key) && object[key as keyof T] === value);
+  });
 };

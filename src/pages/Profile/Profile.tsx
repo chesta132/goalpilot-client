@@ -10,6 +10,7 @@ import type { UserData } from "@/types/types";
 import ButtonV from "@/components/Inputs/ButtonV";
 import { Edit2, UserCheck2, UserPlus2, UserRoundCogIcon } from "lucide-react";
 import { defaultFriend } from "@/utils/defaultData";
+import { decrypt } from "@/utils/cryptoUtils";
 
 const StatsCard = ({ label, value, loading }: { label: string; value: any; loading: boolean }) => {
   return (
@@ -29,13 +30,21 @@ export const Profile = () => {
   const { data: userData, loading, getProfileInitial, getProfileData, profileData } = useUserData();
   const { find, requestFriend } = useFriend();
   const { username } = useParams();
-  const data = (username && profileData) || userData;
+  const [data, setData] = useState((username && profileData) || userData);
   const [friend, setFriend] = useState(find({ friendId: data?.id }));
 
   useEffect(() => {
     if (username && username !== data?.username) getProfileData(username);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
+
+  useEffect(() => {
+    const decr = decrypt(sessionStorage.getItem("preview-profile-edit"), { parse: true });
+    if (decr) {
+      const { fullName, username } = decr;
+      setData((prev) => prev && { ...prev, username, fullName });
+    }
+  }, []);
 
   useEffect(() => {
     if (data) setFriend(find({ friendId: data.id }));

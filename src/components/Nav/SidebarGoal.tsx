@@ -40,7 +40,7 @@ export const SidebarGoal = ({ withEdit = true, withInfo = true }) => {
   };
 
   useEffect(() => {
-    if (JSON.stringify(data) === JSON.stringify(defaultGoalData)) {
+    if (Object.compare(data, defaultGoalData)) {
       if (sessionStorage.getItem("goal-data")) {
         setData(decrypt(sessionStorage.getItem("goal-data"), { parse: true }));
       }

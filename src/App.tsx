@@ -12,19 +12,20 @@ import {
   FriendProvider,
 } from "./contexts/UseContexts.tsx";
 import GoalPage from "./pages/Goal Pages/GoalPage.tsx";
-import Layout from "./Layout/Layout.tsx";
+import Layout from "./layouts/Layout.tsx";
 import { EditGoalPage } from "./pages/Goal Pages/EditGoalPage.tsx";
 import { EditTaskPage } from "./pages/Task Pages/EditTaskPage.tsx";
 import { CreateTaskPage } from "./pages/Task Pages/CreateTaskPage.tsx";
-import SidebarGoalLayout from "./Layout/SidebarGoalLayout.tsx";
-import SidebarUserLayout from "./Layout/SidebarUserLayout.tsx";
+import SidebarGoalLayout from "./layouts/SidebarGoalLayout.tsx";
+import SidebarUserLayout from "./layouts/SidebarUserLayout.tsx";
 import { CreateGoalPage } from "./pages/Goal Pages/CreateGoalPage.tsx";
 import { SettingsPage } from "./pages/Settings/SettingsPage.tsx";
-import SidebarTaskLayout from "./Layout/SidebarTaskLayout.tsx";
+import SidebarTaskLayout from "./layouts/SidebarTaskLayout.tsx";
 import { InfoTaskPage } from "./pages/Task Pages/InfoTaskPage.tsx";
 import { InfoGoalPage } from "./pages/Goal Pages/InfoGoalPage.tsx";
 import { Profile } from "./pages/Profile/Profile.tsx";
 import { SearchPage } from "./pages/Search/SearchPage.tsx";
+import { EditProfile } from "./pages/Profile/EditProfile.tsx";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const API_URL = import.meta.env.VITE_API_URL_DEV_LOCAL;
@@ -49,6 +50,7 @@ const App = () => {
                           <Route path="/goal/create" element={<CreateGoalPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                           <Route path="/profile" element={<Profile />} />
+                          <Route path="/profile/change-profile" element={<EditProfile />} />
                           <Route path="/profile/:username" element={<Profile />} />
                           <Route path="/search" element={<SearchPage />} />
                         </Route>

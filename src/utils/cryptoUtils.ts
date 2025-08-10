@@ -13,6 +13,7 @@ export const encrypt = (data: any) => {
 export const decrypt = (ciphertext?: string | null, options?: { parse?: boolean }) => {
   if (!ciphertext) return "";
   const decrypted = CryptoJS.AES.decrypt(ciphertext, key).toString(CryptoJS.enc.Utf8);
+  console.log(decrypted)
   if (options?.parse) {
     try {
       return sanitizeDatesInObject(JSON.parse(decrypted));

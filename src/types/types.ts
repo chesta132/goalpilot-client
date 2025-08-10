@@ -120,6 +120,7 @@ export type Values = {
   status: string;
   isCompleted: boolean;
   verifyPassword: string;
+  fullName: string;
 };
 
 export type ErrorWithValues = TError & Partial<Values>;

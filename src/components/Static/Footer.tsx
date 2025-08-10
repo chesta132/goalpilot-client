@@ -6,7 +6,7 @@ const Footer = () => {
   const location = useLocation();
 
   const path = location.pathname;
-  const noFooterEndWith = ["/create", "/edit"];
+  const noFooterEndWith = ["/create", "/edit", "/change-profile"];
   if (noFooterEndWith.some((startWith) => path.endsWith(startWith))) return;
   const halfFooterPaths = ["/", "/settings", "/search"];
   const halfFooterStartWith = ["/goal", "/task", "/profile"];
